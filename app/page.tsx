@@ -4,6 +4,7 @@ export default function Home() {
   const b: number = 0;
   console.log(b);
   const a = 'a';
+  const c = 'c';
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
