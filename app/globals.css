@@ -23,3 +23,18 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+body {
+  background-color: color-light;
+  font-family: system-ui, sans-serif;
+  font-weight: normal;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex-grow: 1;
+}
