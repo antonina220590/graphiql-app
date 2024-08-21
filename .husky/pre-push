@@ -1,5 +1,5 @@
 echo "Running tests in CI mode..."
-npm test
+npx vitest run
 
 test_status=$?
 if [ $test_status -ne 0 ]; then
