@@ -1,1 +1,10 @@
+echo "Running tests in CI mode..."
 npm test
+
+test_status=$?
+if [ $test_status -ne 0 ]; then
+  echo "Tests failed. Aborting push."
+  exit 1
+fi
+
+echo "Tests passed. Proceeding with push."
