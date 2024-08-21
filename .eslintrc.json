@@ -17,8 +17,7 @@
     "react-hooks",
     "import",
     "jsx-a11y",
-    "react-refresh",
-    "react-compiler"
+    "prettier"
   ],
   "rules": {
     "prettier/prettier": [
