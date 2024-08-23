@@ -6,7 +6,7 @@ import RSSLogo from '../../../public/rss.svg';
 export default function Footer() {
   return (
     <footer className="bg-dark">
-      <div className="p-5 flex justify-between items-center">
+      <div className="h-[13vh] p-5 flex justify-between items-center">
         <Link href="https://rs.school/courses/reactjs" target="_blank">
           <RSSLogo width="100" height="100" />
         </Link>
