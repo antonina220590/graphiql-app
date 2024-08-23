@@ -597,14 +597,14 @@ video {
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
-.bg-\[\#513125\] {
+.bg-dark {
   --tw-bg-opacity: 1;
-  background-color: rgb(81 49 37 / var(--tw-bg-opacity));
+  background-color: rgb(43 48 52 / var(--tw-bg-opacity));
 }
 
-.bg-\[\#D9BCA9\] {
+.bg-light {
   --tw-bg-opacity: 1;
-  background-color: rgb(217 188 169 / var(--tw-bg-opacity));
+  background-color: rgb(239 239 233 / var(--tw-bg-opacity));
 }
 
 .bg-contain {
@@ -648,7 +648,7 @@ video {
 
 .text-light {
   --tw-text-opacity: 1;
-  color: rgb(217 188 169 / var(--tw-text-opacity));
+  color: rgb(239 239 233 / var(--tw-text-opacity));
 }
 
 .text-white {
