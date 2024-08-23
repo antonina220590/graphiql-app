@@ -7,14 +7,14 @@ export default function LanguageToggler() {
     <div className="flex space-x-4">
       <button
         className={`[font-size:25px] text-lg focus:outline-none ${language === 'en' ? 'underline' : ''}`}
-        style={{ color: '#D9BCA9' }}
+        style={{ color: '#efefe9' }}
         onClick={() => setLanguage('en')}
       >
         ENG
       </button>
       <button
         className={`[font-size:25px] text-lg focus:outline-none ${language === 'ru' ? 'underline' : ''}`}
-        style={{ color: '#D9BCA9' }}
+        style={{ color: '#efefe9' }}
         onClick={() => setLanguage('ru')}
       >
         РУ
