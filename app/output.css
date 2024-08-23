@@ -630,14 +630,14 @@ video {
   background-color: rgb(43 48 52 / var(--tw-bg-opacity));
 }
 
-.bg-light {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 239 233 / var(--tw-bg-opacity));
-}
-
 .bg-errorButton {
   --tw-bg-opacity: 1;
   background-color: rgb(254 109 18 / var(--tw-bg-opacity));
+}
+
+.bg-light {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 239 233 / var(--tw-bg-opacity));
 }
 
 .bg-contain {
@@ -764,11 +764,6 @@ body {
 
 main {
   flex-grow: 1;
-}
-
-.hover\:bg-\[\#dcbb23\]:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(220 187 35 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-\[\#fbc511\]:hover {
