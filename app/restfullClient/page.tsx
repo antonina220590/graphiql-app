@@ -1,17 +1,30 @@
+/* eslint-disable no-console */
 'use client';
 import { useState } from 'react';
+
+import { getStatusText } from '../helpers/restfullHelpers/getStatusText';
 
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
   const [response, setResponse] = useState('');
-  //const url = `https://dummyjson.com/products/42`;
+  const [statusCode, setStatusCode] = useState('');
+  const [method, setMethod] = useState('GET');
+  //test url = `https://dummyjson.com/products/42`;
 
   const handleSend = async () => {
+    const options = {
+      method: method,
+    };
     try {
-      const res = await fetch(url);
-
+      const res = await fetch(url, options);
+      const statusText = getStatusText(res.status);
+      setStatusCode(`${res.status} ${statusText}`);
+      console.log(url);
+      console.log(method);
       if (!res.ok) {
-        throw new Error(`Oh, no! HTTP error! Status: ${res.status}`);
+        throw new Error(
+          `Oh, no! HTTP error! Status: ${res.status} ${statusText}`
+        );
       }
 
       const json = await res.json();
@@ -32,7 +45,7 @@ export default function RESTfullClient() {
           REST Client
         </h1>
         <div className="flex space-x-4 mb-4">
-          <select>
+          <select onChange={(e) => setMethod(e.target.value)}>
             <option value="GET">GET</option>
             <option value="POST">POST</option>
             <option value="PUT">PUT</option>
@@ -94,7 +107,7 @@ export default function RESTfullClient() {
       <div className="flex items-center mb-2">
         <div className="mr-2">Status:</div>
         <div className="border p-2 rounded bg-dark flex-1 text-white">
-          HTTP Status Code
+          {statusCode}
         </div>
       </div>
       <div className="flex items-center">
