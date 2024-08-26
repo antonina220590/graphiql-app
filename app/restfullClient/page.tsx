@@ -15,6 +15,7 @@ export default function RESTfullClient() {
   const [params] = useState(new URLSearchParams());
   const [paramKey, setParamKey] = useState('');
   const [paramValue, setParamValue] = useState('');
+  const [body, setBody] = useState({});
 
   //https://dummyjson.com/products/search?key1=value1&key2=value2
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function RESTfullClient() {
     const options = {
       method: method,
       headers: headers,
+      body: method !== 'GET' ? JSON.stringify(body) : null,
     };
     try {
       const res = await fetch(url, options);
@@ -152,6 +154,7 @@ export default function RESTfullClient() {
           <textarea
             placeholder="JSON/Text Editor"
             className="border-2 p-2 rounded w-full h-32 bg-dark text-white focus:border-yellow-500 focus:outline-none"
+            onChange={(e) => setBody(e.target.value)}
           />
         </div>
       </div>
