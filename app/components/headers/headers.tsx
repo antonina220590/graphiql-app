@@ -1,13 +1,14 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 export default function HeadersPanel() {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [panelHeight, setPanelHeight] = useState<number>(300);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
 
   const togglePanel = () => {
     setIsOpen((prev) => !prev);
+    setPanelHeight(300);
   };
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
@@ -40,7 +41,7 @@ export default function HeadersPanel() {
     <div className="z-10">
       <div
         ref={panelRef}
-        className={`absolute left-0 bottom-0 w-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`absolute left-0 bottom-0 w-full bg-[#c8c8c8] shadow-lg transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ height: `${panelHeight}px` }}
