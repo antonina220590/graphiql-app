@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/resizable';
 
 import SchemaPanel from '../components/schema/schema';
+import HeadersPanel from '../components/headers/headers';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -49,25 +50,16 @@ export default function GraphiQLClient() {
             className="max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
           >
             <ResizablePanel defaultSize={50}>
-              <ResizablePanelGroup direction="vertical">
-                <ResizablePanel defaultSize={75}>
-                  <div className="flex h-full items-center justify-center p-0 bg-[#353d42]">
-                    <textarea className="w-[100%] h-[100%] bg-[#353d42] text-white font-light"></textarea>
-                  </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel defaultSize={25}>
-                  <div className="flex h-full items-center justify-center p-6  bg-[#353d42]">
-                    <span className="font-semibold">Two</span>
-                  </div>
-                </ResizablePanel>
-              </ResizablePanelGroup>
+              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
+                <HeadersPanel />
+                <textarea className="w-[100%] h-[100%] bg-[#c8c8c8] text-white font-light"></textarea>
+              </div>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#848789]">
+              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
                 <SchemaPanel />
-                <span className="font-semibold">One</span>
+                <span className="font-light">One</span>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
