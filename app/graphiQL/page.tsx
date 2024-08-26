@@ -1,10 +1,13 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
+
+import SchemaPanel from '../components/schema/schema';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -40,7 +43,7 @@ export default function GraphiQLClient() {
             onChange={(e) => setUrlSDL(e.target.value)}
           />
         </div>
-        <div className="flex flex-row justify-center">
+        <div className="relative flex flex-row justify-center">
           <ResizablePanelGroup
             direction="horizontal"
             className="max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
@@ -49,9 +52,7 @@ export default function GraphiQLClient() {
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={75}>
                   <div className="flex h-full items-center justify-center p-0 bg-[#353d42]">
-                    <textarea className="font-semibold w-[100%] h-[100%] bg-[#353d42] text-white font-light">
-                      Three
-                    </textarea>
+                    <textarea className="w-[100%] h-[100%] bg-[#353d42] text-white font-light"></textarea>
                   </div>
                 </ResizablePanel>
                 <ResizableHandle />
@@ -64,7 +65,8 @@ export default function GraphiQLClient() {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="flex h-[100%] items-center justify-center p-6 bg-[#848789]">
+              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#848789]">
+                <SchemaPanel />
                 <span className="font-semibold">One</span>
               </div>
             </ResizablePanel>
