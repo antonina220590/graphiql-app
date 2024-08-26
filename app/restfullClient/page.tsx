@@ -4,26 +4,32 @@ import { useEffect, useState } from 'react';
 
 import { getStatusText } from '../helpers/restfullHelpers/getStatusText';
 
+interface Header {
+  key: string;
+  value: string;
+}
+
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
   const [method, setMethod] = useState('GET');
-  const [headers, setHeaders] = useState({});
-  const [headerKey, setHeaderKey] = useState('');
-  const [headerValue, setHeaderValue] = useState('');
+  const [headers, setHeaders] = useState<Header[]>([{ key: '', value: '' }]);
+  // const [headerKey, setHeaderKey] = useState('');
+  // const [headerValue, setHeaderValue] = useState('');
   const [params] = useState(new URLSearchParams());
   const [paramKey, setParamKey] = useState('');
   const [paramValue, setParamValue] = useState('');
   const [body, setBody] = useState({});
 
-  //https://dummyjson.com/products/search?key1=value1&key2=value2
   useEffect(() => {
     const newParams = new URLSearchParams(params);
+
     if (paramKey && paramValue) {
       newParams.set(paramKey, paramValue);
     }
     const paramString = newParams.toString();
+
     setUrl((prevUrl) => {
       const baseUrl = prevUrl.split('?')[0];
       return paramString ? `${baseUrl}?${paramString}` : baseUrl;
@@ -31,16 +37,12 @@ export default function RESTfullClient() {
   }, [paramKey, paramValue, params]);
 
   const handleSend = async () => {
-    if (headerKey && headerValue) {
-      setHeaders((prevHeaders) => ({
-        ...prevHeaders,
-        [headerKey]: headerValue,
-      }));
-    }
-
+    const validHeaders = headers.filter((header) => header.key && header.value);
     const options = {
       method: method,
-      headers: headers,
+      headers: Object.fromEntries(
+        validHeaders.map((header) => [header.key, header.value])
+      ),
       body: method !== 'GET' ? JSON.stringify(body) : null,
     };
     try {
@@ -60,6 +62,20 @@ export default function RESTfullClient() {
         `Error: ${error instanceof Error ? error.message : 'An unknown error occurred'}`
       );
     }
+  };
+
+  const addHeader = () => {
+    setHeaders([...headers, { key: '', value: '' }]);
+  };
+
+  const handleHeaderChange = (
+    index: number,
+    field: 'key' | 'value',
+    value: string
+  ) => {
+    const newHeaders = [...headers];
+    newHeaders[index][field] = value;
+    setHeaders(newHeaders);
   };
 
   return (
@@ -130,21 +146,30 @@ export default function RESTfullClient() {
               Value
             </label>
           </div>
-          <div className="grid grid-cols-2 gap-0 mb-0">
-            <textarea
-              placeholder="Content-Type"
-              className="border border-gray-400 p-2 h-16 resize-none"
-              value={headerKey}
-              onChange={(e) => setHeaderKey(e.target.value)}
-            ></textarea>
-            <textarea
-              placeholder="application/json"
-              className="border border-gray-400 p-2 h-16 resize-none"
-              value={headerValue}
-              onChange={(e) => setHeaderValue(e.target.value)}
-            ></textarea>
-          </div>
-          <button className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300">
+          {headers.map((header, index) => (
+            <div key={index} className="grid grid-cols-2 gap-0 mb-0">
+              <textarea
+                placeholder="Content-Type"
+                className="border border-gray-400 p-2 h-16 resize-none"
+                value={header.key}
+                onChange={(e) =>
+                  handleHeaderChange(index, 'key', e.target.value)
+                }
+              />
+              <textarea
+                placeholder="application/json"
+                className="border border-gray-400 p-2 h-16 resize-none"
+                value={header.value}
+                onChange={(e) =>
+                  handleHeaderChange(index, 'value', e.target.value)
+                }
+              />
+            </div>
+          ))}
+          <button
+            className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
+            onClick={addHeader}
+          >
             Add Header
           </button>
         </div>
