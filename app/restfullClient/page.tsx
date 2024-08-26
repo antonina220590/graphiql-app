@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 //test url = `https://dummyjson.com/products/42`;
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { getStatusText } from '../helpers/restfullHelpers/getStatusText';
 
@@ -13,7 +12,22 @@ export default function RESTfullClient() {
   const [headers, setHeaders] = useState({});
   const [headerKey, setHeaderKey] = useState('');
   const [headerValue, setHeaderValue] = useState('');
-  const [params] = useState();
+  const [params] = useState(new URLSearchParams());
+  const [paramKey, setParamKey] = useState('');
+  const [paramValue, setParamValue] = useState('');
+
+  //https://dummyjson.com/products/search?key1=value1&key2=value2
+  useEffect(() => {
+    const newParams = new URLSearchParams(params);
+    if (paramKey && paramValue) {
+      newParams.set(paramKey, paramValue);
+    }
+    const paramString = newParams.toString();
+    setUrl((prevUrl) => {
+      const baseUrl = prevUrl.split('?')[0];
+      return paramString ? `${baseUrl}?${paramString}` : baseUrl;
+    });
+  }, [paramKey, paramValue, params]);
 
   const handleSend = async () => {
     if (headerKey && headerValue) {
@@ -26,14 +40,11 @@ export default function RESTfullClient() {
     const options = {
       method: method,
       headers: headers,
-      params: params,
     };
     try {
       const res = await fetch(url, options);
       const statusText = getStatusText(res.status);
       setStatusCode(`${res.status} ${statusText}`);
-      console.log(url);
-      console.log(headers);
       if (!res.ok) {
         throw new Error(
           `Oh, no! HTTP error! Status: ${res.status} ${statusText}`
@@ -92,10 +103,14 @@ export default function RESTfullClient() {
             <textarea
               placeholder="Param key"
               className="border border-gray-400 p-2 h-16 resize-none"
+              value={paramKey}
+              onChange={(e) => setParamKey(e.target.value)}
             ></textarea>
             <textarea
               placeholder="Param value"
               className="border border-gray-400 p-2 h-16 resize-none"
+              value={paramValue}
+              onChange={(e) => setParamValue(e.target.value)}
             ></textarea>
           </div>
           <button className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300">
