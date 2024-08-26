@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+//test url = `https://dummyjson.com/products/42`;
 'use client';
 import { useState } from 'react';
 
@@ -9,18 +10,30 @@ export default function RESTfullClient() {
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
   const [method, setMethod] = useState('GET');
-  //test url = `https://dummyjson.com/products/42`;
+  const [headers, setHeaders] = useState({});
+  const [headerKey, setHeaderKey] = useState('');
+  const [headerValue, setHeaderValue] = useState('');
+  const [params] = useState();
 
   const handleSend = async () => {
+    if (headerKey && headerValue) {
+      setHeaders((prevHeaders) => ({
+        ...prevHeaders,
+        [headerKey]: headerValue,
+      }));
+    }
+
     const options = {
       method: method,
+      headers: headers,
+      params: params,
     };
     try {
       const res = await fetch(url, options);
       const statusText = getStatusText(res.status);
       setStatusCode(`${res.status} ${statusText}`);
       console.log(url);
-      console.log(method);
+      console.log(headers);
       if (!res.ok) {
         throw new Error(
           `Oh, no! HTTP error! Status: ${res.status} ${statusText}`
@@ -29,12 +42,10 @@ export default function RESTfullClient() {
 
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setResponse(`Error: ${error.message}`);
-      } else {
-        setResponse('Error: An unknown error occurred');
-      }
+    } catch (error) {
+      setResponse(
+        `Error: ${error instanceof Error ? error.message : 'An unknown error occurred'}`
+      );
     }
   };
 
@@ -68,6 +79,31 @@ export default function RESTfullClient() {
         </div>
 
         <div className="mb-4">
+          <h2 className="font-semibold">Params:</h2>
+          <div className="grid grid-cols-2 gap-0 mb-0">
+            <label className="font-semibold border border-gray-400 p-2">
+              Key
+            </label>
+            <label className="font-semibold border border-gray-400 p-2">
+              Value
+            </label>
+          </div>
+          <div className="grid grid-cols-2 gap-0 mb-0">
+            <textarea
+              placeholder="Param key"
+              className="border border-gray-400 p-2 h-16 resize-none"
+            ></textarea>
+            <textarea
+              placeholder="Param value"
+              className="border border-gray-400 p-2 h-16 resize-none"
+            ></textarea>
+          </div>
+          <button className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300">
+            Add Params
+          </button>
+        </div>
+
+        <div className="mb-4">
           <h2 className="font-semibold">Headers:</h2>
           <div className="grid grid-cols-2 gap-0 mb-0">
             <label className="font-semibold border border-gray-400 p-2">
@@ -79,14 +115,16 @@ export default function RESTfullClient() {
           </div>
           <div className="grid grid-cols-2 gap-0 mb-0">
             <textarea
-              id="key"
               placeholder="Content-Type"
               className="border border-gray-400 p-2 h-16 resize-none"
+              value={headerKey}
+              onChange={(e) => setHeaderKey(e.target.value)}
             ></textarea>
             <textarea
-              id="value"
               placeholder="application/json"
               className="border border-gray-400 p-2 h-16 resize-none"
+              value={headerValue}
+              onChange={(e) => setHeaderValue(e.target.value)}
             ></textarea>
           </div>
           <button className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300">
