@@ -1,9 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
 
 export default function GraphiQLClient() {
-  const [url, setUrl] = useState('');
-  const [urlSDL, setUrlSDL] = useState('');
+  const [url, setUrl] = useState<string>('');
+  const [urlSDL, setUrlSDL] = useState<string>('');
 
   useEffect(() => {
     if (url) {
@@ -34,6 +39,36 @@ export default function GraphiQLClient() {
             value={urlSDL}
             onChange={(e) => setUrlSDL(e.target.value)}
           />
+        </div>
+        <div className="flex flex-row justify-center">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
+          >
+            <ResizablePanel defaultSize={50}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={75}>
+                  <div className="flex h-full items-center justify-center p-0 bg-[#353d42]">
+                    <textarea className="font-semibold w-[100%] h-[100%] bg-[#353d42] text-white font-light">
+                      Three
+                    </textarea>
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel defaultSize={25}>
+                  <div className="flex h-full items-center justify-center p-6  bg-[#353d42]">
+                    <span className="font-semibold">Two</span>
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={50}>
+              <div className="flex h-[100%] items-center justify-center p-6 bg-[#848789]">
+                <span className="font-semibold">One</span>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </div>
     </main>
