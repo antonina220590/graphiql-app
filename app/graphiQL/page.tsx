@@ -6,6 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import { toast } from 'sonner';
 
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
@@ -13,6 +14,8 @@ import HeadersPanel from '../components/headers/headers';
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
   const [urlSDL, setUrlSDL] = useState<string>('');
+  const [responseData, setResponseData] = useState(null);
+  const [query, setQuery] = useState<string>('');
 
   useEffect(() => {
     if (url) {
@@ -22,6 +25,45 @@ export default function GraphiQLClient() {
     }
   }, [url]);
 
+  const handleRequest = async () => {
+    if (!url || !query) {
+      toast('Oooops! Something went wrong!', {
+        description: 'Please provide URL and query',
+        action: {
+          label: 'Close',
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+        }),
+      });
+
+      const data = await response.json();
+      setResponseData(data);
+    } catch (error) {
+      toast('Oooops! Something went wrong!', {
+        description: 'Failed to fetch data',
+        action: {
+          label: 'Close',
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+    }
+  };
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -40,6 +82,7 @@ export default function GraphiQLClient() {
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
+              onClick={handleRequest}
             >
               Send
             </button>
@@ -68,14 +111,20 @@ export default function GraphiQLClient() {
             <ResizablePanel defaultSize={50}>
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
                 <HeadersPanel />
-                <textarea className="w-[100%] h-[100%] bg-[#c8c8c8] text-white font-light"></textarea>
+                <textarea
+                  className="w-[100%] h-[100%] bg-[#c8c8c8] text-white font-light"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                ></textarea>
               </div>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8] z-20">
                 <SchemaPanel />
-                <span className="font-light">One</span>
+                <span className="font-light">
+                  {responseData ? JSON.stringify(responseData, null, 2) : ''}
+                </span>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
