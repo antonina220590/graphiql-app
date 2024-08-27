@@ -5,8 +5,13 @@ import { useEffect, useState } from 'react';
 import { getStatusText } from '../helpers/restfullHelpers/getStatusText';
 
 interface Header {
-  key: string;
-  value: string;
+  keyHeader: string;
+  valueHeader: string;
+}
+
+interface Param {
+  keyParam: string;
+  valueParam: string;
 }
 
 export default function RESTfullClient() {
@@ -14,34 +19,38 @@ export default function RESTfullClient() {
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
   const [method, setMethod] = useState('GET');
-  const [headers, setHeaders] = useState<Header[]>([{ key: '', value: '' }]);
-  // const [headerKey, setHeaderKey] = useState('');
-  // const [headerValue, setHeaderValue] = useState('');
-  const [params] = useState(new URLSearchParams());
-  const [paramKey, setParamKey] = useState('');
-  const [paramValue, setParamValue] = useState('');
+  const [headers, setHeaders] = useState<Header[]>([
+    { keyHeader: '', valueHeader: '' },
+  ]);
+  const [params, setParams] = useState<Param[]>([
+    { keyParam: '', valueParam: '' },
+  ]);
   const [body, setBody] = useState({});
 
   useEffect(() => {
-    const newParams = new URLSearchParams(params);
+    const newParams = new URLSearchParams();
+    params.forEach((param) => {
+      if (param.keyParam || param.valueParam) {
+        newParams.set(param.keyParam, param.valueParam);
+      }
+    });
 
-    if (paramKey && paramValue) {
-      newParams.set(paramKey, paramValue);
-    }
     const paramString = newParams.toString();
 
     setUrl((prevUrl) => {
       const baseUrl = prevUrl.split('?')[0];
       return paramString ? `${baseUrl}?${paramString}` : baseUrl;
     });
-  }, [paramKey, paramValue, params]);
+  }, [params]);
 
   const handleSend = async () => {
-    const validHeaders = headers.filter((header) => header.key && header.value);
+    const validHeaders = headers.filter(
+      (header) => header.keyHeader && header.valueHeader
+    );
     const options = {
       method: method,
       headers: Object.fromEntries(
-        validHeaders.map((header) => [header.key, header.value])
+        validHeaders.map((header) => [header.keyHeader, header.valueHeader])
       ),
       body: method !== 'GET' ? JSON.stringify(body) : null,
     };
@@ -65,17 +74,31 @@ export default function RESTfullClient() {
   };
 
   const addHeader = () => {
-    setHeaders([...headers, { key: '', value: '' }]);
+    setHeaders([...headers, { keyHeader: '', valueHeader: '' }]);
+  };
+
+  const addParam = () => {
+    setParams([...params, { keyParam: '', valueParam: '' }]);
   };
 
   const handleHeaderChange = (
     index: number,
-    field: 'key' | 'value',
+    field: 'keyHeader' | 'valueHeader',
     value: string
   ) => {
     const newHeaders = [...headers];
     newHeaders[index][field] = value;
     setHeaders(newHeaders);
+  };
+
+  const handleParamChange = (index: number, key: string, value: string) => {
+    const newParams = [...params];
+    if (key === 'key') {
+      newParams[index].keyParam = value;
+    } else {
+      newParams[index].valueParam = value;
+    }
+    setParams(newParams);
   };
 
   return (
@@ -117,21 +140,30 @@ export default function RESTfullClient() {
               Value
             </label>
           </div>
-          <div className="grid grid-cols-2 gap-0 mb-0">
-            <textarea
-              placeholder="Param key"
-              className="border border-gray-400 p-2 h-16 resize-none"
-              value={paramKey}
-              onChange={(e) => setParamKey(e.target.value)}
-            ></textarea>
-            <textarea
-              placeholder="Param value"
-              className="border border-gray-400 p-2 h-16 resize-none"
-              value={paramValue}
-              onChange={(e) => setParamValue(e.target.value)}
-            ></textarea>
-          </div>
-          <button className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300">
+          {params.map((param, index) => (
+            <div key={index} className="grid grid-cols-2 gap-0 mb-0">
+              <textarea
+                placeholder="Param key"
+                className="border border-gray-400 p-2 h-16 resize-none"
+                value={param.keyParam}
+                onChange={(e) =>
+                  handleParamChange(index, 'key', e.target.value)
+                }
+              ></textarea>
+              <textarea
+                placeholder="Param value"
+                className="border border-gray-400 p-2 h-16 resize-none"
+                value={param.valueParam}
+                onChange={(e) =>
+                  handleParamChange(index, 'value', e.target.value)
+                }
+              ></textarea>
+            </div>
+          ))}
+          <button
+            className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
+            onClick={addParam}
+          >
             Add Params
           </button>
         </div>
@@ -151,17 +183,17 @@ export default function RESTfullClient() {
               <textarea
                 placeholder="Content-Type"
                 className="border border-gray-400 p-2 h-16 resize-none"
-                value={header.key}
+                value={header.keyHeader}
                 onChange={(e) =>
-                  handleHeaderChange(index, 'key', e.target.value)
+                  handleHeaderChange(index, 'keyHeader', e.target.value)
                 }
               />
               <textarea
                 placeholder="application/json"
                 className="border border-gray-400 p-2 h-16 resize-none"
-                value={header.value}
+                value={header.valueHeader}
                 onChange={(e) =>
-                  handleHeaderChange(index, 'value', e.target.value)
+                  handleHeaderChange(index, 'valueHeader', e.target.value)
                 }
               />
             </div>
