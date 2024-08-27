@@ -220,13 +220,13 @@ export default function RESTfullClient() {
       <div className="font-semibold">Response:</div>
       <div className="flex items-center mb-2">
         <div className="mr-2">Status:</div>
-        <div className="border p-2 rounded bg-dark flex-1 text-white">
+        <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
           {statusCode}
         </div>
       </div>
       <div className="flex items-center">
         <div className="mr-5">Body:</div>
-        <div className="border p-2 rounded bg-dark flex-1 text-white">
+        <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
           {response}
         </div>
       </div>
