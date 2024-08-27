@@ -1,4 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { TrashIcon } from '@heroicons/react/24/solid';
+
+interface Header {
+  key: string;
+  value: string;
+}
 
 export default function HeadersPanel() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -8,7 +14,7 @@ export default function HeadersPanel() {
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
-  const [headers, setHeaders] = useState<string>('');
+  const [headers, setHeaders] = useState<Header[]>([{ key: '', value: '' }]);
   const [variables, setVariables] = useState<string>('');
 
   const togglePanel = () => {
@@ -42,6 +48,24 @@ export default function HeadersPanel() {
     };
   }, [handleMouseMove, stopResize]);
 
+  const addHeader = () => {
+    setHeaders([...headers, { key: '', value: '' }]);
+  };
+
+  const handleHeaderChange = (
+    index: number,
+    field: 'key' | 'value',
+    value: string
+  ) => {
+    const newHeaders = [...headers];
+    newHeaders[index][field] = value;
+    setHeaders(newHeaders);
+  };
+
+  const deleteHeader = (index: number) => {
+    setHeaders(headers.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="z-10">
       <div
@@ -57,12 +81,50 @@ export default function HeadersPanel() {
             onMouseDown={startResize}
           />
           {activeTab === 'headers' && (
-            <textarea
-              className="w-full h-full bg-white text-black"
-              value={headers}
-              onChange={(e) => setHeaders(e.target.value)}
-              placeholder='{"Content-Type": "application/json"}'
-            ></textarea>
+            <div className="mb-4">
+              <h2 className="font-semibold">Headers:</h2>
+              <div className="grid grid-cols-3 gap-0 mb-0">
+                <label className="font-semibold border border-gray-400 p-2">
+                  Key
+                </label>
+                <label className="font-semibold border border-gray-400 p-2">
+                  Value
+                </label>
+              </div>
+              {headers.map((header, index) => (
+                <div key={index} className="grid grid-cols-3 gap-0 mb-0">
+                  <textarea
+                    placeholder="Content-Type"
+                    className="border border-gray-400 p-2 h-16 resize-none"
+                    value={header.key}
+                    onChange={(e) =>
+                      handleHeaderChange(index, 'key', e.target.value)
+                    }
+                  />
+                  <textarea
+                    placeholder="application/json"
+                    className="border border-gray-400 p-2 h-16 resize-none"
+                    value={header.value}
+                    onChange={(e) =>
+                      handleHeaderChange(index, 'value', e.target.value)
+                    }
+                  />
+                  <button
+                    onClick={() => deleteHeader(index)}
+                    className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                  >
+                    <TrashIcon className="h-8 w-8 text-[#fe6d12]" />
+                  </button>
+                </div>
+              ))}
+
+              <button
+                className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
+                onClick={addHeader}
+              >
+                Add Header
+              </button>
+            </div>
           )}
           {activeTab === 'variables' && (
             <textarea
@@ -89,7 +151,7 @@ export default function HeadersPanel() {
         </div>
         <button
           onClick={togglePanel}
-          className="absolute py-2 px-4 right-1 top-[-40px] transform -translate-x-1/5 b bg-[#fe6d12] text-white flex items-center justify-center shadow-md"
+          className="absolute py-2 px-4  right-1 top-[-40px] transform -translate-x-1/5 b bg-[#fe6d12] text-white flex items-center justify-center shadow-md"
         >
           {isOpen ? (
             <span className="text-xl">&#x25B2;</span>
