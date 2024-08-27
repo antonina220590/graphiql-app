@@ -29,20 +29,36 @@ export default function GraphiQLClient() {
           GraphiQL Client
         </h1>
         <div className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Endpoint URL"
-            className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Endpoint URL SDL"
-            className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
-            value={urlSDL}
-            onChange={(e) => setUrlSDL(e.target.value)}
-          />
+          <div className="flex flex-row">
+            <input
+              type="text"
+              placeholder="Endpoint URL"
+              className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <button
+              className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
+              type="submit"
+            >
+              Send
+            </button>
+          </div>
+          <div className="flex flex-row">
+            <input
+              type="text"
+              placeholder="Endpoint URL SDL"
+              className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
+              value={urlSDL}
+              onChange={(e) => setUrlSDL(e.target.value)}
+            />
+            <button
+              className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
+              type="submit"
+            >
+              Send
+            </button>
+          </div>
         </div>
         <div className="relative flex flex-row justify-center">
           <ResizablePanelGroup
@@ -57,7 +73,7 @@ export default function GraphiQLClient() {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
+              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8] z-20">
                 <SchemaPanel />
                 <span className="font-light">One</span>
               </div>

@@ -53,7 +53,7 @@ export default function SchemaPanel() {
         </div>
         <button
           onClick={togglePanel}
-          className="absolute py-1 px-2 left-[-70px] top-1/4 transform -translate-y-1/2 bg-orange-400 text-white flex items-center justify-center shadow-md"
+          className="absolute py-1 px-2 left-[-70px] top-1/4 transform -translate-y-1/2 bg-[#fe6d12] text-white flex items-center justify-center shadow-md"
           style={{ transform: 'rotate(-90deg)' }}
         >
           Schema

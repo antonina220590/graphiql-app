@@ -53,16 +53,16 @@ export default function HeadersPanel() {
           />
         </div>
         <div className="absolute flex flex-row gap-2 left-1 top-[-40px] transform -translate-x-1/5">
-          <button className="py-1 px-2 left-1 top-[-40px] bg-orange-400 text-white flex items-center justify-center shadow-md">
+          <button className="py-1 px-2 left-1 top-[-40px]  bg-[#fe6d12] text-white flex items-center justify-center shadow-md">
             Headers
           </button>
-          <button className="py-1 px-2 left-2/3 top-[-40px] bg-orange-400 text-white flex items-center justify-center shadow-md">
+          <button className="py-1 px-2 left-2/3 top-[-40px]  bg-[#fe6d12] text-white flex items-center justify-center shadow-md">
             Variables
           </button>
         </div>
         <button
           onClick={togglePanel}
-          className="absolute py-2 px-4 right-1 top-[-40px] transform -translate-x-1/5 bg-orange-400 text-white flex items-center justify-center shadow-md"
+          className="absolute py-2 px-4 right-1 top-[-40px] transform -translate-x-1/5 b bg-[#fe6d12] text-white flex items-center justify-center shadow-md"
         >
           {isOpen ? (
             <span className="text-xl">&#x25B2;</span>
