@@ -2,17 +2,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-import { getStatusText } from '../helpers/restfullHelpers/getStatusText';
-
-interface Header {
-  keyHeader: string;
-  valueHeader: string;
-}
-
-interface Param {
-  keyParam: string;
-  valueParam: string;
-}
+import { Header, Param } from './types';
+import { MESSAGE } from './constants';
 
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
@@ -45,7 +36,7 @@ export default function RESTfullClient() {
 
   const handleSend = async () => {
     if (!url) {
-      setResponse('The URL field is empty. Please enter a URL.');
+      setResponse(MESSAGE.EMPTY);
       setStatusCode(`💁`);
       return;
     }
@@ -59,22 +50,27 @@ export default function RESTfullClient() {
       ),
       body: method !== 'GET' ? JSON.stringify(body) : null,
     };
+
     try {
       const res = await fetch(url, options);
-      const statusText = getStatusText(res.status);
-      setStatusCode(`${res.status} ${statusText}`);
-      if (!res.ok) {
-        throw new Error(
-          `Oh, no! HTTP error! Status: ${res.status} ${statusText}`
-        );
-      }
+      setStatusCode(`${res.status} ${res.statusText}`);
 
+      if (!res.ok) {
+        if (res.status >= 400 && res.status < 500) {
+          setResponse(`Client Error: ${res.statusText}`);
+        } else if (res.status >= 500) {
+          setResponse(`Server Error: ${res.statusText}`);
+        }
+        throw new Error(`${res.statusText}`);
+      }
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      setResponse(
-        `Error: ${error instanceof Error ? error.message : 'An unknown error occurred'}`
-      );
+      if (error instanceof Error) {
+        setResponse(`Error: ${error.message}`);
+      } else {
+        setResponse(`Error: ${MESSAGE.UNKNOWN}`);
+      }
     }
   };
 
