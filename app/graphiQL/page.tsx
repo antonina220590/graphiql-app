@@ -14,7 +14,7 @@ import HeadersPanel from '../components/headers/headers';
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
   const [urlSDL, setUrlSDL] = useState<string>('');
-  const [responseData, setResponseData] = useState(null);
+  const [responseData, setResponseData] = useState<string>('');
   const [query, setQuery] = useState<string>('');
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function GraphiQLClient() {
       });
 
       const data = await response.json();
-      setResponseData(data);
+      setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
       toast('Oooops! Something went wrong!', {
         description: 'Failed to fetch data',
@@ -64,6 +64,7 @@ export default function GraphiQLClient() {
       });
     }
   };
+
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -122,9 +123,7 @@ export default function GraphiQLClient() {
             <ResizablePanel defaultSize={50}>
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8] z-20">
                 <SchemaPanel />
-                <span className="font-light">
-                  {responseData ? JSON.stringify(responseData, null, 2) : ''}
-                </span>
+                <span className="font-light">{responseData}</span>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
