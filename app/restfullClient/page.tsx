@@ -44,6 +44,11 @@ export default function RESTfullClient() {
   }, [params]);
 
   const handleSend = async () => {
+    if (!url) {
+      setResponse('The URL field is empty. Please enter a URL.');
+      setStatusCode(`💁`);
+      return;
+    }
     const validHeaders = headers.filter(
       (header) => header.keyHeader && header.valueHeader
     );
