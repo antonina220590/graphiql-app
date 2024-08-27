@@ -5,6 +5,11 @@ export default function HeadersPanel() {
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const isResizing = useRef<boolean>(false);
+  const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
+    'headers'
+  );
+  const [headers, setHeaders] = useState<string>('');
+  const [variables, setVariables] = useState<string>('');
 
   const togglePanel = () => {
     setIsOpen((prev) => !prev);
@@ -51,12 +56,34 @@ export default function HeadersPanel() {
             className="absolute right-0 top-0 h-2 w-[100%] cursor-ns-resize bg-gray-300"
             onMouseDown={startResize}
           />
+          {activeTab === 'headers' && (
+            <textarea
+              className="w-full h-full bg-white text-black"
+              value={headers}
+              onChange={(e) => setHeaders(e.target.value)}
+              placeholder='{"Content-Type": "application/json"}'
+            ></textarea>
+          )}
+          {activeTab === 'variables' && (
+            <textarea
+              className="w-full h-full bg-white text-black"
+              value={variables}
+              onChange={(e) => setVariables(e.target.value)}
+              placeholder='{"key": "value"}'
+            ></textarea>
+          )}
         </div>
         <div className="absolute flex flex-row gap-2 left-1 top-[-40px] transform -translate-x-1/5">
-          <button className="py-1 px-2 left-1 top-[-40px]  bg-[#fe6d12] text-white flex items-center justify-center shadow-md">
+          <button
+            className={`py-1 px-2 bg-[${activeTab === 'headers' ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
+            onClick={() => setActiveTab('headers')}
+          >
             Headers
           </button>
-          <button className="py-1 px-2 left-2/3 top-[-40px]  bg-[#fe6d12] text-white flex items-center justify-center shadow-md">
+          <button
+            className={`py-1 px-2 bg-[${activeTab === 'variables' ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
+            onClick={() => setActiveTab('variables')}
+          >
             Variables
           </button>
         </div>
