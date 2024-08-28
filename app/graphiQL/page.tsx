@@ -6,13 +6,22 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
+import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
 
+import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
   const [urlSDL, setUrlSDL] = useState<string>('');
+  const [responseData, setResponseData] = useState<string>('');
+  const [query, setQuery] = useState<string>('');
+  const headers = useSelector((state: RootState) => state.headers);
+  const variables = useSelector(
+    (state: { variables: { value: string } }) => state.variables.value
+  );
 
   useEffect(() => {
     if (url) {
@@ -21,6 +30,74 @@ export default function GraphiQLClient() {
       setUrlSDL('');
     }
   }, [url]);
+
+  const handleRequest = async () => {
+    if (!url || !query) {
+      toast('Oooops! Something went wrong!', {
+        description: 'Please provide URL and query',
+        action: {
+          label: 'Close',
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+      return;
+    }
+    const validHeaders = headers.filter((header) => header.key && header.value);
+    const headersObject = Object.fromEntries(
+      validHeaders.map((header) => [header.key.trim(), header.value.trim()])
+    );
+
+    let validVariables = {};
+    if (variables.trim()) {
+      try {
+        validVariables = JSON.parse(variables);
+      } catch (e) {
+        toast('Invalid variables format. Please check your input.', {
+          description: 'Failed to fetch data',
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+        return;
+      }
+    }
+
+    const requestBody = {
+      query,
+      ...(validVariables && Object.keys(validVariables).length > 0
+        ? { variables: validVariables }
+        : {}),
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...headersObject,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      setResponseData(JSON.stringify(data, null, 2));
+    } catch (error) {
+      toast('Oooops! Something went wrong!', {
+        description: 'Failed to fetch data',
+        action: {
+          label: 'Close',
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+    }
+  };
 
   return (
     <main className="flex-grow p-4 bg-light">
@@ -40,6 +117,7 @@ export default function GraphiQLClient() {
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
+              onClick={handleRequest}
             >
               Send
             </button>
@@ -68,14 +146,18 @@ export default function GraphiQLClient() {
             <ResizablePanel defaultSize={50}>
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
                 <HeadersPanel />
-                <textarea className="w-[100%] h-[100%] bg-[#c8c8c8] text-white font-light"></textarea>
+                <textarea
+                  className="w-[100%] h-[100%] bg-[#c8c8c8] text-[#292929] font-light"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                ></textarea>
               </div>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8] z-20">
                 <SchemaPanel />
-                <span className="font-light">One</span>
+                <span className="font-light">{responseData}</span>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
