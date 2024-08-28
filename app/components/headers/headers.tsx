@@ -36,6 +36,10 @@ export default function HeadersPanel() {
     setPanelHeight(300);
   };
 
+  const openPanel = () => {
+    setIsOpen(true);
+  };
+
   const handleMouseMove = useCallback((event: MouseEvent) => {
     if (isResizing.current && panelRef.current) {
       const newHeight = window.innerHeight - event.clientY;
@@ -156,13 +160,19 @@ export default function HeadersPanel() {
         <div className="absolute flex flex-row gap-2 left-1 top-[-40px] transform -translate-x-1/5">
           <button
             className={`py-1 px-2 bg-[${activeTab === 'headers' ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
-            onClick={() => setActiveTab('headers')}
+            onClick={() => {
+              setActiveTab('headers');
+              openPanel();
+            }}
           >
             Headers
           </button>
           <button
             className={`py-1 px-2 bg-[${activeTab === 'variables' ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
-            onClick={() => setActiveTab('variables')}
+            onClick={() => {
+              setActiveTab('variables');
+              openPanel();
+            }}
           >
             Variables
           </button>
