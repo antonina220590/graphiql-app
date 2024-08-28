@@ -24,6 +24,7 @@ export default function HeadersPanel() {
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
+
   const dispatch = useDispatch();
   const headers = useSelector((state: { headers: Header[] }) => state.headers);
   const variables = useSelector(
@@ -92,7 +93,7 @@ export default function HeadersPanel() {
         }`}
         style={{ height: `${panelHeight}px` }}
       >
-        <div className="relative p-4 bg-gray-100 h-full">
+        <div className="relative p-4 bg-gray-100 h-full resize-none overflow-y-scroll">
           <div
             className="absolute right-0 top-0 h-2 w-[100%] cursor-ns-resize bg-gray-300"
             onMouseDown={startResize}

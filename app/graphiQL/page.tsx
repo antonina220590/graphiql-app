@@ -147,7 +147,7 @@ export default function GraphiQLClient() {
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
                 <HeadersPanel />
                 <textarea
-                  className="w-[100%] h-[100%] bg-[#c8c8c8] text-white font-light"
+                  className="w-[100%] h-[100%] bg-[#c8c8c8] text-[#292929] font-light"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 ></textarea>
