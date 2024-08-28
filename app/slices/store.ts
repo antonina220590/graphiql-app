@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import headersReducer from './headersSlice';
+import variablesReducer from './variablesSlice';
 
 export const store = configureStore({
   reducer: {
     headers: headersReducer,
+    variables: variablesReducer,
   },
 });
 

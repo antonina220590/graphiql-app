@@ -19,6 +19,9 @@ export default function GraphiQLClient() {
   const [responseData, setResponseData] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const headers = useSelector((state: RootState) => state.headers);
+  const variables = useSelector(
+    (state: { variables: { value: string } }) => state.variables.value
+  );
 
   useEffect(() => {
     if (url) {
@@ -45,6 +48,32 @@ export default function GraphiQLClient() {
     const headersObject = Object.fromEntries(
       validHeaders.map((header) => [header.key.trim(), header.value.trim()])
     );
+
+    let validVariables = {};
+    if (variables.trim()) {
+      try {
+        validVariables = JSON.parse(variables);
+      } catch (e) {
+        toast('Invalid variables format. Please check your input.', {
+          description: 'Failed to fetch data',
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+        return;
+      }
+    }
+
+    const requestBody = {
+      query,
+      ...(validVariables && Object.keys(validVariables).length > 0
+        ? { variables: validVariables }
+        : {}),
+    };
+
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -52,9 +81,7 @@ export default function GraphiQLClient() {
           'Content-Type': 'application/json',
           ...headersObject,
         },
-        body: JSON.stringify({
-          query,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();

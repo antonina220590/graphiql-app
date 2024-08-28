@@ -9,6 +9,7 @@ import {
   updateHeader,
   deleteHeader,
 } from '../../slices/headersSlice';
+import { setVariables } from '../../slices/variablesSlice';
 
 interface Header {
   key: string;
@@ -23,9 +24,11 @@ export default function HeadersPanel() {
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
-  const [variables, setVariables] = useState<string>('');
   const dispatch = useDispatch();
   const headers = useSelector((state: { headers: Header[] }) => state.headers);
+  const variables = useSelector(
+    (state: { variables: { value: string } }) => state.variables.value
+  );
 
   const togglePanel = () => {
     setIsOpen((prev) => !prev);
@@ -72,6 +75,12 @@ export default function HeadersPanel() {
 
   const removeHeader = (index: number) => {
     dispatch(deleteHeader(index));
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = event.target.value;
+    setVariables(newValue);
+    dispatch(setVariables(newValue));
   };
 
   return (
@@ -138,7 +147,7 @@ export default function HeadersPanel() {
             <textarea
               className="w-full h-full bg-white text-black"
               value={variables}
-              onChange={(e) => setVariables(e.target.value)}
+              onChange={handleChange}
               placeholder='{"key": "value"}'
             ></textarea>
           )}
