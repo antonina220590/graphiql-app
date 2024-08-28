@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/sonner';
-
 import './globals.css';
 
 import Header from './components/header/Header';
 import Footer from './components/footer/footer';
+import ProviderWrapper from './providerWrapper';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -17,16 +17,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="icon" href="/api.png" />
-      </head>
-      <body>
-        <Header />
-        {children}
-        <Toaster />
-        <Footer />
-      </body>
-    </html>
+    <ProviderWrapper>
+      <html lang="en">
+        <head>
+          <link rel="icon" href="/api.png" />
+        </head>
+        <body>
+          <Header />
+          {children}
+          <Toaster />
+          <Footer />
+        </body>
+      </html>
+    </ProviderWrapper>
   );
 }

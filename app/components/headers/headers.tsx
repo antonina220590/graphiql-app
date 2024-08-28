@@ -1,5 +1,14 @@
+'use client';
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
+
+import {
+  addHeader,
+  updateHeader,
+  deleteHeader,
+} from '../../slices/headersSlice';
 
 interface Header {
   key: string;
@@ -14,8 +23,9 @@ export default function HeadersPanel() {
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
-  const [headers, setHeaders] = useState<Header[]>([{ key: '', value: '' }]);
   const [variables, setVariables] = useState<string>('');
+  const dispatch = useDispatch();
+  const headers = useSelector((state: { headers: Header[] }) => state.headers);
 
   const togglePanel = () => {
     setIsOpen((prev) => !prev);
@@ -48,8 +58,8 @@ export default function HeadersPanel() {
     };
   }, [handleMouseMove, stopResize]);
 
-  const addHeader = () => {
-    setHeaders([...headers, { key: '', value: '' }]);
+  const addHTTPHeader = () => {
+    dispatch(addHeader());
   };
 
   const handleHeaderChange = (
@@ -57,13 +67,11 @@ export default function HeadersPanel() {
     field: 'key' | 'value',
     value: string
   ) => {
-    const newHeaders = [...headers];
-    newHeaders[index][field] = value;
-    setHeaders(newHeaders);
+    dispatch(updateHeader({ index, field, value }));
   };
 
-  const deleteHeader = (index: number) => {
-    setHeaders(headers.filter((_, i) => i !== index));
+  const removeHeader = (index: number) => {
+    dispatch(deleteHeader(index));
   };
 
   return (
@@ -110,7 +118,7 @@ export default function HeadersPanel() {
                     }
                   />
                   <button
-                    onClick={() => deleteHeader(index)}
+                    onClick={() => removeHeader(index)}
                     className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
                   >
                     <TrashIcon className="h-8 w-8 text-[#fe6d12]" />
@@ -120,7 +128,7 @@ export default function HeadersPanel() {
 
               <button
                 className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
-                onClick={addHeader}
+                onClick={addHTTPHeader}
               >
                 Add Header
               </button>

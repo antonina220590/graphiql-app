@@ -7,7 +7,9 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
 
+import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 
@@ -16,6 +18,7 @@ export default function GraphiQLClient() {
   const [urlSDL, setUrlSDL] = useState<string>('');
   const [responseData, setResponseData] = useState<string>('');
   const [query, setQuery] = useState<string>('');
+  const headers = useSelector((state: RootState) => state.headers);
 
   useEffect(() => {
     if (url) {
@@ -38,12 +41,16 @@ export default function GraphiQLClient() {
       });
       return;
     }
-
+    const validHeaders = headers.filter((header) => header.key && header.value);
+    const headersObject = Object.fromEntries(
+      validHeaders.map((header) => [header.key.trim(), header.value.trim()])
+    );
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...headersObject,
         },
         body: JSON.stringify({
           query,
