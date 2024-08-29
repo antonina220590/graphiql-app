@@ -1,5 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 
+import SchemaFetcher from './schemaSDL';
+
 export default function SchemaPanel() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [panelWidth, setPanelWidth] = useState<number>(300);
@@ -45,15 +47,22 @@ export default function SchemaPanel() {
         }`}
         style={{ width: `${panelWidth}px` }}
       >
-        <div className="p-4 h-full bg-gray-100">
+        <div
+          className="p-4 h-full bg-gray-100 text-xs"
+          style={{
+            height: 'calc(60svh - 80px)',
+            overflowY: 'auto',
+          }}
+        >
           <div
             className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize bg-gray-300"
             onMouseDown={startResize}
           />
+          <SchemaFetcher />
         </div>
         <button
           onClick={togglePanel}
-          className="absolute py-1 px-2 left-[-70px] top-1/4 transform -translate-y-1/2 bg-[#fe6d12] text-white flex items-center justify-center shadow-md"
+          className="absolute py-1 px-2 z-50 left-[-70px] top-1/4 transform -translate-y-1/2 bg-[#fe6d12] text-white flex items-center justify-center shadow-md"
           style={{ transform: 'rotate(-90deg)' }}
         >
           Schema
