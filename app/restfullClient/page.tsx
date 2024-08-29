@@ -1,9 +1,12 @@
-//test url = `https://dummyjson.com/products/42`;
 'use client';
 import { useEffect, useState } from 'react';
 
 import { Header, Param } from './types';
 import { MESSAGE } from './constants';
+import InputUrl from './components/InputUrl';
+import SelectMethod from './components/SelectMethod';
+import RestParams from './components/RestParams';
+import RestHeders from './components/RestHeaders';
 
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
@@ -102,6 +105,16 @@ export default function RESTfullClient() {
     setParams(newParams);
   };
 
+  const removeHeader = (index: number) => {
+    const newHeaders = headers.filter((_, i) => i !== index);
+    setHeaders(newHeaders);
+  };
+
+  const removeParam = (index: number) => {
+    const newParams = params.filter((_, i) => i !== index);
+    setParams(newParams);
+  };
+
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -109,19 +122,8 @@ export default function RESTfullClient() {
           REST Client
         </h1>
         <div className="flex space-x-4 mb-4">
-          <select onChange={(e) => setMethod(e.target.value)}>
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="DELETE">DELETE</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Endpoint URL"
-            className="border-2 p-2 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
+          <SelectMethod method={method} setMethod={setMethod} />
+          <InputUrl url={url} setUrl={setUrl} />
           <button
             className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
             type="submit"
@@ -131,81 +133,18 @@ export default function RESTfullClient() {
           </button>
         </div>
 
-        <div className="mb-4">
-          <h2 className="font-semibold">Params:</h2>
-          <div className="grid grid-cols-2 gap-0 mb-0">
-            <label className="font-semibold border border-gray-400 p-2">
-              Key
-            </label>
-            <label className="font-semibold border border-gray-400 p-2">
-              Value
-            </label>
-          </div>
-          {params.map((param, index) => (
-            <div key={index} className="grid grid-cols-2 gap-0 mb-0">
-              <textarea
-                placeholder="Param key"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={param.keyParam}
-                onChange={(e) =>
-                  handleParamChange(index, 'key', e.target.value)
-                }
-              ></textarea>
-              <textarea
-                placeholder="Param value"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={param.valueParam}
-                onChange={(e) =>
-                  handleParamChange(index, 'value', e.target.value)
-                }
-              ></textarea>
-            </div>
-          ))}
-          <button
-            className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
-            onClick={addParam}
-          >
-            Add Params
-          </button>
-        </div>
-
-        <div className="mb-4">
-          <h2 className="font-semibold">Headers:</h2>
-          <div className="grid grid-cols-2 gap-0 mb-0">
-            <label className="font-semibold border border-gray-400 p-2">
-              Key
-            </label>
-            <label className="font-semibold border border-gray-400 p-2">
-              Value
-            </label>
-          </div>
-          {headers.map((header, index) => (
-            <div key={index} className="grid grid-cols-2 gap-0 mb-0">
-              <textarea
-                placeholder="Content-Type"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={header.keyHeader}
-                onChange={(e) =>
-                  handleHeaderChange(index, 'keyHeader', e.target.value)
-                }
-              />
-              <textarea
-                placeholder="application/json"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={header.valueHeader}
-                onChange={(e) =>
-                  handleHeaderChange(index, 'valueHeader', e.target.value)
-                }
-              />
-            </div>
-          ))}
-          <button
-            className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
-            onClick={addHeader}
-          >
-            Add Header
-          </button>
-        </div>
+        <RestParams
+          params={params}
+          removeParam={removeParam}
+          addParam={addParam}
+          handleParamChange={handleParamChange}
+        />
+        <RestHeders
+          headers={headers}
+          removeHeader={removeHeader}
+          addHeader={addHeader}
+          handleHeaderChange={handleHeaderChange}
+        />
 
         <div className="mb-4">
           <h2 className="font-semibold">Body:</h2>
