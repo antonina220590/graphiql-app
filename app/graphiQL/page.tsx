@@ -23,7 +23,6 @@ export default function GraphiQLClient() {
   const variables = useSelector(
     (state: { variables: { value: string } }) => state.variables.value
   );
-
   const dispatch = useDispatch();
 
   useEffect(() => {

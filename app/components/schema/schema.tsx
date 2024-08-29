@@ -6,6 +6,7 @@ import {
   GraphQLSchema,
   printSchema,
 } from 'graphql';
+import { toast } from 'sonner';
 
 import { RootState } from '../../slices/store';
 
@@ -20,49 +21,60 @@ export default function SchemaPanel() {
   const GRAPHQL_URL = useSelector((state: RootState) => state.schema.urlSdl);
 
   useEffect(() => {
-    if (!GRAPHQL_URL.length) {
+    if (!GRAPHQL_URL.length || error) {
       setIsOpen(false);
     }
-  }, [GRAPHQL_URL]);
+  }, [GRAPHQL_URL, error, isOpen]);
 
   useEffect(() => {
     const fetchSchema = async () => {
       const introspectionQuery = getIntrospectionQuery();
       setError('');
-      try {
-        const response = await fetch(GRAPHQL_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: introspectionQuery }),
-        });
-        setSDLStatus(response.status);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        if (result.errors) {
-          throw new Error(
-            `Errors returned from GraphQL: ${JSON.stringify(result.errors)}`
-          );
-        }
-        const schemaData = result.data;
-        if (!schemaData || !schemaData.__schema) {
-          throw new Error('Invalid introspection response: missing __schema');
-        }
+      if (GRAPHQL_URL.length) {
+        try {
+          const response = await fetch(GRAPHQL_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: introspectionQuery }),
+          });
+          setSDLStatus(response.status);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const result = await response.json();
+          if (result.errors) {
+            throw new Error(
+              `Errors returned from GraphQL: ${JSON.stringify(result.errors)}`
+            );
+          }
+          const schemaData = result.data;
+          if (!schemaData || !schemaData.__schema) {
+            throw new Error('Invalid introspection response: missing __schema');
+          }
 
-        const schema: GraphQLSchema = buildClientSchema(schemaData);
-        setSchemaSDL(printSchema(schema).replace(/"""/g, ''));
-      } catch (error: unknown) {
-        setError((error as Error).message);
+          const schema: GraphQLSchema = buildClientSchema(schemaData);
+          setSchemaSDL(printSchema(schema).replace(/"""/g, ''));
+        } catch (error: unknown) {
+          setError((error as Error).message);
+          toast('Oooops! Something went wrong!', {
+            description: `${error}`,
+            action: {
+              label: 'Close',
+              onClick: () => {
+                toast.dismiss();
+              },
+            },
+          });
+        }
       }
     };
     fetchSchema();
-  }, [schemaSDL, GRAPHQL_URL, sdlStatus]);
+  }, [GRAPHQL_URL, sdlStatus]);
 
   const togglePanel = () => {
-    if (sdlStatus === 200 && schemaSDL && GRAPHQL_URL.length) {
+    if (sdlStatus === 200 && schemaSDL && GRAPHQL_URL.length && !error) {
       setIsOpen((prev) => !prev);
     } else {
       setIsOpen(false);
@@ -105,7 +117,7 @@ export default function SchemaPanel() {
         style={{ width: `${panelWidth}px` }}
       >
         <div
-          className="p-4 h-full bg-gray-100 text-xs"
+          className="p-4 min-h-[60svh] bg-gray-100 text-xs"
           style={{
             height: 'calc(60svh - 80px)',
             overflowY: 'auto',
@@ -124,7 +136,7 @@ export default function SchemaPanel() {
         </div>
         <button
           onClick={togglePanel}
-          className={`absolute py-1 px-2 z-50 left-[-70px] top-1/4 transform -translate-y-1/2 bg-[${sdlStatus === 200 && schemaSDL && GRAPHQL_URL.length ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
+          className={`absolute py-1 px-2 z-50 left-[-70px] top-1/4 transform -translate-y-1/2 bg-[${sdlStatus === 200 && schemaSDL && GRAPHQL_URL.length && !error ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
           style={{ transform: 'rotate(-90deg)' }}
         >
           Schema
