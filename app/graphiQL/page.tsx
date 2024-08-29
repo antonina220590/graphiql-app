@@ -7,11 +7,12 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { toast } from 'sonner';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
+import { setUrlSdl } from '../slices/sdlSlice';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -22,6 +23,8 @@ export default function GraphiQLClient() {
   const variables = useSelector(
     (state: { variables: { value: string } }) => state.variables.value
   );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (url) {
@@ -99,6 +102,10 @@ export default function GraphiQLClient() {
     }
   };
 
+  const handleSDLRequest = () => {
+    dispatch(setUrlSdl(urlSDL));
+  };
+
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -112,7 +119,9 @@ export default function GraphiQLClient() {
               placeholder="Endpoint URL"
               className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => {
+                setUrl(e.target.value);
+              }}
             />
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
@@ -128,11 +137,14 @@ export default function GraphiQLClient() {
               placeholder="Endpoint URL SDL"
               className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
               value={urlSDL}
-              onChange={(e) => setUrlSDL(e.target.value)}
+              onChange={(e) => {
+                setUrlSDL(e.target.value);
+              }}
             />
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
+              onClick={handleSDLRequest}
             >
               Send
             </button>
