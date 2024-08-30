@@ -39,13 +39,14 @@ describe('SchemaPanel', () => {
     vi.clearAllMocks();
   });
 
-  it('renders without errors', () => {
-    render(
-      <Provider store={store}>
-        <SchemaPanel />
-      </Provider>
-    );
-
+  it('renders without crashing', async () => {
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <SchemaPanel />
+        </Provider>
+      );
+    });
     expect(screen.getByText(/GraphQL Schema/i)).toBeInTheDocument();
   });
 
