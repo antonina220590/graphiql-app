@@ -24,9 +24,13 @@
       "error",
       {
         "singleQuote": true
+      },
+      {
+        "endOfLine": "auto"
       }
     ],
     "react/react-in-jsx-scope": "off",
+    "no-inline-comments": "error",
     "import/order": [
       "error",
       {

@@ -1,3 +1,4 @@
 {
-  "./app/**/*.{ts,tsx}": "npx eslint"
+  "./app/**/*.{ts,tsx}": "npx eslint",
+  "./src/**/*.{ts,tsx}": "npx eslint"
 }
