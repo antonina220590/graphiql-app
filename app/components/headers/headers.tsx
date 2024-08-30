@@ -135,6 +135,7 @@ export default function HeadersPanel() {
                   <button
                     onClick={() => removeHeader(index)}
                     className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                    aria-label="delete header"
                   >
                     <TrashIcon className="h-8 w-8 text-[#fe6d12]" />
                   </button>
