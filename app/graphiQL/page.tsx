@@ -19,6 +19,7 @@ export default function GraphiQLClient() {
   const [urlSDL, setUrlSDL] = useState<string>('');
   const [responseData, setResponseData] = useState<string>('');
   const [query, setQuery] = useState<string>('');
+  const [statusCode, setStatusCode] = useState('');
   const headers = useSelector((state: RootState) => state.headers);
   const variables = useSelector(
     (state: { variables: { value: string } }) => state.variables.value
@@ -35,6 +36,7 @@ export default function GraphiQLClient() {
 
   const handleRequest = async () => {
     if (!url || !query) {
+      setStatusCode(`💁`);
       toast('Oooops! Something went wrong!', {
         description: 'Please provide URL and query',
         action: {
@@ -77,7 +79,7 @@ export default function GraphiQLClient() {
     };
 
     try {
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,8 +87,9 @@ export default function GraphiQLClient() {
         },
         body: JSON.stringify(requestBody),
       });
+      setStatusCode(`${res.status} ${res.statusText}`);
 
-      const data = await response.json();
+      const data = await res.json();
       setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
       toast('Oooops! Something went wrong!', {
@@ -147,6 +150,12 @@ export default function GraphiQLClient() {
             >
               Send
             </button>
+          </div>
+          <div className="flex items-center mb-2">
+            <div className="mr-2 font-semibold">Status:</div>
+            <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
+              {statusCode}
+            </div>
           </div>
         </div>
         <div className="relative flex flex-row justify-center">
