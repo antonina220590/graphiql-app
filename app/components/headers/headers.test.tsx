@@ -1,15 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Provider } from 'react-redux';
 import configureStore, { MockStore } from 'redux-mock-store';
 
 import HeadersPanel from './headers';
-// import {
-//   addHeader,
-//   updateHeader,
-//   deleteHeader,
-// } from '../../slices/headersSlice';
-// import { setVariables } from '../../slices/variablesSlice';
 
 const mockStore = configureStore([]);
 const initialState = {
@@ -42,5 +36,22 @@ describe('HeadersPanel', () => {
       </Provider>
     );
     expect(screen.getByText('Headers:')).to.exist;
+  });
+
+  it('toggles open and close panel', () => {
+    render(
+      <Provider store={store}>
+        <HeadersPanel />
+      </Provider>
+    );
+    const toggleButton = screen.getByRole('button', {
+      name: /▼/,
+    });
+    const panelDiv = screen.getByTestId('panel');
+    expect(panelDiv).toHaveClass('translate-y-full');
+    fireEvent.click(toggleButton);
+    expect(panelDiv).toHaveClass('translate-y-0');
+    fireEvent.click(toggleButton);
+    expect(panelDiv).toHaveClass('translate-y-full');
   });
 });
