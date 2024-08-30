@@ -13,6 +13,7 @@ import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { setUrlSdl } from '../slices/sdlSlice';
+import statusTexts from './status';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -87,7 +88,8 @@ export default function GraphiQLClient() {
         },
         body: JSON.stringify(requestBody),
       });
-      setStatusCode(`${res.status} ${res.statusText}`);
+      const statusText = statusTexts[res.status] || 'Unknown Status';
+      setStatusCode(`${res.status} ${statusText}`);
 
       const data = await res.json();
       setResponseData(JSON.stringify(data, null, 2));
