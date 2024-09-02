@@ -38,6 +38,7 @@ const RestHeders: React.FC<RestHeadersProps> = ({
           <button
             onClick={() => removeHeader(index)}
             className="flex items-center justify-center w-full h-10 text-white p-1 m-1"
+            data-testid="trash-button"
           >
             <TrashIcon className="h-6 w-6 text-[#fe6d12]" />
           </button>
