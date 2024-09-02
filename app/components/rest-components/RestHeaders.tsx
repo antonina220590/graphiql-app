@@ -1,6 +1,6 @@
 import { TrashIcon } from '@heroicons/react/24/solid';
 
-import { RestHeadersProps } from '../types';
+import { RestHeadersProps } from '../../restfullClient/types';
 
 const RestHeders: React.FC<RestHeadersProps> = ({
   headers,

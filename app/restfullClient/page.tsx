@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 
 import { Header, Param } from './types';
 import { MESSAGE } from './constants';
-import InputUrl from './components/InputUrl';
-import SelectMethod from './components/SelectMethod';
-import RestParams from './components/RestParams';
-import RestHeders from './components/RestHeaders';
+import RestParams from '../components/rest-components/RestParams';
+import RestHeders from '../components/rest-components/RestHeaders';
+import SelectMethod from '../components/rest-components/SelectMethod';
 
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
@@ -123,7 +122,13 @@ export default function RESTfullClient() {
         </h1>
         <div className="flex space-x-4 mb-4">
           <SelectMethod method={method} setMethod={setMethod} />
-          <InputUrl url={url} setUrl={setUrl} />
+          <input
+            type="text"
+            placeholder="Endpoint URL"
+            className="border-2 p-2 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
           <button
             className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
             type="submit"

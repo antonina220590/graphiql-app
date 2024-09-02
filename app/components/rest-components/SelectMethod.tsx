@@ -1,4 +1,4 @@
-import { SelectMethodProps } from '../types';
+import { SelectMethodProps } from '../../restfullClient/types';
 
 const SelectMethod: React.FC<SelectMethodProps> = ({ method, setMethod }) => (
   <select value={method} onChange={(e) => setMethod(e.target.value)}>

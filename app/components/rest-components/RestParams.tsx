@@ -1,8 +1,8 @@
 import { TrashIcon } from '@heroicons/react/24/solid';
 
-import { RestParamsProps } from '../types';
+import { RestParamsProps } from '../../restfullClient/types';
 
-const Params: React.FC<RestParamsProps> = ({
+const RestParams: React.FC<RestParamsProps> = ({
   params,
   handleParamChange,
   removeParam,
@@ -20,13 +20,15 @@ const Params: React.FC<RestParamsProps> = ({
           placeholder="Param key"
           className="border border-gray-400 p-2 h-16 resize-none"
           value={param.keyParam}
-          onChange={(e) => handleParamChange(index, 'key', e.target.value)}
+          onChange={(e) => handleParamChange(index, 'keyParam', e.target.value)}
         ></textarea>
         <textarea
           placeholder="Param value"
           className="border border-gray-400 p-2 h-16 resize-none"
           value={param.valueParam}
-          onChange={(e) => handleParamChange(index, 'value', e.target.value)}
+          onChange={(e) =>
+            handleParamChange(index, 'valueParam', e.target.value)
+          }
         ></textarea>
         <button
           onClick={() => removeParam(index)}
@@ -44,4 +46,4 @@ const Params: React.FC<RestParamsProps> = ({
     </button>
   </div>
 );
-export default Params;
+export default RestParams;
