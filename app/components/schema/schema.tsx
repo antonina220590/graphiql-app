@@ -127,6 +127,7 @@ export default function SchemaPanel() {
           <div
             className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize bg-gray-300"
             onMouseDown={startResize}
+            data-testid="resize-handle"
           />
           <h1>GraphQL Schema</h1>
           {error ? (
