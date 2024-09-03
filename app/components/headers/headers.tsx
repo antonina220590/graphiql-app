@@ -102,6 +102,7 @@ export default function HeadersPanel() {
           <div
             className="absolute right-0 top-0 h-2 w-[100%] cursor-ns-resize bg-gray-300"
             onMouseDown={startResize}
+            data-testid="resize-handle"
           />
           {activeTab === 'headers' && (
             <div className="mb-4">
