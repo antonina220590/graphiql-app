@@ -8,12 +8,14 @@ import {
 } from '@/components/ui/resizable';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
+import { SparklesIcon } from '@heroicons/react/24/solid';
 
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { setUrlSdl } from '../slices/sdlSlice';
 import statusTexts from './status';
+import formatQuery from './prettifier';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -34,6 +36,29 @@ export default function GraphiQLClient() {
       setUrlSDL('');
     }
   }, [url]);
+
+  const handleFormatCode = () => {
+    if (!query) {
+      toast('No query to format!');
+      return;
+    }
+
+    formatQuery(query)
+      .then((formattedQuery) => {
+        setQuery(formattedQuery);
+      })
+      .catch((error) => {
+        toast('Formatting failed, please try again!', {
+          description: `${error.message}`,
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+      });
+  };
 
   const handleRequest = async () => {
     if (!url || !query) {
@@ -163,10 +188,18 @@ export default function GraphiQLClient() {
         <div className="relative flex flex-row justify-center">
           <ResizablePanelGroup
             direction="horizontal"
-            className="max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
+            className="relative max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
           >
             <ResizablePanel defaultSize={50}>
               <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
+                <div className="absolute right-0 top-0">
+                  <button
+                    className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                    onClick={handleFormatCode}
+                  >
+                    <SparklesIcon className="h-15 w-15 text-[#fe6d12]" />
+                  </button>
+                </div>
                 <HeadersPanel />
                 <textarea
                   className="w-[100%] h-[100%] bg-[#c8c8c8] text-[#292929] font-light"
