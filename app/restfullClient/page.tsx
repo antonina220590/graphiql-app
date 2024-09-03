@@ -1,11 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Controlled as CodeMirror } from 'react-codemirror2';
 
 import { Header, Param } from './types';
 import { MESSAGE } from './constants';
 import RestParams from '../components/rest-components/RestParams';
-import RestHeders from '../components/rest-components/RestHeaders';
 import SelectMethod from '../components/rest-components/SelectMethod';
+import RestHeders from '../components/rest-components/RestHeaders';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
+import 'codemirror/mode/javascript/javascript';
 
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
@@ -170,9 +174,17 @@ export default function RESTfullClient() {
       </div>
       <div className="flex items-center">
         <div className="mr-5">Body:</div>
-        <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
-          {response}
-        </div>
+        <CodeMirror
+          value={response}
+          options={{
+            mode: 'application/json',
+            theme: 'material',
+            lineNumbers: true,
+            readOnly: true,
+          }}
+          onBeforeChange={() => {}}
+          className="border p-2 rounded bg-dark flex-1 text-white min-h-10"
+        />
       </div>
     </main>
   );
