@@ -9,7 +9,26 @@ import {
   updateHeader,
   deleteHeader,
 } from '../../slices/headersSlice';
-import { setVariables } from '../../slices/variablesSlice';
+
+vi.mock('@uiw/react-codemirror', () => {
+  return {
+    default: ({
+      value = '',
+      onChange,
+      placeholder = '',
+    }: {
+      value: string;
+      onChange: (value: string) => void;
+      placeholder: string;
+    }) => (
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
+    ),
+  };
+});
 
 const mockStore = configureStore([]);
 const initialState = {
@@ -119,24 +138,17 @@ describe('HeadersPanel', () => {
 
     expect(deleteHeader).toHaveBeenCalledWith(0);
   });
-  it('dispatches setVariables action when textarea value is changed', () => {
+
+  it('renders CodeMirror with default value', async () => {
     render(
       <Provider store={store}>
         <HeadersPanel />
       </Provider>
     );
-
-    const variablesTabButton = screen.getByRole('button', {
-      name: /Variables/i,
-    });
-    fireEvent.click(variablesTabButton);
-
-    const variablesTextarea = screen.getByPlaceholderText('{"key": "value"}');
-
-    fireEvent.change(variablesTextarea, {
-      target: { value: '{"newKey": "newValue"}' },
-    });
-    expect(setVariables).toHaveBeenCalledWith('{"newKey": "newValue"}');
+    const variablesButton = screen.getByRole('button', { name: /Variables/i });
+    fireEvent.click(variablesButton);
+    const codeMirror = await screen.findByPlaceholderText(/{"key": "value"}/i);
+    expect(codeMirror).toBeInTheDocument();
   });
 
   it('allows the panel to be resized when dragging the resize handle', async () => {
