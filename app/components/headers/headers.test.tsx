@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Provider } from 'react-redux';
 import configureStore, { MockStore } from 'redux-mock-store';
@@ -149,26 +149,5 @@ describe('HeadersPanel', () => {
     fireEvent.click(variablesButton);
     const codeMirror = await screen.findByPlaceholderText(/{"key": "value"}/i);
     expect(codeMirror).toBeInTheDocument();
-  });
-
-  it('allows the panel to be resized when dragging the resize handle', async () => {
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <HeadersPanel />
-        </Provider>
-      );
-    });
-
-    const resizeHandle = screen.getByTestId('resize-handle');
-    const panel = screen.getByTestId('panel');
-
-    expect(panel).toHaveStyle('height: 0px');
-
-    fireEvent.mouseDown(resizeHandle);
-    fireEvent.mouseMove(resizeHandle, { clientY: 200 });
-    fireEvent.mouseUp(resizeHandle);
-
-    expect(panel).toHaveStyle('height: 568px');
   });
 });

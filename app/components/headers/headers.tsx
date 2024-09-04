@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import CodeMirror from '@uiw/react-codemirror';
@@ -22,7 +22,6 @@ export default function HeadersPanel() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const isResizing = useRef<boolean>(false);
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
@@ -41,32 +40,6 @@ export default function HeadersPanel() {
   const openPanel = () => {
     setIsOpen(true);
   };
-
-  const handleMouseMove = useCallback((event: MouseEvent) => {
-    if (isResizing.current && panelRef.current) {
-      const newHeight = window.innerHeight - event.clientY;
-      setPanelHeight(newHeight > 150 ? newHeight : 150);
-    }
-  }, []);
-
-  const startResize = () => {
-    isResizing.current = true;
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', stopResize);
-  };
-
-  const stopResize = useCallback(() => {
-    isResizing.current = false;
-    window.removeEventListener('mousemove', handleMouseMove);
-    window.removeEventListener('mouseup', stopResize);
-  }, [handleMouseMove]);
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', stopResize);
-    };
-  }, [handleMouseMove, stopResize]);
 
   const addHTTPHeader = () => {
     dispatch(addHeader());
@@ -104,7 +77,6 @@ export default function HeadersPanel() {
         <div className="relative p-4 bg-gray-100 h-full resize-none overflow-y-scroll">
           <div
             className="absolute right-0 top-0 h-2 w-[100%] cursor-ns-resize bg-gray-300"
-            onMouseDown={startResize}
             data-testid="resize-handle"
           />
           {activeTab === 'headers' && (

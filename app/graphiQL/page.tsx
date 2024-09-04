@@ -205,7 +205,7 @@ export default function GraphiQLClient() {
                 <div className="flex-grow p-2 min-h-full overflow-auto">
                   <HeadersPanel />
                   <CodeMirror
-                    height="800px"
+                    height="700px"
                     width="100%"
                     value={query}
                     theme="dark"
@@ -221,7 +221,7 @@ export default function GraphiQLClient() {
                 <SchemaPanel />
                 <div className="flex-grow p-2 min-h-full overflow-auto">
                   <CodeMirror
-                    height="800px"
+                    height="700px"
                     width="100%"
                     value={responseData}
                     theme="dark"
