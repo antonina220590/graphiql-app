@@ -89,11 +89,11 @@ export default function HeadersPanel() {
   };
 
   return (
-    <div className="z-10">
+    <div className="">
       <div
         ref={panelRef}
         data-testid="panel"
-        className={`absolute left-0 bottom-0 w-full bg-[#c8c8c8] shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`absolute z-10 left-0 bottom-0 w-full bg-[#c8c8c8] shadow-lg transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ height: `${panelHeight}px` }}

@@ -9,6 +9,8 @@ import {
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
 import { SparklesIcon } from '@heroicons/react/24/solid';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
@@ -200,12 +202,17 @@ export default function GraphiQLClient() {
                     <SparklesIcon className="h-15 w-15 text-[#fe6d12]" />
                   </button>
                 </div>
-                <HeadersPanel />
-                <textarea
-                  className="w-[100%] h-[100%] bg-[#c8c8c8] text-[#292929] font-light"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                ></textarea>
+                <div className="flex-grow p-2 min-h-full overflow-auto">
+                  <HeadersPanel />
+                  <CodeMirror
+                    height="800px"
+                    width="100%"
+                    value={query}
+                    theme="dark"
+                    extensions={[javascript({ jsx: true })]}
+                    onChange={(value) => setQuery(value)}
+                  />
+                </div>
               </div>
             </ResizablePanel>
             <ResizableHandle />
