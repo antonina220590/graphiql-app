@@ -193,8 +193,8 @@ export default function GraphiQLClient() {
             className="relative max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
           >
             <ResizablePanel defaultSize={50}>
-              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
-                <div className="absolute right-0 top-0">
+              <div className="relative flex h-[100%] items-center justify-center bg-[#c8c8c8]">
+                <div className="absolute right-2 top-2 z-10">
                   <button
                     className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
                     onClick={handleFormatCode}
@@ -217,9 +217,18 @@ export default function GraphiQLClient() {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8] z-20">
+              <div className="relative flex h-[100%] items-center justify-center bg-[#c8c8c8] z-20">
                 <SchemaPanel />
-                <span className="font-light">{responseData}</span>
+                <div className="flex-grow p-2 min-h-full overflow-auto">
+                  <CodeMirror
+                    height="800px"
+                    width="100%"
+                    value={responseData}
+                    theme="dark"
+                    extensions={[javascript({ jsx: true })]}
+                    readOnly
+                  />
+                </div>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>

@@ -3,6 +3,8 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 
 import {
   addHeader,
@@ -82,11 +84,12 @@ export default function HeadersPanel() {
     dispatch(deleteHeader(index));
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = event.target.value;
-    setVariables(newValue);
-    dispatch(setVariables(newValue));
-  };
+  const handleChange = useCallback(
+    (value: string) => {
+      dispatch(setVariables(value));
+    },
+    [dispatch]
+  );
 
   return (
     <div className="">
@@ -152,12 +155,17 @@ export default function HeadersPanel() {
             </div>
           )}
           {activeTab === 'variables' && (
-            <textarea
-              className="w-full h-full bg-white text-black"
-              value={variables}
-              onChange={handleChange}
-              placeholder='{"key": "value"}'
-            ></textarea>
+            <div className="flex-grow min-h-full overflow-auto">
+              <CodeMirror
+                height="300px"
+                width="100%"
+                value={variables}
+                theme="dark"
+                extensions={[javascript({ jsx: true })]}
+                onChange={handleChange}
+                placeholder='{"key": "value"}'
+              />
+            </div>
           )}
         </div>
         <div className="absolute flex flex-row gap-2 left-1 top-[-40px] transform -translate-x-1/5">
