@@ -7,12 +7,14 @@ import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
-// import 'codemirror/lib/codemirror.css';
-// import 'codemirror/theme/material.css';
-// import 'codemirror/mode/javascript/javascript';
 const CodeMirror = dynamic(
-  () =>
-    import('react-codemirror2').then((mod) => ({ default: mod.Controlled })),
+  async () => {
+    const { Controlled } = await import('react-codemirror2');
+    await import('codemirror/lib/codemirror.css');
+    await import('codemirror/theme/material.css');
+    await import('codemirror/mode/javascript/javascript');
+    return { default: Controlled };
+  },
   {
     ssr: false,
   }
@@ -29,7 +31,7 @@ export default function RESTfullClient() {
   const [params, setParams] = useState<Param[]>([
     { keyParam: '', valueParam: '' },
   ]);
-  const [body, setBody] = useState({});
+  const [body, setBody] = useState('');
 
   useEffect(() => {
     const newParams = new URLSearchParams();
@@ -169,23 +171,30 @@ export default function RESTfullClient() {
 
         <div className="mb-4">
           <h2 className="font-semibold">Body:</h2>
-          <textarea
-            placeholder="JSON/Text Editor"
-            className="border-2 p-2 rounded w-full h-32 bg-dark text-white focus:border-yellow-500 focus:outline-none"
-            onChange={(e) => setBody(e.target.value)}
+          <CodeMirror
+            value={body}
+            options={{
+              mode: 'application/json' || 'text/plain',
+              theme: 'material',
+              lineNumbers: true,
+            }}
+            onBeforeChange={(editor, data, value) => {
+              setBody(value);
+            }}
+            className="border p-2 rounded bg-dark flex-1 text-white min-h-10"
           />
         </div>
       </div>
 
-      <div className="font-semibold">Response:</div>
+      <h2 className="font-semibold mb-3">Response:</h2>
       <div className="flex items-center mb-2">
-        <div className="mr-2">Status:</div>
+        <h2 className="mr-2">Status:</h2>
         <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
           {statusCode}
         </div>
       </div>
-      <div className="flex items-center">
-        <div className="mr-5">Body:</div>
+      <div className="flex items-center mb-4">
+        <h2 className="mr-5">Body:</h2>
         <CodeMirror
           value={response}
           options={{
