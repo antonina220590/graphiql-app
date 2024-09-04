@@ -3,18 +3,16 @@
 import React from 'react';
 
 interface AuthButtonProps {
-  text: string;
-  onClick?: () => void;
+  title: string;
 }
 
-export default function AuthButton({ text, onClick }: AuthButtonProps) {
+export function AuthButton({ title }: AuthButtonProps) {
   return (
     <button
       type="submit"
       className="bg-orange-500 text-white p-2 rounded hover:bg-orange-600 transition duration-300"
-      onClick={onClick}
     >
-      {text}
+      {title}
     </button>
   );
 }
