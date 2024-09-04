@@ -31,6 +31,41 @@ export default function GraphiQLClient() {
   );
   const dispatch = useDispatch();
 
+  const padBase64Str = (str: string) => {
+    while (str.length % 4 !== 0) {
+      str += '=';
+    }
+    return str;
+  };
+
+  useEffect(() => {
+    const encodedSegments = window.location.pathname.split('/');
+
+    if (encodedSegments.length >= 4) {
+      const endpointUrlEncoded = encodedSegments[2];
+      const bodyEncoded = encodedSegments[3];
+
+      try {
+        const decodedEndpointUrl = decodeURIComponent(
+          atob(padBase64Str(endpointUrlEncoded))
+        );
+        const decodedBody = decodeURIComponent(atob(padBase64Str(bodyEncoded)));
+        setUrl(decodedEndpointUrl);
+        setQuery(decodedBody);
+      } catch (error) {
+        toast('Failed to decode URL parameters', {
+          description: `${error}`,
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (url) {
       setUrlSDL(`${url}?sdl`);
@@ -137,6 +172,27 @@ export default function GraphiQLClient() {
     dispatch(setUrlSdl(urlSDL));
   };
 
+  const generateEncodedUrl = () => {
+    const endpointUrl = encodeURIComponent(url.trim());
+    const body = encodeURIComponent(query.trim());
+
+    if (!endpointUrl || !body) return '';
+
+    const endpointUrlEncoded = btoa(endpointUrl);
+    const bodyEncoded = btoa(body);
+
+    return `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}`;
+  };
+
+  const handleFocusOut = () => {
+    const generatedUrl = generateEncodedUrl();
+    const currentUrl = window.location.href;
+
+    if (generatedUrl && generatedUrl !== currentUrl) {
+      window.history.pushState({}, '', generatedUrl);
+    }
+  };
+
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -153,6 +209,7 @@ export default function GraphiQLClient() {
               onChange={(e) => {
                 setUrl(e.target.value.trim());
               }}
+              onBlur={handleFocusOut}
             />
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
@@ -211,6 +268,7 @@ export default function GraphiQLClient() {
                     theme="dark"
                     extensions={[javascript({ jsx: true })]}
                     onChange={(value) => setQuery(value)}
+                    onBlur={handleFocusOut}
                   />
                 </div>
               </div>
