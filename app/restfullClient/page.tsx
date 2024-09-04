@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 import { Header, Param } from './types';
-import { MESSAGE } from './constants';
+import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
-import 'codemirror/mode/javascript/javascript';
+// import 'codemirror/lib/codemirror.css';
+// import 'codemirror/theme/material.css';
+// import 'codemirror/mode/javascript/javascript';
 const CodeMirror = dynamic(
   () =>
     import('react-codemirror2').then((mod) => ({ default: mod.Controlled })),
@@ -53,6 +53,7 @@ export default function RESTfullClient() {
       setStatusCode(`💁`);
       return;
     }
+
     const validHeaders = headers.filter(
       (header) => header.keyHeader && header.valueHeader
     );
@@ -66,16 +67,20 @@ export default function RESTfullClient() {
 
     try {
       const res = await fetch(url, options);
-      setStatusCode(`${res.status} ${res.statusText}`);
+      const statusMessage = statusText[res.status] || 'Unknown Status';
+
+      setStatusCode(`${res.status} ${statusMessage}`);
 
       if (!res.ok) {
-        if (res.status >= 400 && res.status < 500) {
-          setResponse(`Client Error: ${res.statusText}`);
-        } else if (res.status >= 500) {
-          setResponse(`Server Error: ${res.statusText}`);
+        let errorMessage = `${res.status} ${statusMessage}`;
+        const errorData = await res.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
         }
-        throw new Error(`${res.statusText}`);
+        setResponse(`Error: ${errorMessage}`);
+        throw new Error(errorMessage);
       }
+
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
