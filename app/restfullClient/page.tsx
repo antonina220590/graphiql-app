@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Controlled as CodeMirror } from 'react-codemirror2';
+import dynamic from 'next/dynamic';
 
 import { Header, Param } from './types';
 import { MESSAGE } from './constants';
@@ -10,6 +10,13 @@ import RestHeders from '../components/rest-components/RestHeaders';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import 'codemirror/mode/javascript/javascript';
+const CodeMirror = dynamic(
+  () =>
+    import('react-codemirror2').then((mod) => ({ default: mod.Controlled })),
+  {
+    ssr: false,
+  }
+);
 
 export default function RESTfullClient() {
   const [url, setUrl] = useState('');
