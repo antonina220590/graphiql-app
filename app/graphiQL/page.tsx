@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -16,8 +16,9 @@ import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { setUrlSdl } from '../slices/sdlSlice';
-import statusTexts from './status';
-import formatQuery from './prettifier';
+import statusTexts from './helpers/status';
+import formatQuery from './helpers/prettifier';
+import { setVariables } from '../slices/variablesSlice';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -30,49 +31,6 @@ export default function GraphiQLClient() {
     (state: { variables: { value: string } }) => state.variables.value
   );
   const dispatch = useDispatch();
-
-  const padBase64Str = (str: string) => {
-    while (str.length % 4 !== 0) {
-      str += '=';
-    }
-    return str;
-  };
-
-  useEffect(() => {
-    const encodedSegments = window.location.pathname.split('/');
-
-    if (encodedSegments.length >= 4) {
-      const endpointUrlEncoded = encodedSegments[2];
-      const bodyEncoded = encodedSegments[3];
-
-      try {
-        const decodedEndpointUrl = decodeURIComponent(
-          atob(padBase64Str(endpointUrlEncoded))
-        );
-        const decodedBody = decodeURIComponent(atob(padBase64Str(bodyEncoded)));
-        setUrl(decodedEndpointUrl);
-        setQuery(decodedBody);
-      } catch (error) {
-        toast('Failed to decode URL parameters', {
-          description: `${error}`,
-          action: {
-            label: 'Close',
-            onClick: () => {
-              toast.dismiss();
-            },
-          },
-        });
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (url) {
-      setUrlSDL(`${url}?sdl`);
-    } else {
-      setUrlSDL('');
-    }
-  }, [url]);
 
   const handleFormatCode = () => {
     if (!query) {
@@ -96,6 +54,55 @@ export default function GraphiQLClient() {
         });
       });
   };
+
+  const padBase64Str = (str: string) => {
+    while (str.length % 4 !== 0) {
+      str += '=';
+    }
+    return str;
+  };
+
+  useEffect(() => {
+    const encodedSegments = window.location.pathname.split('/');
+
+    if (encodedSegments.length >= 4) {
+      const endpointUrlEncoded = encodedSegments[2];
+      const bodyEncoded = encodedSegments[3];
+
+      try {
+        const decodedEndpointUrl = decodeURIComponent(
+          atob(padBase64Str(endpointUrlEncoded))
+        );
+        const decodedBody = decodeURIComponent(atob(padBase64Str(bodyEncoded)));
+        const bodyParsed = JSON.parse(decodedBody.replace(/\\n/g, ''));
+        setUrl(decodedEndpointUrl);
+        formatQuery(bodyParsed.query).then((formattedQuery) => {
+          setQuery(formattedQuery);
+        });
+        if (Object.keys(bodyParsed.variables).length > 0) {
+          dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
+        }
+      } catch (error) {
+        toast('Failed to decode URL parameters', {
+          description: `${error}`,
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+      }
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (url) {
+      setUrlSDL(`${url}?sdl`);
+    } else {
+      setUrlSDL('');
+    }
+  }, [url]);
 
   const handleRequest = async () => {
     if (!url || !query) {
@@ -172,26 +179,58 @@ export default function GraphiQLClient() {
     dispatch(setUrlSdl(urlSDL));
   };
 
-  const generateEncodedUrl = () => {
-    const endpointUrl = encodeURIComponent(url.trim());
-    const body = encodeURIComponent(query.trim());
+  let parsedVariables;
 
-    if (!endpointUrl || !body) return '';
+  if (variables) {
+    try {
+      parsedVariables = JSON.parse(variables);
+    } catch (error) {
+      toast('Error parsing variables:', {
+        description: `${error}`,
+        action: {
+          label: 'Close',
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+      parsedVariables = {};
+    }
+  } else {
+    parsedVariables = {};
+  }
 
-    const endpointUrlEncoded = btoa(endpointUrl);
-    const bodyEncoded = btoa(body);
+  const commonBody = JSON.stringify({
+    query: query,
+    variables: parsedVariables,
+  });
 
-    return `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}`;
-  };
+  const handleFocusOut = useCallback(() => {
+    const generateEncodedUrl = () => {
+      const endpointUrl = encodeURIComponent(url.trim());
+      const body = encodeURIComponent(commonBody.trim());
 
-  const handleFocusOut = () => {
+      if (!endpointUrl || !body) return '';
+
+      const endpointUrlEncoded = btoa(endpointUrl);
+      const bodyEncoded = btoa(body);
+
+      return `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}`;
+    };
+
     const generatedUrl = generateEncodedUrl();
     const currentUrl = window.location.href;
 
     if (generatedUrl && generatedUrl !== currentUrl) {
       window.history.pushState({}, '', generatedUrl);
     }
-  };
+  }, [url, commonBody]);
+
+  useEffect(() => {
+    if (variables) {
+      handleFocusOut();
+    }
+  }, [handleFocusOut, variables]);
 
   return (
     <main className="flex-grow p-4 bg-light">

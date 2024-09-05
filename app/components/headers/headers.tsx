@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { toast } from 'sonner';
 
 import {
   addHeader,
@@ -25,6 +26,7 @@ export default function HeadersPanel() {
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
+  const [isValidJson, setIsValidJson] = useState(true);
 
   const dispatch = useDispatch();
   const headers = useSelector((state: { headers: Header[] }) => state.headers);
@@ -57,9 +59,31 @@ export default function HeadersPanel() {
     dispatch(deleteHeader(index));
   };
 
+  const validateJson = (input: string) => {
+    try {
+      JSON.parse(input);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleChange = useCallback(
     (value: string) => {
-      dispatch(setVariables(value));
+      if (validateJson(value)) {
+        dispatch(setVariables(value));
+        setIsValidJson(true);
+      } else {
+        setIsValidJson(false);
+        toast('Invalid JSON format in variables.', {
+          description:
+            'Please make sure your JSON input is correctly formatted.',
+          action: {
+            label: 'Close',
+            onClick: () => toast.dismiss(),
+          },
+        });
+      }
     },
     [dispatch]
   );
@@ -136,6 +160,11 @@ export default function HeadersPanel() {
                 extensions={[javascript({ jsx: true })]}
                 onChange={handleChange}
                 placeholder='{"key": "value"}'
+                style={{
+                  borderColor: isValidJson ? 'lightgray' : 'red',
+                  borderWidth: '2px',
+                  borderStyle: 'solid',
+                }}
               />
             </div>
           )}
