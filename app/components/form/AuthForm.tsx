@@ -59,7 +59,7 @@ export default function AuthForm({
     return valid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (handleValidation()) {
       onSubmit(e);
