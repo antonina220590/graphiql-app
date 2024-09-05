@@ -9,6 +9,7 @@ import {
   updateHeader,
   deleteHeader,
 } from '../../slices/headersSlice';
+import { setVariables } from '../../slices/variablesSlice';
 
 vi.mock('@uiw/react-codemirror', () => {
   return {
@@ -57,7 +58,7 @@ describe('HeadersPanel', () => {
   it('renders HeadersPanel component', () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
     expect(screen.getByText('Headers:')).to.exist;
@@ -66,7 +67,7 @@ describe('HeadersPanel', () => {
   it('toggles open and close panel', () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
     const toggleButton = screen.getByRole('button', {
@@ -79,10 +80,10 @@ describe('HeadersPanel', () => {
     fireEvent.click(toggleButton);
     expect(panelDiv).toHaveClass('translate-y-full');
   });
-  it('dispatches addHeader action when Add Header button is clicked', () => {
+  it('dispatches addHeader when Add Header button is clicked', () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
 
@@ -92,10 +93,10 @@ describe('HeadersPanel', () => {
     expect(addHeader).toHaveBeenCalled();
   });
 
-  it('dispatches updateHeader action when header value is changed', () => {
+  it('dispatches updateHeader when header value is changed', () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
 
@@ -109,10 +110,10 @@ describe('HeadersPanel', () => {
     });
   });
 
-  it('dispatches updateHeader action when header value is changed', () => {
+  it('dispatches updateHeader when header value is changed', () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
 
@@ -125,10 +126,10 @@ describe('HeadersPanel', () => {
       value: 'Accept',
     });
   });
-  it('dispatches deleteHeader action when delete button is clicked', () => {
+  it('dispatches deleteHeader when delete button is clicked', () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
     const deleteButton = screen.getByRole('button', {
@@ -142,12 +143,29 @@ describe('HeadersPanel', () => {
   it('renders CodeMirror with default value', async () => {
     render(
       <Provider store={store}>
-        <HeadersPanel />
+        <HeadersPanel onUpdate={vi.fn()} />
       </Provider>
     );
     const variablesButton = screen.getByRole('button', { name: /Variables/i });
     fireEvent.click(variablesButton);
     const codeMirror = await screen.findByPlaceholderText(/{"key": "value"}/i);
     expect(codeMirror).toBeInTheDocument();
+  });
+
+  it('renders CodeMirror with default value and validates JSON format', async () => {
+    render(
+      <Provider store={store}>
+        <HeadersPanel onUpdate={vi.fn()} />
+      </Provider>
+    );
+
+    const variablesButton = screen.getByRole('button', { name: /Variables/i });
+    fireEvent.click(variablesButton);
+    const codeMirror = await screen.findByPlaceholderText(/{"key": "value"}/i);
+    expect(codeMirror).toBeInTheDocument();
+    fireEvent.change(codeMirror, { target: { value: '{"valid": "json"}' } });
+    expect(setVariables).toHaveBeenCalledWith('{"valid": "json"}');
+    fireEvent.change(codeMirror, { target: { value: 'invalid json' } });
+    expect(setVariables).not.toHaveBeenCalledWith('invalid json');
   });
 });

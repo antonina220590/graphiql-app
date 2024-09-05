@@ -19,6 +19,8 @@ import { setUrlSdl } from '../slices/sdlSlice';
 import statusTexts from './helpers/status';
 import formatQuery from './helpers/prettifier';
 import { setVariables } from '../slices/variablesSlice';
+import generateEncodedUrl from './helpers/urlHelper';
+import { setHeaders } from '../slices/headersSlice';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -54,7 +56,6 @@ export default function GraphiQLClient() {
         });
       });
   };
-
   const padBase64Str = (str: string) => {
     while (str.length % 4 !== 0) {
       str += '=';
@@ -63,11 +64,11 @@ export default function GraphiQLClient() {
   };
 
   useEffect(() => {
-    const encodedSegments = window.location.pathname.split('/');
+    const encodedUrl = window.location.pathname.split('/');
 
-    if (encodedSegments.length >= 4) {
-      const endpointUrlEncoded = encodedSegments[2];
-      const bodyEncoded = encodedSegments[3];
+    if (encodedUrl.length >= 4) {
+      const endpointUrlEncoded = encodedUrl[2];
+      const bodyEncoded = encodedUrl[3];
 
       try {
         const decodedEndpointUrl = decodeURIComponent(
@@ -81,6 +82,17 @@ export default function GraphiQLClient() {
         });
         if (Object.keys(bodyParsed.variables).length > 0) {
           dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
+        }
+        const queryParams = new URLSearchParams(window.location.search);
+        const headerEntries = Array.from(queryParams.entries());
+
+        const headersToDispatch = headerEntries.map(([key, value]) => ({
+          key: key.trim(),
+          value: value.trim(),
+        }));
+
+        if (headersToDispatch.length > 0) {
+          dispatch(setHeaders(headersToDispatch));
         }
       } catch (error) {
         toast('Failed to decode URL parameters', {
@@ -179,58 +191,23 @@ export default function GraphiQLClient() {
     dispatch(setUrlSdl(urlSDL));
   };
 
-  let parsedVariables;
-
-  if (variables) {
-    try {
-      parsedVariables = JSON.parse(variables);
-    } catch (error) {
-      toast('Error parsing variables:', {
-        description: `${error}`,
-        action: {
-          label: 'Close',
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
-      parsedVariables = {};
-    }
-  } else {
-    parsedVariables = {};
-  }
-
-  const commonBody = JSON.stringify({
-    query: query,
-    variables: parsedVariables,
-  });
-
   const handleFocusOut = useCallback(() => {
-    const generateEncodedUrl = () => {
-      const endpointUrl = encodeURIComponent(url.trim());
-      const body = encodeURIComponent(commonBody.trim());
+    const commonBody = JSON.stringify({
+      query,
+      variables: JSON.parse(variables || '{}'),
+    });
 
-      if (!endpointUrl || !body) return '';
-
-      const endpointUrlEncoded = btoa(endpointUrl);
-      const bodyEncoded = btoa(body);
-
-      return `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}`;
-    };
-
-    const generatedUrl = generateEncodedUrl();
+    const generatedUrl = generateEncodedUrl(url, commonBody, headers);
     const currentUrl = window.location.href;
 
     if (generatedUrl && generatedUrl !== currentUrl) {
       window.history.pushState({}, '', generatedUrl);
     }
-  }, [url, commonBody]);
+  }, [url, query, headers, variables]);
 
   useEffect(() => {
-    if (variables) {
-      handleFocusOut();
-    }
-  }, [handleFocusOut, variables]);
+    handleFocusOut();
+  }, [handleFocusOut]);
 
   return (
     <main className="flex-grow p-4 bg-light">
@@ -299,7 +276,7 @@ export default function GraphiQLClient() {
                   </button>
                 </div>
                 <div className="flex-grow p-2 min-h-full overflow-auto">
-                  <HeadersPanel />
+                  <HeadersPanel onUpdate={handleFocusOut} />
                   <CodeMirror
                     height="700px"
                     width="100%"

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
-import { toast } from 'sonner';
 
 import {
   addHeader,
@@ -19,7 +18,11 @@ interface Header {
   value: string;
 }
 
-export default function HeadersPanel() {
+interface HeadersPanelProps {
+  onUpdate: () => void;
+}
+
+export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -40,7 +43,10 @@ export default function HeadersPanel() {
   };
 
   const openPanel = () => {
-    setIsOpen(true);
+    if (!isOpen) {
+      setIsOpen(true);
+      setPanelHeight(300);
+    }
   };
 
   const addHTTPHeader = () => {
@@ -57,6 +63,7 @@ export default function HeadersPanel() {
 
   const removeHeader = (index: number) => {
     dispatch(deleteHeader(index));
+    onUpdate();
   };
 
   const validateJson = (input: string) => {
@@ -75,21 +82,13 @@ export default function HeadersPanel() {
         setIsValidJson(true);
       } else {
         setIsValidJson(false);
-        toast('Invalid JSON format in variables.', {
-          description:
-            'Please make sure your JSON input is correctly formatted.',
-          action: {
-            label: 'Close',
-            onClick: () => toast.dismiss(),
-          },
-        });
       }
     },
     [dispatch]
   );
 
   return (
-    <div className="">
+    <div>
       <div
         ref={panelRef}
         data-testid="panel"
@@ -106,7 +105,8 @@ export default function HeadersPanel() {
           {activeTab === 'headers' && (
             <div className="mb-4">
               <h2 className="font-semibold">Headers:</h2>
-              <div className="grid grid-cols-3 gap-0 mb-0">
+              <div className="grid grid-cols-[4rem_1fr_1fr_4rem] gap-0 mb-0">
+                <div></div>
                 <label className="font-semibold border border-gray-400 p-2">
                   Key
                 </label>
@@ -115,7 +115,13 @@ export default function HeadersPanel() {
                 </label>
               </div>
               {headers.map((header, index) => (
-                <div key={index} className="grid grid-cols-3 gap-0 mb-0">
+                <div key={index} className="grid grid-cols-[4rem_1fr_1fr_4rem]">
+                  <button
+                    className="text-[#fe6d12] border hover:border-[#292929] transition duration-300"
+                    onClick={onUpdate}
+                  >
+                    +
+                  </button>
                   <textarea
                     placeholder="Content-Type"
                     className="border border-gray-400 p-2 h-16 resize-none"
@@ -162,7 +168,7 @@ export default function HeadersPanel() {
                 placeholder='{"key": "value"}'
                 style={{
                   borderColor: isValidJson ? 'lightgray' : 'red',
-                  borderWidth: '2px',
+                  borderWidth: '5px',
                   borderStyle: 'solid',
                 }}
               />
