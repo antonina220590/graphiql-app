@@ -282,6 +282,7 @@ export default function GraphiQLClient() {
                     width="100%"
                     value={query}
                     theme="dark"
+                    placeholder="# Write your query or mutation here"
                     extensions={[javascript({ jsx: true })]}
                     onChange={(value) => setQuery(value)}
                     onBlur={handleFocusOut}
@@ -296,6 +297,7 @@ export default function GraphiQLClient() {
                 <div className="flex-grow p-2 min-h-full overflow-auto">
                   <CodeMirror
                     height="700px"
+                    placeholder="Response"
                     width="100%"
                     value={responseData}
                     theme="dark"
