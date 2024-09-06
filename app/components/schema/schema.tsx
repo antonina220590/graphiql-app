@@ -111,6 +111,7 @@ export default function SchemaPanel() {
     <div className="z-10">
       <div
         ref={panelRef}
+        data-testid="schema-panel"
         className={`absolute right-0 top-0 min-h-[60svh] bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -126,6 +127,7 @@ export default function SchemaPanel() {
           <div
             className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize bg-gray-300"
             onMouseDown={startResize}
+            data-testid="resize-handle"
           />
           <h1>GraphQL Schema</h1>
           {error ? (
