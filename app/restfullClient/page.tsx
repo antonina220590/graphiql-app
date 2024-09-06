@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 import { Header, Param } from './types';
@@ -7,6 +7,7 @@ import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
+import generateEncodedUrl from './helpers/urlHelper';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -32,6 +33,28 @@ export default function RESTfullClient() {
     { keyParam: '', valueParam: '' },
   ]);
   const [body, setBody] = useState('');
+
+  useEffect(() => {
+    const validHeaders = headers.map((header) => ({
+      key: header.keyHeader,
+      value: header.valueHeader,
+    }));
+
+    const validParams = params.map((param) => ({
+      key: param.keyParam,
+      value: param.valueParam,
+    }));
+
+    const newEncodedUrl = generateEncodedUrl(
+      method,
+      url,
+      body,
+      validHeaders,
+      validParams
+    );
+
+    window.history.pushState(null, '', newEncodedUrl);
+  }, [method, url, headers, params, body]);
 
   useEffect(() => {
     const newParams = new URLSearchParams();
@@ -67,10 +90,13 @@ export default function RESTfullClient() {
       body: method !== 'GET' ? JSON.stringify(body) : null,
     };
 
+    if (method !== 'GET' && body) {
+      options.body = body;
+    }
+
     try {
       const res = await fetch(url, options);
       const statusMessage = statusText[res.status] || 'Unknown Status';
-
       setStatusCode(`${res.status} ${statusMessage}`);
 
       if (!res.ok) {
@@ -112,13 +138,13 @@ export default function RESTfullClient() {
     setHeaders(newHeaders);
   };
 
-  const handleParamChange = (index: number, key: string, value: string) => {
+  const handleParamChange = (
+    index: number,
+    field: 'keyParam' | 'valueParam',
+    value: string
+  ) => {
     const newParams = [...params];
-    if (key === 'key') {
-      newParams[index].keyParam = value;
-    } else {
-      newParams[index].valueParam = value;
-    }
+    newParams[index][field] = value;
     setParams(newParams);
   };
 
@@ -131,6 +157,37 @@ export default function RESTfullClient() {
     const newParams = params.filter((_, i) => i !== index);
     setParams(newParams);
   };
+
+  const handleFocusOut = useCallback(() => {
+    const commonBody = method !== 'GET' ? JSON.stringify(body) : null;
+
+    const validHeaders = headers.map((header) => ({
+      key: header.keyHeader,
+      value: header.valueHeader,
+    }));
+
+    const validParams = params.map((param) => ({
+      key: param.keyParam,
+      value: param.valueParam,
+    }));
+
+    const generatedUrl = generateEncodedUrl(
+      method,
+      url,
+      commonBody,
+      validHeaders,
+      validParams
+    );
+
+    const currentUrl = window.location.href;
+    if (generatedUrl && generatedUrl !== currentUrl) {
+      window.history.pushState({}, '', generatedUrl);
+    }
+  }, [method, url, headers, body, params]);
+
+  useEffect(() => {
+    handleFocusOut();
+  }, [handleFocusOut]);
 
   return (
     <main className="flex-grow p-4 bg-light">
