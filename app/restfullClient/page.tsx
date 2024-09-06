@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
 
 import { Header, Param } from './types';
 import { MESSAGE, statusText } from './constants';
@@ -35,25 +36,27 @@ export default function RESTfullClient() {
   const [body, setBody] = useState('');
 
   useEffect(() => {
-    const validHeaders = headers.map((header) => ({
-      key: header.keyHeader,
-      value: header.valueHeader,
-    }));
+    if (url.trim() !== '') {
+      const validHeaders = headers.map((header) => ({
+        key: header.keyHeader,
+        value: header.valueHeader,
+      }));
 
-    const validParams = params.map((param) => ({
-      key: param.keyParam,
-      value: param.valueParam,
-    }));
+      const validParams = params.map((param) => ({
+        key: param.keyParam,
+        value: param.valueParam,
+      }));
 
-    const newEncodedUrl = generateEncodedUrl(
-      method,
-      url,
-      body,
-      validHeaders,
-      validParams
-    );
+      const newEncodedUrl = generateEncodedUrl(
+        method,
+        url,
+        body,
+        validHeaders,
+        validParams
+      );
 
-    window.history.pushState(null, '', newEncodedUrl);
+      window.history.pushState(null, '', newEncodedUrl);
+    }
   }, [method, url, headers, params, body]);
 
   useEffect(() => {
@@ -74,6 +77,7 @@ export default function RESTfullClient() {
 
   const handleSend = async () => {
     if (!url) {
+      toast(MESSAGE.EMPTY);
       setResponse(MESSAGE.EMPTY);
       setStatusCode(`💁`);
       return;
@@ -106,7 +110,7 @@ export default function RESTfullClient() {
           errorMessage = errorData.message;
         }
         setResponse(`Error: ${errorMessage}`);
-        throw new Error(errorMessage);
+        toast(errorMessage);
       }
 
       const json = await res.json();

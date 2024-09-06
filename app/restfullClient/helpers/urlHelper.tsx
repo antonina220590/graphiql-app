@@ -1,17 +1,17 @@
 const generateEncodedUrl = (
   method: string,
   url: string,
-  commonBody: string | null,
+  body: string | null,
   headers: { key: string; value: string }[],
   params: { key: string; value: string }[]
 ): string => {
+  if (!url.trim()) {
+    return window.location.origin;
+  }
+
   const endpointUrl = encodeURIComponent(url.trim());
   const encodedUrl = btoa(endpointUrl);
-
-  const body =
-    commonBody && method !== 'GET'
-      ? btoa(JSON.stringify(commonBody.trim()))
-      : '';
+  const encodedBody = body ? btoa(encodeURIComponent(body.trim())) : '';
 
   const paramString = params
     .filter((param) => param.key && param.value)
@@ -30,14 +30,14 @@ const generateEncodedUrl = (
     )
     .join('&');
 
-  let fullUrl = `${window.location.origin}/${method}/${encodedUrl}`;
+  let fullUrl = `${window.location.origin}/restfullClient/${method}/${encodedUrl}`;
 
   if (encodedParams) {
     fullUrl += `/${encodedParams}`;
   }
 
-  if (body) {
-    fullUrl += `/${body}`;
+  if (encodedBody) {
+    fullUrl += `/${encodedBody}`;
   }
 
   if (headerParams) {
