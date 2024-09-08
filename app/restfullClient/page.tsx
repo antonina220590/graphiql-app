@@ -36,28 +36,56 @@ export default function RESTfullClient() {
   const [body, setBody] = useState('');
 
   useEffect(() => {
-    if (url.trim() !== '') {
-      const validHeaders = headers.map((header) => ({
-        key: header.keyHeader,
-        value: header.valueHeader,
-      }));
+    const pathParts = window.location.pathname.split('/');
 
-      const validParams = params.map((param) => ({
-        key: param.keyParam,
-        value: param.valueParam,
-      }));
+    if (pathParts.length >= 6) {
+      const method = pathParts[2];
+      const encodedUrl = pathParts[3];
+      const encodedParams = pathParts[4] || '';
+      const encodedHeaders = pathParts[5] || '';
+      const encodedBody = pathParts[6] || '';
 
-      const newEncodedUrl = generateEncodedUrl(
-        method,
-        url,
-        body,
-        validHeaders,
-        validParams
-      );
+      try {
+        const decodedUrl = decodeURIComponent(atob(encodedUrl));
+        setUrl(decodedUrl);
 
-      window.history.pushState(null, '', newEncodedUrl);
+        if (encodedBody) {
+          const decodedBody = decodeURIComponent(atob(encodedBody));
+          setBody(decodedBody);
+        }
+
+        if (encodedParams) {
+          const decodedParamsStr = decodeURIComponent(atob(encodedParams));
+          const paramsArray = decodedParamsStr.split('&').map((paramStr) => {
+            const [key, value] = paramStr.split('=');
+            return {
+              keyParam: decodeURIComponent(key),
+              valueParam: decodeURIComponent(value),
+            };
+          });
+          setParams(paramsArray);
+        }
+
+        if (encodedHeaders) {
+          const decodedHeadersStr = decodeURIComponent(atob(encodedHeaders));
+          const headersArray = decodedHeadersStr.split('&').map((headerStr) => {
+            const [key, value] = headerStr.split('=');
+            return {
+              keyHeader: decodeURIComponent(key),
+              valueHeader: decodeURIComponent(value),
+            };
+          });
+          setHeaders(headersArray);
+        }
+
+        setMethod(method);
+      } catch (error) {
+        toast('Failed to decode URL parameters', {
+          description: error.message,
+        });
+      }
     }
-  }, [method, url, headers, params, body]);
+  }, []);
 
   useEffect(() => {
     const newParams = new URLSearchParams();
