@@ -12,7 +12,7 @@ const generateEncodedUrl = (
   const endpointUrl = encodeURIComponent(url.trim());
   const encodedUrl = btoa(endpointUrl);
 
-  const encodedBody = body ? btoa(encodeURIComponent(body.trim())) : '';
+  const encodedBody = body ? btoa(encodeURIComponent(body)) : '';
 
   const param = params
     .filter((param) => param.key && param.value)
@@ -34,16 +34,16 @@ const generateEncodedUrl = (
 
   let fullUrl = `${window.location.origin}/restfullClient/${method}/${encodedUrl}`;
 
-  if (encodedBody) {
-    fullUrl += `/${encodedBody}`;
-  }
-
   if (encodedParams) {
     fullUrl += `/${encodedParams}`;
   }
 
   if (encodedHeaders) {
     fullUrl += `/${encodedHeaders}`;
+  }
+
+  if (encodedBody) {
+    fullUrl += `/${encodedBody}`;
   }
 
   return fullUrl;

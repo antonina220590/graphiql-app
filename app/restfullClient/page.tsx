@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 
 import { Header, Param } from './types';
-import { MESSAGE, statusText } from './constants';
+import { MESSAGE, PathPartIndex, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
@@ -38,12 +38,12 @@ export default function RESTfullClient() {
   useEffect(() => {
     const pathParts = window.location.pathname.split('/');
 
-    if (pathParts.length >= 6) {
-      const method = pathParts[2];
-      const encodedUrl = pathParts[3];
-      const encodedParams = pathParts[4] || '';
-      const encodedHeaders = pathParts[5] || '';
-      const encodedBody = pathParts[6] || '';
+    if (pathParts.length > PathPartIndex.BODY) {
+      const method = pathParts[PathPartIndex.METHOD];
+      const encodedUrl = pathParts[PathPartIndex.URL];
+      const encodedParams = pathParts[PathPartIndex.PARAMS] || '';
+      const encodedHeaders = pathParts[PathPartIndex.HEADERS] || '';
+      const encodedBody = pathParts[PathPartIndex.BODY] || '';
 
       try {
         const decodedUrl = decodeURIComponent(atob(encodedUrl));

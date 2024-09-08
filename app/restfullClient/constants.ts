@@ -15,3 +15,11 @@ export const statusText: { [key: string]: string } = {
   '502': 'Bad Gateway',
   '503': 'Service Unavailable',
 };
+
+export enum PathPartIndex {
+  METHOD = 2,
+  URL = 3,
+  PARAMS = 4,
+  HEADERS = 5,
+  BODY = 6,
+}
