@@ -29,6 +29,7 @@ export default function GraphiQLClient() {
   const [query, setQuery] = useState<string>('');
   const [statusCode, setStatusCode] = useState('');
   const headers = useSelector((state: RootState) => state.headers);
+  const [decodedURL, setDecodedURL] = useState<string>('');
   const variables = useSelector(
     (state: { variables: { value: string } }) => state.variables.value
   );
@@ -80,6 +81,7 @@ export default function GraphiQLClient() {
         formatQuery(bodyParsed.query).then((formattedQuery) => {
           setQuery(formattedQuery);
         });
+
         if (Object.keys(bodyParsed.variables).length > 0) {
           dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
         }
@@ -186,7 +188,6 @@ export default function GraphiQLClient() {
       });
     }
   };
-
   const handleSDLRequest = () => {
     dispatch(setUrlSdl(urlSDL));
   };
@@ -202,8 +203,23 @@ export default function GraphiQLClient() {
 
     if (generatedUrl && generatedUrl !== currentUrl) {
       window.history.pushState({}, '', generatedUrl);
+      setDecodedURL(generatedUrl);
     }
   }, [url, query, headers, variables]);
+
+  const saveToLS = () => {
+    const savedRequests = JSON.parse(
+      localStorage.getItem('savedRequests') || '[]'
+    );
+
+    const requestDetails = {
+      url: decodedURL,
+      timestamp: new Date().toISOString(),
+    };
+
+    savedRequests.push(requestDetails);
+    localStorage.setItem('savedRequests', JSON.stringify(savedRequests));
+  };
 
   useEffect(() => {
     handleFocusOut();
@@ -230,7 +246,10 @@ export default function GraphiQLClient() {
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
-              onClick={handleRequest}
+              onClick={() => {
+                handleRequest();
+                saveToLS();
+              }}
             >
               Send
             </button>

@@ -1,9 +1,15 @@
-export default function History() {
+'use client';
+
+import React from 'react';
+
+import RequestHistory from '../components/history/history';
+
+function History() {
   return (
     <main>
-      <div>
-        <h1>History Page</h1>
-      </div>
+      <RequestHistory />
     </main>
   );
 }
+
+export default History;
