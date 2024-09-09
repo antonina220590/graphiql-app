@@ -1,6 +1,7 @@
 export enum MESSAGE {
   EMPTY = 'The URL field is empty. Please enter a URL.',
   UNKNOWN = 'An unknown error occurred',
+  DECODING = 'Failed to decode URL parameters',
 }
 
 export const statusText: { [key: string]: string } = {

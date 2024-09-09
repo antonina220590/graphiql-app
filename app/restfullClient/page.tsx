@@ -3,12 +3,12 @@ import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 
-import { Header, Param } from './types';
-import { MESSAGE, PathPartIndex, statusText } from './constants';
+import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
 import generateEncodedUrl from './helpers/urlHelper';
+import useUrlState from './helpers/useUrlState';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -23,91 +23,21 @@ const CodeMirror = dynamic(
 );
 
 export default function RESTfullClient() {
-  const [url, setUrl] = useState('');
+  const {
+    url,
+    setUrl,
+    method,
+    setMethod,
+    headers,
+    setHeaders,
+    params,
+    setParams,
+    body,
+    setBody,
+  } = useUrlState();
+
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
-  const [method, setMethod] = useState('GET');
-  const [headers, setHeaders] = useState<Header[]>([
-    { keyHeader: '', valueHeader: '' },
-  ]);
-  const [params, setParams] = useState<Param[]>([
-    { keyParam: '', valueParam: '' },
-  ]);
-  const [body, setBody] = useState('');
-
-  useEffect(() => {
-    const pathParts = window.location.pathname.split('/');
-
-    if (pathParts.length > PathPartIndex.BODY) {
-      const method = pathParts[PathPartIndex.METHOD];
-      const encodedUrl = pathParts[PathPartIndex.URL];
-      const encodedParams = pathParts[PathPartIndex.PARAMS] || '';
-      const encodedHeaders = pathParts[PathPartIndex.HEADERS] || '';
-      const encodedBody = pathParts[PathPartIndex.BODY] || '';
-
-      try {
-        const decodedUrl = decodeURIComponent(atob(encodedUrl));
-        setUrl(decodedUrl);
-
-        if (encodedBody) {
-          const decodedBody = decodeURIComponent(atob(encodedBody));
-
-          try {
-            const parsedBody = JSON.parse(decodedBody);
-            setBody(parsedBody);
-          } catch {
-            setBody(decodedBody);
-          }
-        }
-
-        if (encodedParams) {
-          const decodedParamsStr = decodeURIComponent(atob(encodedParams));
-          const paramsArray = decodedParamsStr.split('&').map((paramStr) => {
-            const [key, value] = paramStr.split('=');
-            return {
-              keyParam: decodeURIComponent(key),
-              valueParam: decodeURIComponent(value),
-            };
-          });
-          setParams(paramsArray);
-        }
-
-        if (encodedHeaders) {
-          const decodedHeadersStr = decodeURIComponent(atob(encodedHeaders));
-          const headersArray = decodedHeadersStr.split('&').map((headerStr) => {
-            const [key, value] = headerStr.split('=');
-            return {
-              keyHeader: decodeURIComponent(key),
-              valueHeader: decodeURIComponent(value),
-            };
-          });
-          setHeaders(headersArray);
-        }
-
-        setMethod(method);
-      } catch (error) {
-        toast('Failed to decode URL parameters', {
-          description: error.message,
-        });
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    const newParams = new URLSearchParams();
-    params.forEach((param) => {
-      if (param.keyParam || param.valueParam) {
-        newParams.set(param.keyParam, param.valueParam);
-      }
-    });
-
-    const paramString = newParams.toString();
-
-    setUrl((prevUrl) => {
-      const baseUrl = prevUrl.split('?')[0];
-      return paramString ? `${baseUrl}?${paramString}` : baseUrl;
-    });
-  }, [params]);
 
   const handleSend = async () => {
     if (!url) {
@@ -125,12 +55,8 @@ export default function RESTfullClient() {
       headers: Object.fromEntries(
         validHeaders.map((header) => [header.keyHeader, header.valueHeader])
       ),
-      body: JSON.stringify(body),
+      body: body ? JSON.stringify(body) : undefined,
     };
-
-    if (body) {
-      options.body = body;
-    }
 
     try {
       const res = await fetch(url, options);
@@ -143,18 +69,13 @@ export default function RESTfullClient() {
         if (errorData.message) {
           errorMessage = errorData.message;
         }
-        setResponse(`Error: ${errorMessage}`);
-        toast(errorMessage);
+        toast(`Error: ${errorMessage}`);
       }
 
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      if (error instanceof Error) {
-        setResponse(`Error: ${error.message}`);
-      } else {
-        setResponse(`Error: ${MESSAGE.UNKNOWN}`);
-      }
+      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
     }
   };
 
