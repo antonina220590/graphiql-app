@@ -51,7 +51,13 @@ export default function RESTfullClient() {
 
         if (encodedBody) {
           const decodedBody = decodeURIComponent(atob(encodedBody));
-          setBody(decodedBody);
+
+          try {
+            const parsedBody = JSON.parse(decodedBody);
+            setBody(parsedBody);
+          } catch {
+            setBody(decodedBody);
+          }
         }
 
         if (encodedParams) {
@@ -261,8 +267,9 @@ export default function RESTfullClient() {
         <div className="mb-4">
           <h2 className="font-semibold">Body:</h2>
           <CodeMirror
-            value={body}
-            data-testid="codeMirror"
+            value={
+              typeof body === 'object' ? JSON.stringify(body, null, 2) : body
+            }
             options={{
               mode: 'application/json' || 'text/plain',
               theme: 'material',
@@ -287,7 +294,6 @@ export default function RESTfullClient() {
         <h2 className="mr-5">Body:</h2>
         <CodeMirror
           value={response}
-          data-testid="codeMirror"
           options={{
             mode: 'application/json',
             theme: 'material',
