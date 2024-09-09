@@ -125,10 +125,10 @@ export default function RESTfullClient() {
       headers: Object.fromEntries(
         validHeaders.map((header) => [header.keyHeader, header.valueHeader])
       ),
-      body: method !== 'GET' ? JSON.stringify(body) : null,
+      body: JSON.stringify(body),
     };
 
-    if (method !== 'GET' && body) {
+    if (body) {
       options.body = body;
     }
 
@@ -197,7 +197,7 @@ export default function RESTfullClient() {
   };
 
   const handleFocusOut = useCallback(() => {
-    const commonBody = method !== 'GET' ? JSON.stringify(body) : null;
+    const commonBody = JSON.stringify(body);
 
     const validHeaders = headers.map((header) => ({
       key: header.keyHeader,
