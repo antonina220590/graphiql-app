@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -8,22 +8,105 @@ import {
 } from '@/components/ui/resizable';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
+import { SparklesIcon } from '@heroicons/react/24/solid';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { setUrlSdl } from '../slices/sdlSlice';
+import statusTexts from './helpers/status';
+import formatQuery from './helpers/prettifier';
+import { setVariables } from '../slices/variablesSlice';
+import generateEncodedUrl from './helpers/urlHelper';
+import { setHeaders } from '../slices/headersSlice';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
   const [urlSDL, setUrlSDL] = useState<string>('');
   const [responseData, setResponseData] = useState<string>('');
   const [query, setQuery] = useState<string>('');
+  const [statusCode, setStatusCode] = useState('');
   const headers = useSelector((state: RootState) => state.headers);
   const variables = useSelector(
     (state: { variables: { value: string } }) => state.variables.value
   );
   const dispatch = useDispatch();
+
+  const handleFormatCode = () => {
+    if (!query) {
+      toast('No query to format!');
+      return;
+    }
+
+    formatQuery(query)
+      .then((formattedQuery) => {
+        setQuery(formattedQuery);
+      })
+      .catch((error) => {
+        toast('Formatting failed, please try again!', {
+          description: `${error.message}`,
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+      });
+  };
+  const padBase64Str = (str: string) => {
+    while (str.length % 4 !== 0) {
+      str += '=';
+    }
+    return str;
+  };
+
+  useEffect(() => {
+    const encodedUrl = window.location.pathname.split('/');
+
+    if (encodedUrl.length >= 4) {
+      const endpointUrlEncoded = encodedUrl[2];
+      const bodyEncoded = encodedUrl[3];
+
+      try {
+        const decodedEndpointUrl = decodeURIComponent(
+          atob(padBase64Str(endpointUrlEncoded))
+        );
+        const decodedBody = decodeURIComponent(atob(padBase64Str(bodyEncoded)));
+        const bodyParsed = JSON.parse(decodedBody.replace(/\\n/g, ''));
+        setUrl(decodedEndpointUrl);
+        formatQuery(bodyParsed.query).then((formattedQuery) => {
+          setQuery(formattedQuery);
+        });
+        if (Object.keys(bodyParsed.variables).length > 0) {
+          dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
+        }
+        const queryParams = new URLSearchParams(window.location.search);
+        const headerEntries = Array.from(queryParams.entries());
+
+        const headersToDispatch = headerEntries.map(([key, value]) => ({
+          key: key.trim(),
+          value: value.trim(),
+        }));
+
+        if (headersToDispatch.length > 0) {
+          dispatch(setHeaders(headersToDispatch));
+        }
+      } catch (error) {
+        toast('Failed to decode URL parameters', {
+          description: `${error}`,
+          action: {
+            label: 'Close',
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
+      }
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     if (url) {
@@ -35,6 +118,7 @@ export default function GraphiQLClient() {
 
   const handleRequest = async () => {
     if (!url || !query) {
+      setStatusCode(`💁`);
       toast('Oooops! Something went wrong!', {
         description: 'Please provide URL and query',
         action: {
@@ -77,7 +161,7 @@ export default function GraphiQLClient() {
     };
 
     try {
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,8 +169,10 @@ export default function GraphiQLClient() {
         },
         body: JSON.stringify(requestBody),
       });
+      const statusText = statusTexts[res.status] || 'Unknown Status';
+      setStatusCode(`${res.status} ${statusText}`);
 
-      const data = await response.json();
+      const data = await res.json();
       setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
       toast('Oooops! Something went wrong!', {
@@ -105,6 +191,24 @@ export default function GraphiQLClient() {
     dispatch(setUrlSdl(urlSDL));
   };
 
+  const handleFocusOut = useCallback(() => {
+    const commonBody = JSON.stringify({
+      query,
+      variables: JSON.parse(variables || '{}'),
+    });
+
+    const generatedUrl = generateEncodedUrl(url, commonBody, headers);
+    const currentUrl = window.location.href;
+
+    if (generatedUrl && generatedUrl !== currentUrl) {
+      window.history.pushState({}, '', generatedUrl);
+    }
+  }, [url, query, headers, variables]);
+
+  useEffect(() => {
+    handleFocusOut();
+  }, [handleFocusOut]);
+
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
@@ -121,6 +225,7 @@ export default function GraphiQLClient() {
               onChange={(e) => {
                 setUrl(e.target.value.trim());
               }}
+              onBlur={handleFocusOut}
             />
             <button
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
@@ -148,27 +253,58 @@ export default function GraphiQLClient() {
               Send
             </button>
           </div>
+          <div className="flex items-center mb-2">
+            <div className="mr-2 font-semibold">Status:</div>
+            <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
+              {statusCode}
+            </div>
+          </div>
         </div>
         <div className="relative flex flex-row justify-center">
           <ResizablePanelGroup
             direction="horizontal"
-            className="max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
+            className="relative max-w-md rounded-lg border md:min-w-[100%] min-h-[60svh]"
           >
             <ResizablePanel defaultSize={50}>
-              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8]">
-                <HeadersPanel />
-                <textarea
-                  className="w-[100%] h-[100%] bg-[#c8c8c8] text-[#292929] font-light"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                ></textarea>
+              <div className="relative flex h-[100%] items-center justify-center bg-[#c8c8c8]">
+                <div className="absolute right-2 top-2 z-10">
+                  <button
+                    className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                    onClick={handleFormatCode}
+                  >
+                    <SparklesIcon className="h-15 w-15 text-[#fe6d12]" />
+                  </button>
+                </div>
+                <div className="flex-grow p-2 min-h-full overflow-auto">
+                  <HeadersPanel onUpdate={handleFocusOut} />
+                  <CodeMirror
+                    height="700px"
+                    width="100%"
+                    value={query}
+                    theme="dark"
+                    placeholder="# Write your query or mutation here"
+                    extensions={[javascript({ jsx: true })]}
+                    onChange={(value) => setQuery(value)}
+                    onBlur={handleFocusOut}
+                  />
+                </div>
               </div>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-              <div className="relative flex h-[100%] items-center justify-center p-6 bg-[#c8c8c8] z-20">
+              <div className="relative flex h-[100%] items-center justify-center bg-[#c8c8c8] z-20">
                 <SchemaPanel />
-                <span className="font-light">{responseData}</span>
+                <div className="flex-grow p-2 min-h-full overflow-auto">
+                  <CodeMirror
+                    height="700px"
+                    placeholder="Response"
+                    width="100%"
+                    value={responseData}
+                    theme="dark"
+                    extensions={[javascript({ jsx: true })]}
+                    readOnly
+                  />
+                </div>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
