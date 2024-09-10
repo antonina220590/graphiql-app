@@ -244,6 +244,7 @@ export default function GraphiQLClient() {
               onBlur={handleFocusOut}
             />
             <button
+              data-testid="sendUrl"
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
               onClick={() => {
@@ -265,6 +266,7 @@ export default function GraphiQLClient() {
               }}
             />
             <button
+              data-testid="sendSdl"
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
               onClick={handleSDLRequest}
@@ -297,6 +299,7 @@ export default function GraphiQLClient() {
                 <div className="flex-grow p-2 min-h-full overflow-auto">
                   <HeadersPanel onUpdate={handleFocusOut} />
                   <CodeMirror
+                    data-testid="queryPanel"
                     height="700px"
                     width="100%"
                     value={query}
