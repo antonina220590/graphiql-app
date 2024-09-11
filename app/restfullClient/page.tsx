@@ -192,7 +192,7 @@ export default function RESTfullClient() {
               typeof body === 'object' ? JSON.stringify(body, null, 2) : body
             }
             options={{
-              mode: 'application/json' || 'text/plain',
+              mode: 'application/json',
               theme: 'material',
               lineNumbers: true,
             }}
