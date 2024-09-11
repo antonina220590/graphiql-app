@@ -9,6 +9,7 @@ import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
 import generateEncodedUrl from './helpers/urlHelper';
 import useUrlState from './helpers/useUrlState';
+import HistoryBtn from '../components/historyButton/historyButton';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -167,9 +168,12 @@ export default function RESTfullClient() {
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-xxl font-bold mb-4 text-center w-full">
-          REST Client
-        </h1>
+        <div className="flex flex-row mb-[20px]">
+          <HistoryBtn />
+          <h1 className="text-xxl font-bold mb-4 text-center w-full">
+            REST Client
+          </h1>
+        </div>
         <div className="flex space-x-4 mb-4">
           <SelectMethod method={method} setMethod={setMethod} />
           <input

@@ -21,6 +21,7 @@ import formatQuery from './helpers/prettifier';
 import { setVariables } from '../slices/variablesSlice';
 import generateEncodedUrl from './helpers/urlHelper';
 import { setHeaders } from '../slices/headersSlice';
+import HistoryBtn from '../components/historyButton/historyButton';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -228,9 +229,12 @@ export default function GraphiQLClient() {
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-xxl font-bold mb-4 text-center w-full">
-          GraphiQL Client
-        </h1>
+        <div className="flex flex-row mb-[20px]">
+          <HistoryBtn />
+          <h1 className="text-xxl font-bold mb-4 text-center w-full">
+            GraphiQL Client
+          </h1>
+        </div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row">
             <input
