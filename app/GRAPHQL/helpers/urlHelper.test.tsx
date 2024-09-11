@@ -21,7 +21,7 @@ describe('generateEncodedUrl', () => {
       .map((header) => `${header.key.trim()}=${header.value.trim()}`)
       .join('&');
 
-    const expectedUrl = `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}${headerParams ? `?${headerParams}` : ''}`;
+    const expectedUrl = `${window.location.origin}/GRAPHQL/${endpointUrlEncoded}/${bodyEncoded}${headerParams ? `?${headerParams}` : ''}`;
 
     expect(result).toEqual(expectedUrl);
   });
@@ -42,7 +42,7 @@ describe('generateEncodedUrl', () => {
     const bodyEncoded = btoa(encodeURIComponent(commonBody.trim()));
     const headerParams = `${headers[0].key.trim()}=${headers[0].value.trim()}`;
 
-    const expectedUrl = `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}?${headerParams}`;
+    const expectedUrl = `${window.location.origin}/GRAPHQL/${endpointUrlEncoded}/${bodyEncoded}?${headerParams}`;
 
     expect(result).toEqual(expectedUrl);
   });
@@ -62,7 +62,7 @@ describe('generateEncodedUrl', () => {
     const bodyEncoded = btoa(encodeURIComponent(commonBody.trim()));
     const expectedHeaderParams = 'Valid-Header=header value';
 
-    const expectedUrl = `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}?${expectedHeaderParams}`;
+    const expectedUrl = `${window.location.origin}/GRAPHQL/${endpointUrlEncoded}/${bodyEncoded}?${expectedHeaderParams}`;
 
     expect(result).toEqual(expectedUrl);
   });
