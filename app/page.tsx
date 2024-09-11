@@ -1,31 +1,58 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
 
+import { auth } from '../firebaseConfig';
 import { useAuthStatus } from './hooks/useAuthStatus';
 
 export default function Page() {
-  const { isAuthenticated, checkingStatus } = useAuthStatus();
-  const router = useRouter();
+  const { isAuthenticated, checkingStatus, errorMessage } = useAuthStatus();
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUsername(user.email);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   if (checkingStatus) {
     return null;
   }
 
   return (
     <main className="bg-light flex flex-col items-center justify-center">
-      <h1>Welcome!</h1>
-      <div className="flex gap-4 mt-4 justify-center">
-        {isAuthenticated ? (
-          <button
-            onClick={() => router.push('/')}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease"
-          >
-            Main Page
-          </button>
-        ) : (
-          <>
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      {isAuthenticated ? (
+        <div className="text-center">
+          <h1>Welcome Back, {username}!</h1>
+          <div className="flex gap-4 mt-4 justify-center">
+            <Link href="/restfullClient">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease">
+                REST Client
+              </button>
+            </Link>
+            <Link href="/graphiQL">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease">
+                GraphiQL Client
+              </button>
+            </Link>
+            <Link href="/history">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease">
+                History
+              </button>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center">
+          <h1>Welcome!</h1>
+          <div className="flex gap-4 mt-4 justify-center">
             <Link href="/signIn">
               <button className="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500 transition duration-300 ease">
                 Sign in
@@ -36,9 +63,9 @@ export default function Page() {
                 Sign up
               </button>
             </Link>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

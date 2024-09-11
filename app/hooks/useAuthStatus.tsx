@@ -14,14 +14,15 @@ export function useAuthStatus() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCheckingStatus(true);
       if (user) {
         try {
           const tokenResult = await getIdTokenResult(user);
-          const isExpired =
-            tokenResult.expirationTime < new Date().toISOString();
+          const currentTime = new Date().getTime();
+          const expirationTime = new Date(tokenResult.expirationTime).getTime();
 
-          if (isExpired) {
-            auth.signOut();
+          if (expirationTime < currentTime) {
+            await auth.signOut();
             router.push('/');
           } else {
             setIsAuthenticated(true);
