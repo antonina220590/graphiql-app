@@ -19,63 +19,76 @@ const useUrlState = () => {
   useEffect(() => {
     const pathParts = window.location.pathname.split('/');
 
-    if (pathParts.length > PathPartIndex.METHOD) {
-      const method = pathParts[PathPartIndex.METHOD];
-      const encodedUrl = pathParts[PathPartIndex.URL];
-      const encodedParams = pathParts[PathPartIndex.PARAMS] || '';
-      const encodedHeaders = pathParts[PathPartIndex.HEADERS] || '';
-      const encodedBody = pathParts[PathPartIndex.BODY] || '';
+    const method = pathParts[PathPartIndex.METHOD] || 'GET';
+    const encodedUrl = pathParts[PathPartIndex.URL] || '';
+    const encodedParams = pathParts[PathPartIndex.PARAMS] || '';
+    const encodedHeaders = pathParts[PathPartIndex.HEADERS] || '';
+    const encodedBody = pathParts[PathPartIndex.BODY] || '';
 
-      try {
-        const decodedUrl = decodeURIComponent(atob(encodedUrl));
-        setUrl(decodedUrl);
+    try {
+      const decodedUrl = decodeURIComponent(atob(encodedUrl));
+      setUrl(decodedUrl);
 
-        if (encodedBody) {
-          const decodedBody = decodeURIComponent(atob(encodedBody));
-
-          try {
-            const parsedBody = JSON.parse(decodedBody);
-            setBody(parsedBody);
-          } catch {
-            setBody(decodedBody);
-          }
+      if (encodedBody) {
+        const decodedBody = decodeURIComponent(atob(encodedBody));
+        try {
+          const parsedBody = JSON.parse(decodedBody);
+          setBody(parsedBody);
+        } catch {
+          setBody(decodedBody);
         }
+      }
 
-        if (encodedParams) {
-          const decodedParamsStr = decodeURIComponent(atob(encodedParams));
-          const paramsArray = decodedParamsStr.split('&').map((paramStr) => {
+      if (encodedParams) {
+        const decodedParamsStr = decodeURIComponent(atob(encodedParams));
+        const paramsArray = decodedParamsStr
+          .split('&')
+          .map((paramStr) => {
             const [key, value] = paramStr.split('=');
             return {
-              keyParam: decodeURIComponent(key),
-              valueParam: decodeURIComponent(value),
+              keyParam: decodeURIComponent(key || ''),
+              valueParam: decodeURIComponent(value || ''),
             };
-          });
-          setParams(paramsArray);
+          })
+          .filter((param) => param.keyParam && param.valueParam);
+
+        if (paramsArray.length === 0) {
+          paramsArray.push({ keyParam: '', valueParam: '' });
         }
 
-        if (encodedHeaders) {
-          const decodedHeadersStr = decodeURIComponent(atob(encodedHeaders));
-          const headersArray = decodedHeadersStr.split('&').map((headerStr) => {
+        setParams(paramsArray);
+      }
+
+      if (encodedHeaders) {
+        const decodedHeadersStr = decodeURIComponent(atob(encodedHeaders));
+        const headersArray = decodedHeadersStr
+          .split('&')
+          .map((headerStr) => {
             const [key, value] = headerStr.split('=');
             return {
-              keyHeader: decodeURIComponent(key),
-              valueHeader: decodeURIComponent(value),
+              keyHeader: decodeURIComponent(key || ''),
+              valueHeader: decodeURIComponent(value || ''),
             };
-          });
-          setHeaders(headersArray);
+          })
+          .filter((header) => header.keyHeader && header.valueHeader);
+
+        if (headersArray.length === 0) {
+          headersArray.push({ keyHeader: '', valueHeader: '' });
         }
 
-        setMethod(method);
-      } catch (error) {
-        toast(MESSAGE.DECODING, { description: error.message });
+        setHeaders(headersArray);
       }
+
+      setMethod(method);
+    } catch (error) {
+      toast(MESSAGE.DECODING, { description: error.message });
     }
   }, []);
 
   useEffect(() => {
     const newParams = new URLSearchParams();
     params.forEach((param) => {
-      if (param.keyParam || param.valueParam) {
+      if (param.keyParam.trim() && param.valueParam.trim()) {
         newParams.set(param.keyParam, param.valueParam);
       }
     });
@@ -87,17 +100,33 @@ const useUrlState = () => {
     });
   }, [params]);
 
+  useEffect(() => {
+    if (params.length === 0) {
+      setParams([{ keyParam: '', valueParam: '' }]);
+    }
+  }, [params]);
+
+  useEffect(() => {
+    if (headers.length === 0) {
+      setHeaders([{ keyHeader: '', valueHeader: '' }]);
+    }
+  }, [headers]);
+
   const generateAndSetUrl = useCallback(() => {
     const commonBody = JSON.stringify(body);
-    const validHeaders = headers.map((header) => ({
-      key: header.keyHeader,
-      value: header.valueHeader,
-    }));
+    const validHeaders = headers
+      .filter((header) => header.keyHeader.trim() && header.valueHeader.trim())
+      .map((header) => ({
+        key: header.keyHeader,
+        value: header.valueHeader,
+      }));
 
-    const validParams = params.map((param) => ({
-      key: param.keyParam,
-      value: param.valueParam,
-    }));
+    const validParams = params
+      .filter((param) => param.keyParam.trim() && param.valueParam.trim())
+      .map((param) => ({
+        key: param.keyParam,
+        value: param.valueParam,
+      }));
 
     const generatedUrl = generateEncodedUrl(
       method,
@@ -112,10 +141,6 @@ const useUrlState = () => {
       window.history.pushState({}, '', generatedUrl);
     }
   }, [method, url, headers, body, params]);
-
-  useEffect(() => {
-    generateAndSetUrl();
-  }, [generateAndSetUrl]);
 
   return {
     url,
