@@ -38,6 +38,7 @@ export default function RESTfullClient() {
 
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
+  const [decodedURL, setDecodedURL] = useState<string>('');
 
   const handleSend = async () => {
     if (!url) {
@@ -142,7 +143,22 @@ export default function RESTfullClient() {
     if (generatedUrl && generatedUrl !== currentUrl) {
       window.history.pushState({}, '', generatedUrl);
     }
+    setDecodedURL(generatedUrl);
   }, [method, url, headers, body, params]);
+
+  const saveToLS = () => {
+    const savedRequests = JSON.parse(
+      localStorage.getItem('savedRequests') || '[]'
+    );
+
+    const requestDetails = {
+      url: decodedURL,
+      timestamp: new Date().toISOString(),
+    };
+
+    savedRequests.push(requestDetails);
+    localStorage.setItem('savedRequests', JSON.stringify(savedRequests));
+  };
 
   useEffect(() => {
     handleFocusOut();
@@ -166,7 +182,11 @@ export default function RESTfullClient() {
           <button
             className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
             type="submit"
-            onClick={handleSend}
+            onClick={() => {
+              handleSend();
+              saveToLS();
+              handleFocusOut();
+            }}
           >
             Send
           </button>
@@ -192,7 +212,7 @@ export default function RESTfullClient() {
               typeof body === 'object' ? JSON.stringify(body, null, 2) : body
             }
             options={{
-              mode: 'application/json' || 'text/plain',
+              mode: 'application/json',
               theme: 'material',
               lineNumbers: true,
             }}

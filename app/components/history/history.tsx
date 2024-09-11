@@ -46,6 +46,13 @@ function RequestHistory() {
     router.push(`${request.url}`);
   }
 
+  history.map((url) => {
+    const stringURL = url.url.toString();
+    if (stringURL.includes('restfullClient')) {
+      // console.log(stringURL);
+    }
+  });
+
   function extractGraphQLOperation(queryJsonString: string): string {
     try {
       const parsedQuery = JSON.parse(queryJsonString);
@@ -81,21 +88,31 @@ function RequestHistory() {
       <ul>
         {history.map((request, index) => {
           const urlSegment = request.url.split('/');
-          const decodedUrl = decodeBase64(urlSegment[4]);
+          const methodSegment = urlSegment.includes('restfullClient')
+            ? urlSegment[4]
+            : urlSegment[3];
+          const decodedUrl = decodeBase64(
+            urlSegment.includes('restfullClient')
+              ? urlSegment[5]
+              : urlSegment[4]
+          );
           const decodedQuery = decodeBase64(urlSegment[5]);
           const visibleQuery = decodeURIComponent(decodedQuery)
             .replace(/\\n/g, ' ')
             .trim();
           const visibleQueryResult = extractGraphQLOperation(visibleQuery);
+
           return (
-            <li
-              key={index}
-              onClick={() => handleSelectRequestFromGraphiHistory(request)}
-              title={request.url}
-              style={{ cursor: 'pointer' }}
-            >
-              {`${decodedUrl}/${visibleQueryResult}`}
-            </li>
+            <div key={index} className="flex gap-4">
+              <span>{methodSegment}</span>
+              <li
+                onClick={() => handleSelectRequestFromGraphiHistory(request)}
+                title={request.url}
+                style={{ cursor: 'pointer' }}
+              >
+                {`${decodedUrl}/${visibleQueryResult}`}
+              </li>
+            </div>
           );
         })}
       </ul>

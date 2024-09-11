@@ -19,7 +19,7 @@ const useUrlState = () => {
   useEffect(() => {
     const pathParts = window.location.pathname.split('/');
 
-    if (pathParts.length > PathPartIndex.BODY) {
+    if (pathParts.length > PathPartIndex.METHOD) {
       const method = pathParts[PathPartIndex.METHOD];
       const encodedUrl = pathParts[PathPartIndex.URL];
       const encodedParams = pathParts[PathPartIndex.PARAMS] || '';
