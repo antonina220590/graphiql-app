@@ -59,7 +59,6 @@ function RequestHistory() {
               const methodSegment = urlSegment.includes('restfullClient')
                 ? urlSegment[4]
                 : urlSegment[3];
-
               const decodedUrl = decodeBase64(
                 urlSegment.includes('restfullClient')
                   ? urlSegment[5]
