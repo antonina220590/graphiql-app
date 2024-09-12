@@ -67,7 +67,7 @@ describe('RequestHistory Component', () => {
     );
   });
 
-  it('renders the list of history requests', async () => {
+  it('renders the list of history requests', () => {
     render(<RequestHistory />);
     const getLink = screen.getByText('GET', { selector: 'span' });
     expect(getLink).toBeInTheDocument();
