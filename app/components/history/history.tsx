@@ -19,9 +19,23 @@ interface RequestDetails {
   timestamp: string;
 }
 
+function extractAndSanitize(base64Input: string): string {
+  const splitIndex = base64Input.indexOf('=');
+  const onlyBase64Part =
+    splitIndex !== -1 ? base64Input.slice(0, splitIndex + 1) : base64Input;
+  let sanitized = onlyBase64Part.replace(/-/g, '+').replace(/_/g, '/');
+  const padding = sanitized.length % 4;
+  if (padding > 0) {
+    sanitized += '='.repeat(4 - padding);
+  }
+
+  return sanitized;
+}
+
 function decodeBase64(str: string): string {
   try {
-    return decodeURIComponent(atob(str));
+    const sanitized = extractAndSanitize(str);
+    return decodeURIComponent(atob(sanitized));
   } catch (error) {
     toast('Failed to decode base64 string', {
       description: `${error}`,
@@ -61,8 +75,8 @@ function RequestHistory() {
       const parsedQuery = JSON.parse(queryJsonString);
       const queryString = parsedQuery.query;
       const cleanedQuery = queryString
-        .replace(/\\n/g, ' ')
-        .replace(/\s+/g, ' ')
+        .replace(/\\n/g, '')
+        .replace(/\s+/g, '')
         .trim();
       const match = cleanedQuery.match(/\{([^}]+)/);
       if (match && match[1]) {
@@ -104,19 +118,20 @@ function RequestHistory() {
               const methodSegment = urlSegment.includes('restfullClient')
                 ? urlSegment[4]
                 : urlSegment[3];
+
               const decodedUrl = decodeBase64(
                 urlSegment.includes('restfullClient')
                   ? urlSegment[5]
                   : urlSegment[4]
               );
+
               const decodedQuery = decodeBase64(urlSegment[5]);
               const visibleQuery = decodeURIComponent(decodedQuery)
                 .replace(/\\n/g, ' ')
                 .trim();
               const visibleQueryResult = decodedQuery.includes('{')
                 ? extractGraphQLOperation(visibleQuery)
-                : '';
-
+                : ' ';
               const displayMethod = () => {
                 switch (methodSegment) {
                   case 'GRAPHQL':
