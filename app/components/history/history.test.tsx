@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import RequestHistory from './history';
+import extractGraphQLOperation from './helpers/extractOperator';
 
 interface RequestDetails {
   url: string;
@@ -117,5 +118,10 @@ describe('RequestHistory Component', () => {
       name: /GraphiQL Client/i,
     });
     expect(graphqlClientButton).toBeInTheDocument();
+  });
+  it('should extract the correct operation from a valid GraphQL query', () => {
+    const query = '{"query": "{ getUser(id: 1) { id name } }"}';
+    const operation = extractGraphQLOperation(query);
+    expect(operation).toEqual('getUser');
   });
 });

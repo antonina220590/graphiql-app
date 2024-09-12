@@ -266,7 +266,7 @@ export default function GraphiQLClient() {
               className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
               value={urlSDL}
               onChange={(e) => {
-                setUrlSDL(e.target.value);
+                setUrlSDL(e.target.value.trim());
               }}
             />
             <button

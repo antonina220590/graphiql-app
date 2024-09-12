@@ -29,6 +29,8 @@ export default defineConfig({
         'tailwind.config.ts',
         'postcss.config.js',
         'postcss.config.mjs',
+        'src/components/ui/**',
+        'firebaseConfig.ts',
       ],
       thresholds: {
         functions: 80,
