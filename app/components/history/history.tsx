@@ -166,12 +166,12 @@ function RequestHistory() {
               <span>It`s empty here. Try those options:</span>
               <div className="flex gap-4 mt-4 justify-center">
                 <Link href="/restfullClient">
-                  <button className="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500 transition duration-300 ease">
+                  <button className="bg-orange-400 data-testid='restBtn' text-white px-4 py-2 rounded hover:bg-orange-500 transition duration-300 ease">
                     Rest Client
                   </button>
                 </Link>
                 <Link href="/GRAPHQL">
-                  <button className="bg-green-900 text-white px-4 py-2 rounded hover:bg-green-950 transition duration-300 ease">
+                  <button className="bg-green-900 data-testid='graphBtn' text-white px-4 py-2 rounded hover:bg-green-950 transition duration-300 ease">
                     GraphiQL Client
                   </button>
                 </Link>
