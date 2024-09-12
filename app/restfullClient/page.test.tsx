@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import RESTfullClient from './page';
@@ -72,5 +72,20 @@ describe('RESTfullClient', () => {
     const selectMethod = screen.getByRole('combobox') as HTMLSelectElement;
     fireEvent.change(selectMethod, { target: { value: 'POST' } });
     expect(selectMethod.value).toBe('POST');
+  });
+
+  it('should handle invalid URL and show error', async () => {
+    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('Network Error'));
+
+    render(<RESTfullClient />);
+
+    fireEvent.change(screen.getByPlaceholderText('Endpoint URL'), {
+      target: { value: 'https://api.example.com' },
+    });
+    fireEvent.click(screen.getByText('Send'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Error: Network Error')).toBeInTheDocument();
+    });
   });
 });
