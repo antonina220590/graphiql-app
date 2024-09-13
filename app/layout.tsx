@@ -5,6 +5,7 @@ import './globals.css';
 import Header from './components/header/Header';
 import Footer from './components/footer/footer';
 import ProviderWrapper from './providerWrapper';
+import ErrorWrapper from './errorWrapper';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -23,10 +24,12 @@ export default function RootLayout({
           <link rel="icon" href="/api.png" />
         </head>
         <body>
-          <Header />
-          {children}
-          <Toaster />
-          <Footer />
+          <ErrorWrapper>
+            <Header />
+            {children}
+            <Toaster />
+            <Footer />
+          </ErrorWrapper>
         </body>
       </html>
     </ProviderWrapper>
