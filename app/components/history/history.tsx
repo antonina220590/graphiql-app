@@ -73,7 +73,7 @@ function RequestHistory() {
 
               const visibleQueryResult = decodedQuery.includes('{')
                 ? extractGraphQLOperation(visibleQuery)
-                : 'query';
+                : '';
 
               const displayMethod = () => {
                 switch (methodSegment) {
