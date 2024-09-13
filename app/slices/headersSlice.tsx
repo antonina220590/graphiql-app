@@ -33,10 +33,18 @@ const headersSlice = createSlice({
     setHeaders(_state, action: PayloadAction<Header[]>) {
       return action.payload;
     },
+    clearHeaders() {
+      return initialState;
+    },
   },
 });
 
-export const { addHeader, updateHeader, deleteHeader, setHeaders } =
-  headersSlice.actions;
+export const {
+  addHeader,
+  updateHeader,
+  deleteHeader,
+  setHeaders,
+  clearHeaders,
+} = headersSlice.actions;
 
 export default headersSlice.reducer;

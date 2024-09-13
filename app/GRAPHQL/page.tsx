@@ -18,9 +18,9 @@ import HeadersPanel from '../components/headers/headers';
 import { clearUrlSdl, setUrlSdl } from '../slices/sdlSlice';
 import statusTexts from './helpers/status';
 import formatQuery from './helpers/prettifier';
-import { setVariables } from '../slices/variablesSlice';
+import { clearVariables, setVariables } from '../slices/variablesSlice';
 import generateEncodedUrl from './helpers/urlHelper';
-import { setHeaders } from '../slices/headersSlice';
+import { clearHeaders, setHeaders } from '../slices/headersSlice';
 import HistoryBtn from '../components/historyButton/historyButton';
 
 export default function GraphiQLClient() {
@@ -39,6 +39,8 @@ export default function GraphiQLClient() {
   useEffect(() => {
     return () => {
       dispatch(clearUrlSdl());
+      dispatch(clearHeaders());
+      dispatch(clearVariables());
     };
   }, [dispatch]);
 
@@ -148,9 +150,9 @@ export default function GraphiQLClient() {
     if (variables.trim()) {
       try {
         validVariables = JSON.parse(variables);
-      } catch (e) {
+      } catch (error) {
         toast('Invalid variables format. Please check your input.', {
-          description: 'Failed to fetch data',
+          description: `${error}`,
           action: {
             label: 'Close',
             onClick: () => {
@@ -184,6 +186,7 @@ export default function GraphiQLClient() {
       const data = await res.json();
       setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
+      setResponseData(error);
       toast('Oooops! Something went wrong!', {
         description: 'Failed to fetch data',
         action: {

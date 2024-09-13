@@ -66,7 +66,7 @@ function RequestHistory() {
                   : urlSegment[4]
               );
               const decodedQuery = decodeBase64(
-                urlSegment[5]?.includes('?')
+                urlSegment.includes('?')
                   ? urlSegment[5].split('?')[0]
                   : urlSegment[5]
               );
@@ -75,7 +75,7 @@ function RequestHistory() {
                 .trim();
               const visibleQueryResult = decodedQuery.includes('{')
                 ? extractGraphQLOperation(visibleQuery)
-                : '';
+                : 'query';
               const displayMethod = () => {
                 switch (methodSegment) {
                   case 'GRAPHQL':
