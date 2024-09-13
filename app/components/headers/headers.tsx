@@ -11,7 +11,7 @@ import {
   updateHeader,
   deleteHeader,
 } from '../../slices/headersSlice';
-import { setVariables } from '../../slices/variablesSlice';
+import { clearVariables, setVariables } from '../../slices/variablesSlice';
 
 interface Header {
   key: string;
@@ -87,6 +87,10 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
     [dispatch]
   );
 
+  const handleClearVariables = () => {
+    dispatch(clearVariables());
+  };
+
   return (
     <div>
       <div
@@ -157,7 +161,14 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
             </div>
           )}
           {activeTab === 'variables' && (
-            <div className="flex-grow min-h-full overflow-auto">
+            <div className="relative flex-grow min-h-full overflow-auto">
+              <button
+                onClick={() => handleClearVariables()}
+                className="absolute right-2 top-2 z-10 flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                aria-label="delete header"
+              >
+                <TrashIcon className="h-8 w-8 text-[#fe6d12]" />
+              </button>
               <CodeMirror
                 height="300px"
                 width="100%"

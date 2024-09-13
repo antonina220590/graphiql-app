@@ -9,6 +9,7 @@ import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
 import generateEncodedUrl from './helpers/urlHelper';
 import useUrlState from './helpers/useUrlState';
+import HistoryBtn from '../components/historyButton/historyButton';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -38,6 +39,17 @@ export default function RESTfullClient() {
 
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
+  const [editorMode, setEditorMode] = useState('application/json');
+  const [decodedURL, setDecodedURL] = useState<string>('');
+
+  useEffect(() => {
+    try {
+      JSON.parse(body);
+      setEditorMode('application/json');
+    } catch (e) {
+      setEditorMode('text/plain');
+    }
+  }, [body]);
 
   const handleSend = async () => {
     if (!url) {
@@ -50,12 +62,20 @@ export default function RESTfullClient() {
     const validHeaders = headers.filter(
       (header) => header.keyHeader && header.valueHeader
     );
+
+    let requestBody;
+    if (typeof body === 'object') {
+      requestBody = JSON.stringify(body);
+    } else {
+      requestBody = body;
+    }
+
     const options = {
       method: method,
       headers: Object.fromEntries(
         validHeaders.map((header) => [header.keyHeader, header.valueHeader])
       ),
-      body: body ? JSON.stringify(body) : undefined,
+      body: requestBody ? requestBody : undefined,
     };
 
     try {
@@ -142,7 +162,22 @@ export default function RESTfullClient() {
     if (generatedUrl && generatedUrl !== currentUrl) {
       window.history.pushState({}, '', generatedUrl);
     }
+    setDecodedURL(generatedUrl);
   }, [method, url, headers, body, params]);
+
+  const saveToLS = () => {
+    const savedRequests = JSON.parse(
+      localStorage.getItem('savedRequests') || '[]'
+    );
+
+    const requestDetails = {
+      url: decodedURL,
+      timestamp: new Date().toISOString(),
+    };
+
+    savedRequests.push(requestDetails);
+    localStorage.setItem('savedRequests', JSON.stringify(savedRequests));
+  };
 
   useEffect(() => {
     handleFocusOut();
@@ -151,9 +186,12 @@ export default function RESTfullClient() {
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-xxl font-bold mb-4 text-center w-full">
-          REST Client
-        </h1>
+        <div className="flex flex-row mb-[20px]">
+          <HistoryBtn />
+          <h1 className="text-xxl font-bold mb-4 text-center w-full">
+            REST Client
+          </h1>
+        </div>
         <div className="flex space-x-4 mb-4">
           <SelectMethod method={method} setMethod={setMethod} />
           <input
@@ -166,7 +204,11 @@ export default function RESTfullClient() {
           <button
             className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
             type="submit"
-            onClick={handleSend}
+            onClick={() => {
+              handleSend();
+              saveToLS();
+              handleFocusOut();
+            }}
           >
             Send
           </button>
@@ -192,7 +234,7 @@ export default function RESTfullClient() {
               typeof body === 'object' ? JSON.stringify(body, null, 2) : body
             }
             options={{
-              mode: 'application/json',
+              mode: editorMode,
               theme: 'material',
               lineNumbers: true,
             }}
