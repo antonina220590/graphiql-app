@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 
-import { auth } from '../../../../firebaseConfig';
-import { useAuthStatus } from '../../../hooks/useAuthStatus';
+import { auth } from '../../../firebaseConfig';
+import { useAuthStatus } from '../../hooks/useAuthStatus';
 
 export default function SignOutButton() {
   const { isAuthenticated } = useAuthStatus();
