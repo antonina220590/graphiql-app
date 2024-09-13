@@ -82,14 +82,27 @@ export default function GraphiQLClient() {
 
       try {
         const decodedEndpointUrl = decodeURIComponent(
-          atob(padBase64Str(endpointUrlEncoded))
+          atob(padBase64Str(endpointUrlEncoded) || '')
         );
-        const decodedBody = decodeURIComponent(atob(padBase64Str(bodyEncoded)));
+        const decodedBody = decodeURIComponent(
+          atob(padBase64Str(bodyEncoded)) || ''
+        );
         const bodyParsed = JSON.parse(decodedBody.replace(/\\n/g, ''));
-        setUrl(decodedEndpointUrl);
-        formatQuery(bodyParsed.query).then((formattedQuery) => {
-          setQuery(formattedQuery);
-        });
+
+        // setUrl(decodedEndpointUrl);
+        // formatQuery(bodyParsed.query).then((formattedQuery) => {
+        //   setQuery(formattedQuery);
+        // });
+
+        if (typeof decodedEndpointUrl === 'string') {
+          setUrl(decodedEndpointUrl);
+        }
+
+        if (typeof bodyParsed.query === 'string') {
+          formatQuery(bodyParsed.query).then((formattedQuery) => {
+            setQuery(formattedQuery);
+          });
+        }
 
         if (Object.keys(bodyParsed.variables).length > 0) {
           dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
@@ -130,6 +143,7 @@ export default function GraphiQLClient() {
   const handleRequest = async () => {
     if (!url || !query) {
       setStatusCode(`💁`);
+      setResponseData('Please provide correct URL and query');
       toast('Oooops! Something went wrong!', {
         description: 'Please provide URL and query',
         action: {
@@ -141,6 +155,7 @@ export default function GraphiQLClient() {
       });
       return;
     }
+
     const validHeaders = headers.filter((header) => header.key && header.value);
     const headersObject = Object.fromEntries(
       validHeaders.map((header) => [header.key.trim(), header.value.trim()])
@@ -186,7 +201,7 @@ export default function GraphiQLClient() {
       const data = await res.json();
       setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
-      setResponseData(error);
+      setResponseData(String(error));
       toast('Oooops! Something went wrong!', {
         description: 'Failed to fetch data',
         action: {
@@ -319,7 +334,9 @@ export default function GraphiQLClient() {
                     theme="dark"
                     placeholder="# Write your query or mutation here"
                     extensions={[javascript({ jsx: true })]}
-                    onChange={(value) => setQuery(value)}
+                    onChange={(value) => {
+                      setQuery(value);
+                    }}
                     onBlur={handleFocusOut}
                   />
                 </div>

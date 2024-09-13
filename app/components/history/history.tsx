@@ -56,26 +56,33 @@ function RequestHistory() {
             </h3>
             {history.map((request, index) => {
               const urlSegment = request.url.split('/');
-              const methodSegment = urlSegment.includes('restfullClient')
-                ? urlSegment[4]
-                : urlSegment[3];
+              const methodSegment = urlSegment
+                ? urlSegment.includes('restfullClient')
+                  ? urlSegment[4]
+                  : urlSegment[3]
+                : '';
 
-              const decodedUrl = decodeBase64(
-                urlSegment.includes('restfullClient')
-                  ? urlSegment[5]
-                  : urlSegment[4]
-              );
+              const decodedUrl = urlSegment
+                ? decodeBase64(
+                    urlSegment.includes('restfullClient')
+                      ? urlSegment[5]
+                      : urlSegment[4]
+                  )
+                : '';
+
               const decodedQuery = decodeBase64(
                 urlSegment.includes('?')
                   ? urlSegment[5].split('?')[0]
                   : urlSegment[5]
               );
+
               const visibleQuery = decodeURIComponent(decodedQuery)
                 .replace(/\\n/g, ' ')
                 .trim();
               const visibleQueryResult = decodedQuery.includes('{')
                 ? extractGraphQLOperation(visibleQuery)
                 : 'query';
+
               const displayMethod = () => {
                 switch (methodSegment) {
                   case 'GRAPHQL':
