@@ -112,7 +112,7 @@ export default function SchemaPanel() {
       <div
         ref={panelRef}
         data-testid="schema-panel"
-        className={`absolute right-0 top-0 min-h-[70svh] bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`absolute right-0 top-0 min-h-[60svh] bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ width: `${panelWidth}px` }}
@@ -120,7 +120,7 @@ export default function SchemaPanel() {
         <div
           className="p-4 min-h-[60svh] bg-gray-100 text-xs"
           style={{
-            height: 'calc(90svh - 100px)',
+            height: 'calc(60svh - 80px)',
             overflowY: 'auto',
           }}
         >
@@ -133,7 +133,7 @@ export default function SchemaPanel() {
           {error ? (
             <p className="text-red-500">{error}</p>
           ) : (
-            <pre className=" h-full">{schemaSDL}</pre>
+            <pre className="h-[20%]">{schemaSDL}</pre>
           )}
         </div>
         <button

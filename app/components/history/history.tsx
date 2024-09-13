@@ -103,7 +103,9 @@ function RequestHistory() {
                   key={index}
                   className="flex gap-2 rounded-md border-sky-600 border-[1px] p-2 bg-white mx-10 mb-5"
                 >
-                  <span className="w-[120px]">{displayMethod()}</span>
+                  <span className="flex justify-center w-[100px]">
+                    {displayMethod()}
+                  </span>
                   <li
                     className="text-blue-500 hover:underline"
                     onClick={() =>

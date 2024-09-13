@@ -15,7 +15,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
-import { setUrlSdl } from '../slices/sdlSlice';
+import { clearUrlSdl, setUrlSdl } from '../slices/sdlSlice';
 import statusTexts from './helpers/status';
 import formatQuery from './helpers/prettifier';
 import { setVariables } from '../slices/variablesSlice';
@@ -35,6 +35,12 @@ export default function GraphiQLClient() {
     (state: { variables: { value: string } }) => state.variables.value
   );
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearUrlSdl());
+    };
+  }, [dispatch]);
 
   const handleFormatCode = () => {
     if (!query) {
