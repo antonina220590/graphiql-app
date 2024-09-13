@@ -89,11 +89,6 @@ export default function GraphiQLClient() {
         );
         const bodyParsed = JSON.parse(decodedBody.replace(/\\n/g, ''));
 
-        // setUrl(decodedEndpointUrl);
-        // formatQuery(bodyParsed.query).then((formattedQuery) => {
-        //   setQuery(formattedQuery);
-        // });
-
         if (typeof decodedEndpointUrl === 'string') {
           setUrl(decodedEndpointUrl);
         }
