@@ -1,29 +1,35 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 
 import {
   addHeader,
   updateHeader,
   deleteHeader,
 } from '../../slices/headersSlice';
-import { setVariables } from '../../slices/variablesSlice';
+import { clearVariables, setVariables } from '../../slices/variablesSlice';
 
 interface Header {
   key: string;
   value: string;
 }
 
-export default function HeadersPanel() {
+interface HeadersPanelProps {
+  onUpdate: () => void;
+}
+
+export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const isResizing = useRef<boolean>(false);
   const [activeTab, setActiveTab] = useState<'headers' | 'variables'>(
     'headers'
   );
+  const [isValidJson, setIsValidJson] = useState(true);
 
   const dispatch = useDispatch();
   const headers = useSelector((state: { headers: Header[] }) => state.headers);
@@ -37,34 +43,11 @@ export default function HeadersPanel() {
   };
 
   const openPanel = () => {
-    setIsOpen(true);
-  };
-
-  const handleMouseMove = useCallback((event: MouseEvent) => {
-    if (isResizing.current && panelRef.current) {
-      const newHeight = window.innerHeight - event.clientY;
-      setPanelHeight(newHeight > 150 ? newHeight : 150);
+    if (!isOpen) {
+      setIsOpen(true);
+      setPanelHeight(300);
     }
-  }, []);
-
-  const startResize = () => {
-    isResizing.current = true;
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', stopResize);
   };
-
-  const stopResize = useCallback(() => {
-    isResizing.current = false;
-    window.removeEventListener('mousemove', handleMouseMove);
-    window.removeEventListener('mouseup', stopResize);
-  }, [handleMouseMove]);
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', stopResize);
-    };
-  }, [handleMouseMove, stopResize]);
 
   const addHTTPHeader = () => {
     dispatch(addHeader());
@@ -80,20 +63,40 @@ export default function HeadersPanel() {
 
   const removeHeader = (index: number) => {
     dispatch(deleteHeader(index));
+    onUpdate();
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = event.target.value;
-    setVariables(newValue);
-    dispatch(setVariables(newValue));
+  const validateJson = (input: string) => {
+    try {
+      JSON.parse(input);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleChange = useCallback(
+    (value: string) => {
+      if (validateJson(value)) {
+        dispatch(setVariables(value));
+        setIsValidJson(true);
+      } else {
+        setIsValidJson(false);
+      }
+    },
+    [dispatch]
+  );
+
+  const handleClearVariables = () => {
+    dispatch(clearVariables());
   };
 
   return (
-    <div className="z-10">
+    <div>
       <div
         ref={panelRef}
         data-testid="panel"
-        className={`absolute left-0 bottom-0 w-full bg-[#c8c8c8] shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`absolute z-10 left-0 bottom-0 w-full bg-[#c8c8c8] shadow-lg transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ height: `${panelHeight}px` }}
@@ -101,12 +104,13 @@ export default function HeadersPanel() {
         <div className="relative p-4 bg-gray-100 h-full resize-none overflow-y-scroll">
           <div
             className="absolute right-0 top-0 h-2 w-[100%] cursor-ns-resize bg-gray-300"
-            onMouseDown={startResize}
+            data-testid="resize-handle"
           />
           {activeTab === 'headers' && (
             <div className="mb-4">
               <h2 className="font-semibold">Headers:</h2>
-              <div className="grid grid-cols-3 gap-0 mb-0">
+              <div className="grid grid-cols-[4rem_1fr_1fr_4rem] gap-0 mb-0">
+                <div></div>
                 <label className="font-semibold border border-gray-400 p-2">
                   Key
                 </label>
@@ -115,7 +119,13 @@ export default function HeadersPanel() {
                 </label>
               </div>
               {headers.map((header, index) => (
-                <div key={index} className="grid grid-cols-3 gap-0 mb-0">
+                <div key={index} className="grid grid-cols-[4rem_1fr_1fr_4rem]">
+                  <button
+                    className="text-[#fe6d12] border hover:border-[#292929] transition duration-300"
+                    onClick={onUpdate}
+                  >
+                    +
+                  </button>
                   <textarea
                     placeholder="Content-Type"
                     className="border border-gray-400 p-2 h-16 resize-none"
@@ -135,6 +145,7 @@ export default function HeadersPanel() {
                   <button
                     onClick={() => removeHeader(index)}
                     className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                    aria-label="delete header"
                   >
                     <TrashIcon className="h-8 w-8 text-[#fe6d12]" />
                   </button>
@@ -150,12 +161,29 @@ export default function HeadersPanel() {
             </div>
           )}
           {activeTab === 'variables' && (
-            <textarea
-              className="w-full h-full bg-white text-black"
-              value={variables}
-              onChange={handleChange}
-              placeholder='{"key": "value"}'
-            ></textarea>
+            <div className="relative flex-grow min-h-full overflow-auto">
+              <button
+                onClick={() => handleClearVariables()}
+                className="absolute right-2 top-2 z-10 flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
+                aria-label="delete header"
+              >
+                <TrashIcon className="h-8 w-8 text-[#fe6d12]" />
+              </button>
+              <CodeMirror
+                height="300px"
+                width="100%"
+                value={variables}
+                theme="dark"
+                extensions={[javascript({ jsx: true })]}
+                onChange={handleChange}
+                placeholder='{"key": "value"}'
+                style={{
+                  borderColor: isValidJson ? 'lightgray' : 'red',
+                  borderWidth: '5px',
+                  borderStyle: 'solid',
+                }}
+              />
+            </div>
           )}
         </div>
         <div className="absolute flex flex-row gap-2 left-1 top-[-40px] transform -translate-x-1/5">

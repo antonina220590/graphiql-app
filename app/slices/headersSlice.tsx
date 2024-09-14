@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Header {
+export interface Header {
   key: string;
   value: string;
 }
@@ -30,9 +30,21 @@ const headersSlice = createSlice({
     deleteHeader(state, action: PayloadAction<number>) {
       state.splice(action.payload, 1);
     },
+    setHeaders(_state, action: PayloadAction<Header[]>) {
+      return action.payload;
+    },
+    clearHeaders() {
+      return initialState;
+    },
   },
 });
 
-export const { addHeader, updateHeader, deleteHeader } = headersSlice.actions;
+export const {
+  addHeader,
+  updateHeader,
+  deleteHeader,
+  setHeaders,
+  clearHeaders,
+} = headersSlice.actions;
 
 export default headersSlice.reducer;

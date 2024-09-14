@@ -1,76 +1,101 @@
-//test url = `https://dummyjson.com/products/42`;
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
 
-import { Header, Param } from './types';
-import { MESSAGE } from './constants';
+import { MESSAGE, statusText } from './constants';
+import RestParams from '../components/rest-components/RestParams';
+import SelectMethod from '../components/rest-components/SelectMethod';
+import RestHeders from '../components/rest-components/RestHeaders';
+import generateEncodedUrl from './helpers/urlHelper';
+import useUrlState from './helpers/useUrlState';
+import HistoryBtn from '../components/historyButton/historyButton';
+const CodeMirror = dynamic(
+  async () => {
+    const { Controlled } = await import('react-codemirror2');
+    await import('codemirror/lib/codemirror.css');
+    await import('codemirror/theme/material.css');
+    await import('codemirror/mode/javascript/javascript');
+    return { default: Controlled };
+  },
+  {
+    ssr: false,
+  }
+);
 
 export default function RESTfullClient() {
-  const [url, setUrl] = useState('');
+  const {
+    url,
+    setUrl,
+    method,
+    setMethod,
+    headers,
+    setHeaders,
+    params,
+    setParams,
+    body,
+    setBody,
+  } = useUrlState();
+
   const [response, setResponse] = useState('');
   const [statusCode, setStatusCode] = useState('');
-  const [method, setMethod] = useState('GET');
-  const [headers, setHeaders] = useState<Header[]>([
-    { keyHeader: '', valueHeader: '' },
-  ]);
-  const [params, setParams] = useState<Param[]>([
-    { keyParam: '', valueParam: '' },
-  ]);
-  const [body, setBody] = useState({});
+  const [editorMode, setEditorMode] = useState('application/json');
+  const [decodedURL, setDecodedURL] = useState<string>('');
 
   useEffect(() => {
-    const newParams = new URLSearchParams();
-    params.forEach((param) => {
-      if (param.keyParam || param.valueParam) {
-        newParams.set(param.keyParam, param.valueParam);
-      }
-    });
-
-    const paramString = newParams.toString();
-
-    setUrl((prevUrl) => {
-      const baseUrl = prevUrl.split('?')[0];
-      return paramString ? `${baseUrl}?${paramString}` : baseUrl;
-    });
-  }, [params]);
+    try {
+      JSON.parse(body);
+      setEditorMode('application/json');
+    } catch (e) {
+      setEditorMode('text/plain');
+    }
+  }, [body]);
 
   const handleSend = async () => {
     if (!url) {
+      toast(MESSAGE.EMPTY);
       setResponse(MESSAGE.EMPTY);
       setStatusCode(`💁`);
       return;
     }
+
     const validHeaders = headers.filter(
       (header) => header.keyHeader && header.valueHeader
     );
+
+    let requestBody;
+    if (typeof body === 'object') {
+      requestBody = JSON.stringify(body);
+    } else {
+      requestBody = body;
+    }
+
     const options = {
       method: method,
       headers: Object.fromEntries(
         validHeaders.map((header) => [header.keyHeader, header.valueHeader])
       ),
-      body: method !== 'GET' ? JSON.stringify(body) : null,
+      body: requestBody ? requestBody : undefined,
     };
 
     try {
       const res = await fetch(url, options);
-      setStatusCode(`${res.status} ${res.statusText}`);
+      const statusMessage = statusText[res.status] || 'Unknown Status';
+      setStatusCode(`${res.status} ${statusMessage}`);
 
       if (!res.ok) {
-        if (res.status >= 400 && res.status < 500) {
-          setResponse(`Client Error: ${res.statusText}`);
-        } else if (res.status >= 500) {
-          setResponse(`Server Error: ${res.statusText}`);
+        let errorMessage = `${res.status} ${statusMessage}`;
+        const errorData = await res.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
         }
-        throw new Error(`${res.statusText}`);
+        toast(`Error: ${errorMessage}`);
       }
+
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      if (error instanceof Error) {
-        setResponse(`Error: ${error.message}`);
-      } else {
-        setResponse(`Error: ${MESSAGE.UNKNOWN}`);
-      }
+      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
     }
   };
 
@@ -92,29 +117,83 @@ export default function RESTfullClient() {
     setHeaders(newHeaders);
   };
 
-  const handleParamChange = (index: number, key: string, value: string) => {
+  const handleParamChange = (
+    index: number,
+    field: 'keyParam' | 'valueParam',
+    value: string
+  ) => {
     const newParams = [...params];
-    if (key === 'key') {
-      newParams[index].keyParam = value;
-    } else {
-      newParams[index].valueParam = value;
-    }
+    newParams[index][field] = value;
     setParams(newParams);
   };
+
+  const removeHeader = (index: number) => {
+    const newHeaders = headers.filter((_, i) => i !== index);
+    setHeaders(newHeaders);
+  };
+
+  const removeParam = (index: number) => {
+    const newParams = params.filter((_, i) => i !== index);
+    setParams(newParams);
+  };
+
+  const handleFocusOut = useCallback(() => {
+    const commonBody = JSON.stringify(body);
+
+    const validHeaders = headers.map((header) => ({
+      key: header.keyHeader,
+      value: header.valueHeader,
+    }));
+
+    const validParams = params.map((param) => ({
+      key: param.keyParam,
+      value: param.valueParam,
+    }));
+
+    const generatedUrl = generateEncodedUrl(
+      method,
+      url,
+      commonBody,
+      validHeaders,
+      validParams
+    );
+
+    const currentUrl = window.location.href;
+    if (generatedUrl && generatedUrl !== currentUrl) {
+      window.history.pushState({}, '', generatedUrl);
+    }
+    setDecodedURL(generatedUrl);
+  }, [method, url, headers, body, params]);
+
+  const saveToLS = () => {
+    const savedRequests = JSON.parse(
+      localStorage.getItem('savedRequests') || '[]'
+    );
+
+    const requestDetails = {
+      url: decodedURL,
+      timestamp: new Date().toISOString(),
+    };
+
+    savedRequests.push(requestDetails);
+    localStorage.setItem('savedRequests', JSON.stringify(savedRequests));
+  };
+
+  useEffect(() => {
+    handleFocusOut();
+  }, [handleFocusOut]);
 
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-xxl font-bold mb-4 text-center w-full">
-          REST Client
-        </h1>
+        <div className="flex flex-row mb-[20px]">
+          <HistoryBtn />
+          <h1 className="text-xxl font-bold mb-4 text-center w-full">
+            REST Client
+          </h1>
+        </div>
         <div className="flex space-x-4 mb-4">
-          <select onChange={(e) => setMethod(e.target.value)}>
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="DELETE">DELETE</option>
-          </select>
+          <SelectMethod method={method} setMethod={setMethod} />
           <input
             type="text"
             placeholder="Endpoint URL"
@@ -125,110 +204,68 @@ export default function RESTfullClient() {
           <button
             className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
             type="submit"
-            onClick={handleSend}
+            onClick={() => {
+              handleSend();
+              saveToLS();
+              handleFocusOut();
+            }}
           >
             Send
           </button>
         </div>
 
-        <div className="mb-4">
-          <h2 className="font-semibold">Params:</h2>
-          <div className="grid grid-cols-2 gap-0 mb-0">
-            <label className="font-semibold border border-gray-400 p-2">
-              Key
-            </label>
-            <label className="font-semibold border border-gray-400 p-2">
-              Value
-            </label>
-          </div>
-          {params.map((param, index) => (
-            <div key={index} className="grid grid-cols-2 gap-0 mb-0">
-              <textarea
-                placeholder="Param key"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={param.keyParam}
-                onChange={(e) =>
-                  handleParamChange(index, 'key', e.target.value)
-                }
-              ></textarea>
-              <textarea
-                placeholder="Param value"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={param.valueParam}
-                onChange={(e) =>
-                  handleParamChange(index, 'value', e.target.value)
-                }
-              ></textarea>
-            </div>
-          ))}
-          <button
-            className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
-            onClick={addParam}
-          >
-            Add Params
-          </button>
-        </div>
-
-        <div className="mb-4">
-          <h2 className="font-semibold">Headers:</h2>
-          <div className="grid grid-cols-2 gap-0 mb-0">
-            <label className="font-semibold border border-gray-400 p-2">
-              Key
-            </label>
-            <label className="font-semibold border border-gray-400 p-2">
-              Value
-            </label>
-          </div>
-          {headers.map((header, index) => (
-            <div key={index} className="grid grid-cols-2 gap-0 mb-0">
-              <textarea
-                placeholder="Content-Type"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={header.keyHeader}
-                onChange={(e) =>
-                  handleHeaderChange(index, 'keyHeader', e.target.value)
-                }
-              />
-              <textarea
-                placeholder="application/json"
-                className="border border-gray-400 p-2 h-16 resize-none"
-                value={header.valueHeader}
-                onChange={(e) =>
-                  handleHeaderChange(index, 'valueHeader', e.target.value)
-                }
-              />
-            </div>
-          ))}
-          <button
-            className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
-            onClick={addHeader}
-          >
-            Add Header
-          </button>
-        </div>
+        <RestParams
+          params={params}
+          removeParam={removeParam}
+          addParam={addParam}
+          handleParamChange={handleParamChange}
+        />
+        <RestHeders
+          headers={headers}
+          removeHeader={removeHeader}
+          addHeader={addHeader}
+          handleHeaderChange={handleHeaderChange}
+        />
 
         <div className="mb-4">
           <h2 className="font-semibold">Body:</h2>
-          <textarea
-            placeholder="JSON/Text Editor"
-            className="border-2 p-2 rounded w-full h-32 bg-dark text-white focus:border-yellow-500 focus:outline-none"
-            onChange={(e) => setBody(e.target.value)}
+          <CodeMirror
+            value={
+              typeof body === 'object' ? JSON.stringify(body, null, 2) : body
+            }
+            options={{
+              mode: editorMode,
+              theme: 'material',
+              lineNumbers: true,
+            }}
+            onBeforeChange={(editor, data, value) => {
+              setBody(value);
+            }}
+            className="border p-2 rounded bg-dark flex-1 text-white min-h-10"
           />
         </div>
       </div>
 
-      <div className="font-semibold">Response:</div>
+      <h2 className="font-semibold mb-3">Response:</h2>
       <div className="flex items-center mb-2">
-        <div className="mr-2">Status:</div>
+        <h2 className="mr-2">Status:</h2>
         <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
           {statusCode}
         </div>
       </div>
-      <div className="flex items-center">
-        <div className="mr-5">Body:</div>
-        <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
-          {response}
-        </div>
+      <div className="flex items-center mb-4">
+        <h2 className="mr-5">Body:</h2>
+        <CodeMirror
+          value={response}
+          options={{
+            mode: 'application/json',
+            theme: 'material',
+            lineNumbers: true,
+            readOnly: true,
+          }}
+          onBeforeChange={() => {}}
+          className="border p-2 rounded bg-dark flex-1 text-white min-h-10"
+        />
       </div>
     </main>
   );

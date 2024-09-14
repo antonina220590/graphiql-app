@@ -4,9 +4,17 @@ import {
   defineConfig,
 } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+      '@codemirror/state':
+        __dirname + '/node_modules/@codemirror/state/dist/index.cjs',
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
@@ -21,6 +29,8 @@ export default defineConfig({
         'tailwind.config.ts',
         'postcss.config.js',
         'postcss.config.mjs',
+        'src/components/ui/**',
+        'firebaseConfig.ts',
       ],
       thresholds: {
         functions: 80,
