@@ -6,6 +6,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 import { auth } from '../firebaseConfig';
 import { useAuthStatus } from './hooks/useAuthStatus';
+import SignInButton from './components/buttons/SignInButton';
+import SignUpButton from './components/buttons/SignUpButton';
 
 export default function Page() {
   const { isAuthenticated, checkingStatus, errorMessage } = useAuthStatus();
@@ -53,16 +55,8 @@ export default function Page() {
         <div className="text-center">
           <h1>Welcome!</h1>
           <div className="flex gap-4 mt-4 justify-center">
-            <Link href="/signIn">
-              <button className="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500 transition duration-300 ease">
-                Sign in
-              </button>
-            </Link>
-            <Link href="/signUp">
-              <button className="bg-green-900 text-white px-4 py-2 rounded hover:bg-green-950 transition duration-300 ease">
-                Sign up
-              </button>
-            </Link>
+            <SignInButton />
+            <SignUpButton />
           </div>
         </div>
       )}
