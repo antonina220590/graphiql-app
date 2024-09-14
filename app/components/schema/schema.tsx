@@ -133,7 +133,7 @@ export default function SchemaPanel() {
           {error ? (
             <p className="text-red-500">{error}</p>
           ) : (
-            <pre className=" h-full">{schemaSDL}</pre>
+            <pre className="h-[20%]">{schemaSDL}</pre>
           )}
         </div>
         <button

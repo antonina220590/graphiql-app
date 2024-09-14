@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface VariablesState {
+export interface VariablesState {
   value: string;
 }
 
@@ -15,8 +15,11 @@ const variablesSlice = createSlice({
     setVariables(state, action: PayloadAction<string>) {
       state.value = action.payload;
     },
+    clearVariables(state) {
+      state.value = '';
+    },
   },
 });
 
-export const { setVariables } = variablesSlice.actions;
+export const { setVariables, clearVariables } = variablesSlice.actions;
 export default variablesSlice.reducer;

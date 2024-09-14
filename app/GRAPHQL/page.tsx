@@ -15,12 +15,13 @@ import { javascript } from '@codemirror/lang-javascript';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
-import { setUrlSdl } from '../slices/sdlSlice';
+import { clearUrlSdl, setUrlSdl } from '../slices/sdlSlice';
 import statusTexts from './helpers/status';
 import formatQuery from './helpers/prettifier';
-import { setVariables } from '../slices/variablesSlice';
+import { clearVariables, setVariables } from '../slices/variablesSlice';
 import generateEncodedUrl from './helpers/urlHelper';
-import { setHeaders } from '../slices/headersSlice';
+import { clearHeaders, setHeaders } from '../slices/headersSlice';
+import HistoryBtn from '../components/historyButton/historyButton';
 
 export default function GraphiQLClient() {
   const [url, setUrl] = useState<string>('');
@@ -29,10 +30,19 @@ export default function GraphiQLClient() {
   const [query, setQuery] = useState<string>('');
   const [statusCode, setStatusCode] = useState('');
   const headers = useSelector((state: RootState) => state.headers);
+  const [decodedURL, setDecodedURL] = useState<string>('');
   const variables = useSelector(
     (state: { variables: { value: string } }) => state.variables.value
   );
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearUrlSdl());
+      dispatch(clearHeaders());
+      dispatch(clearVariables());
+    };
+  }, [dispatch]);
 
   const handleFormatCode = () => {
     if (!query) {
@@ -72,14 +82,23 @@ export default function GraphiQLClient() {
 
       try {
         const decodedEndpointUrl = decodeURIComponent(
-          atob(padBase64Str(endpointUrlEncoded))
+          atob(padBase64Str(endpointUrlEncoded) || '')
         );
-        const decodedBody = decodeURIComponent(atob(padBase64Str(bodyEncoded)));
+        const decodedBody = decodeURIComponent(
+          atob(padBase64Str(bodyEncoded)) || ''
+        );
         const bodyParsed = JSON.parse(decodedBody.replace(/\\n/g, ''));
-        setUrl(decodedEndpointUrl);
-        formatQuery(bodyParsed.query).then((formattedQuery) => {
-          setQuery(formattedQuery);
-        });
+
+        if (typeof decodedEndpointUrl === 'string') {
+          setUrl(decodedEndpointUrl);
+        }
+
+        if (typeof bodyParsed.query === 'string') {
+          formatQuery(bodyParsed.query).then((formattedQuery) => {
+            setQuery(formattedQuery);
+          });
+        }
+
         if (Object.keys(bodyParsed.variables).length > 0) {
           dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
         }
@@ -119,6 +138,7 @@ export default function GraphiQLClient() {
   const handleRequest = async () => {
     if (!url || !query) {
       setStatusCode(`💁`);
+      setResponseData('Please provide correct URL and query');
       toast('Oooops! Something went wrong!', {
         description: 'Please provide URL and query',
         action: {
@@ -130,6 +150,7 @@ export default function GraphiQLClient() {
       });
       return;
     }
+
     const validHeaders = headers.filter((header) => header.key && header.value);
     const headersObject = Object.fromEntries(
       validHeaders.map((header) => [header.key.trim(), header.value.trim()])
@@ -139,9 +160,9 @@ export default function GraphiQLClient() {
     if (variables.trim()) {
       try {
         validVariables = JSON.parse(variables);
-      } catch (e) {
+      } catch (error) {
         toast('Invalid variables format. Please check your input.', {
-          description: 'Failed to fetch data',
+          description: `${error}`,
           action: {
             label: 'Close',
             onClick: () => {
@@ -175,6 +196,7 @@ export default function GraphiQLClient() {
       const data = await res.json();
       setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
+      setResponseData(String(error));
       toast('Oooops! Something went wrong!', {
         description: 'Failed to fetch data',
         action: {
@@ -186,7 +208,6 @@ export default function GraphiQLClient() {
       });
     }
   };
-
   const handleSDLRequest = () => {
     dispatch(setUrlSdl(urlSDL));
   };
@@ -202,8 +223,23 @@ export default function GraphiQLClient() {
 
     if (generatedUrl && generatedUrl !== currentUrl) {
       window.history.pushState({}, '', generatedUrl);
+      setDecodedURL(generatedUrl);
     }
   }, [url, query, headers, variables]);
+
+  const saveToLS = () => {
+    const savedRequests = JSON.parse(
+      localStorage.getItem('savedRequests') || '[]'
+    );
+
+    const requestDetails = {
+      url: decodedURL,
+      timestamp: new Date().toISOString(),
+    };
+
+    savedRequests.push(requestDetails);
+    localStorage.setItem('savedRequests', JSON.stringify(savedRequests));
+  };
 
   useEffect(() => {
     handleFocusOut();
@@ -212,9 +248,12 @@ export default function GraphiQLClient() {
   return (
     <main className="flex-grow p-4 bg-light">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-xxl font-bold mb-4 text-center w-full">
-          GraphiQL Client
-        </h1>
+        <div className="flex flex-row mb-[20px]">
+          <HistoryBtn />
+          <h1 className="text-xxl font-bold mb-4 text-center w-full">
+            GraphiQL Client
+          </h1>
+        </div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row">
             <input
@@ -228,9 +267,13 @@ export default function GraphiQLClient() {
               onBlur={handleFocusOut}
             />
             <button
+              data-testid="sendUrl"
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
-              onClick={handleRequest}
+              onClick={() => {
+                handleRequest();
+                saveToLS();
+              }}
             >
               Send
             </button>
@@ -242,10 +285,11 @@ export default function GraphiQLClient() {
               className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
               value={urlSDL}
               onChange={(e) => {
-                setUrlSDL(e.target.value);
+                setUrlSDL(e.target.value.trim());
               }}
             />
             <button
+              data-testid="sendSdl"
               className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
               type="submit"
               onClick={handleSDLRequest}
@@ -278,13 +322,16 @@ export default function GraphiQLClient() {
                 <div className="flex-grow p-2 min-h-full overflow-auto">
                   <HeadersPanel onUpdate={handleFocusOut} />
                   <CodeMirror
+                    data-testid="queryPanel"
                     height="700px"
                     width="100%"
                     value={query}
                     theme="dark"
                     placeholder="# Write your query or mutation here"
                     extensions={[javascript({ jsx: true })]}
-                    onChange={(value) => setQuery(value)}
+                    onChange={(value) => {
+                      setQuery(value);
+                    }}
                     onBlur={handleFocusOut}
                   />
                 </div>

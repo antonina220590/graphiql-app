@@ -10,6 +10,7 @@ const statusTexts: Record<number, string> = {
   404: 'Not Found',
   500: 'Internal Server Error',
   503: 'Service Unavailable',
+  422: 'Unprocessable Entity',
 };
 
 export default statusTexts;

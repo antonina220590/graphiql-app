@@ -16,7 +16,7 @@ const generateEncodedUrl = (
     .map((header) => `${header.key.trim()}=${header.value.trim()}`)
     .join('&');
 
-  return `${window.location.origin}/graphiQL/${endpointUrlEncoded}/${bodyEncoded}${headerParams ? `?${headerParams}` : ''}`;
+  return `${window.location.origin}/GRAPHQL/${endpointUrlEncoded}/${bodyEncoded}${headerParams ? `?${headerParams}` : ''}`;
 };
 
 export default generateEncodedUrl;
