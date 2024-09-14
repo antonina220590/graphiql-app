@@ -10,6 +10,7 @@ export function useAuthStatus() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasJustLoggedIn, setHasJustLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -41,5 +42,11 @@ export function useAuthStatus() {
     return () => unsubscribe();
   }, [router]);
 
-  return { isAuthenticated, checkingStatus, errorMessage };
+  return {
+    isAuthenticated,
+    checkingStatus,
+    errorMessage,
+    setHasJustLoggedIn,
+    hasJustLoggedIn,
+  };
 }
