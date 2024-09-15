@@ -1,5 +1,6 @@
 const GraphQLIcon = () => (
   <svg
+    data-testid="graphql-icon"
     width="200px"
     height="200px"
     viewBox="-16 0 288 288"

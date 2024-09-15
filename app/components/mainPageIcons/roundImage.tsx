@@ -11,6 +11,7 @@ interface RoundImageProps {
 const RoundImage: React.FC<RoundImageProps> = ({ src, alt, width, height }) => {
   return (
     <Image
+      data-testid="round-image"
       src={src}
       alt={alt}
       width={width}

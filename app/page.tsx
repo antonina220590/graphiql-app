@@ -8,10 +8,10 @@ import { auth } from '../firebaseConfig';
 import { useAuthStatus } from './hooks/useAuthStatus';
 import SignInButton from './components/buttons/SignInButton';
 import SignUpButton from './components/buttons/SignUpButton';
-import PostmanIcon from './components/mainPage/postmanLogo';
-import HandShakeIcon from './components/mainPage/handshake';
-import GraphQLIcon from './components/mainPage/graphLogo';
-import RoundImage from './components/mainPage/roundImage';
+import PostmanIcon from './components/mainPageIcons/postmanLogo';
+import HandShakeIcon from './components/mainPageIcons/handshake';
+import GraphQLIcon from './components/mainPageIcons/graphLogo';
+import RoundImage from './components/mainPageIcons/roundImage';
 
 export default function Page() {
   const { isAuthenticated, checkingStatus, errorMessage } = useAuthStatus();

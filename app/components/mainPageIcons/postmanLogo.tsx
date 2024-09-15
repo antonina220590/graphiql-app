@@ -1,5 +1,6 @@
 const PostmanIcon = () => (
   <svg
+    data-testid="postman-icon"
     width="200px"
     height="200px"
     viewBox="0 0 256 256"
