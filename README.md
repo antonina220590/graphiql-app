@@ -97,7 +97,11 @@ Executes the test coverage.
 
 ## GraphiQL Requests Examples
 
+### Post
+
 #### Without variables
+
+##### Example 1
 
 ```
 ##### endpoint url:
@@ -119,17 +123,41 @@ Content-Type: application/json
 
 ```
 
+##### Example 2
+
+```
+##### endpoint url:
+https://graphql-pokeapi.graphcdn.app/
+
+##### query:
+
+query {
+  pokemons {
+    results {
+      name
+    }
+  }
+}
+
+##### headers (optional)
+
+Content-Type: application/json
+
+```
+
 #### With variables
 
 ##### Example 1
 
 ```
+
 ##### endpoint url:
+
 https://graphqlzero.almansi.me/api
 
 ##### query:
 
- query ($id: ID!) {
+query ($id: ID!) {
   album(id: $id) {
     title
     user {
@@ -142,7 +170,7 @@ https://graphqlzero.almansi.me/api
 ##### Variables
 
 {
-  "id": 3
+"id": 3
 }
 
 ##### headers (optional)
@@ -154,30 +182,51 @@ Content-Type: application/json
 ##### Example 2
 
 ```
+
 ##### endpoint url:
+
 https://swapi-graphql.eskerda.vercel.app/
 
 ##### query:
 
- query ($id: ID!) {
-  album(id: $id) {
-    title
-    user {
-      name
-      username
-    }
+query ($id: ID, $planetID: ID) {
+  planet(id: $id, planetID: $planetID) {
+    name
   }
 }
 
 ##### Variables
 
 {
-  "id": 1,
-  "planetID": 1
+"id": 1,
+"planetID": 1
 }
 
 ##### headers (optional)
 
 Content-Type: application/json
+
+```
+
+### Mutation
+
+```
+##### endpoint url:
+
+https://apollo-fullstack-tutorial.herokuapp.com/graphql
+
+##### query:
+
+mutation Login($email: String!) {
+  login(email: $email) {
+    token
+  }
+}
+
+##### variables:
+
+{
+  "email": "test@test.com"
+}
 
 ```
