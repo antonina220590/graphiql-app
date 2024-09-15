@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
+
 import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
@@ -26,6 +27,7 @@ const CodeMirror = dynamic(
 
 export default function RESTfullClient() {
   const { t } = useTranslation();
+
   const {
     url,
     setUrl,
@@ -191,7 +193,9 @@ export default function RESTfullClient() {
         <div className="flex flex-row mb-[20px]">
           <HistoryBtn />
           <h1 className="text-xxl font-bold mb-4 text-center w-full">
+
             {t('restfull.restClient')}
+
           </h1>
         </div>
         <div className="flex space-x-4 mb-4">
@@ -231,6 +235,7 @@ export default function RESTfullClient() {
 
         <div className="mb-4">
           <h2 className="font-semibold">{t('restfull.body')}</h2>
+
           <CodeMirror
             value={
               typeof body === 'object' ? JSON.stringify(body, null, 2) : body
@@ -251,6 +256,7 @@ export default function RESTfullClient() {
       <h2 className="font-semibold mb-3">{t('restfull.response')}</h2>
       <div className="flex items-center mb-2">
         <h2 className="mr-2">{t('restfull.status')}</h2>
+
         <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
           {statusCode}
         </div>

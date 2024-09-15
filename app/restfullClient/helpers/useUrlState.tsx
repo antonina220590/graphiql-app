@@ -5,6 +5,7 @@ import { Header, Param } from '../types';
 import generateEncodedUrl from '../helpers/urlHelper';
 import { MESSAGE } from '../constants';
 
+
 const useUrlState = () => {
   const [url, setUrl] = useState('');
   const [method, setMethod] = useState('GET');
@@ -25,9 +26,11 @@ const useUrlState = () => {
     const encodedUrl = pathParts[3] || '';
     const encodedParams = pathParts[4] || null;
 
+
     try {
       const decodedUrl = decodeURIComponent(atob(encodedUrl));
       setUrl(decodedUrl);
+
 
       if (encodedParams) {
         const decodedParamsStr = atob(encodedParams);
@@ -74,7 +77,9 @@ const useUrlState = () => {
 
       setMethod(method);
     } catch (error) {
+
       toast(MESSAGE.DECODING, { description: (error as Error).message });
+
     }
   }, []);
 

@@ -11,7 +11,6 @@ const generateEncodedUrl = (
 
   const endpointUrl = encodeURIComponent(url.trim());
   const encodedUrl = btoa(endpointUrl);
-
   const param = params
     .filter((param) => param.key && param.value)
     .map(

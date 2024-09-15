@@ -10,9 +10,6 @@ import { useAuthStatus } from '../../hooks/useAuthStatus';
 
 export default function SignOutButton() {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuthStatus();
-  const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter();
 
   const handleSignOut = async () => {
     try {

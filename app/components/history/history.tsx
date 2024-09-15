@@ -54,7 +54,9 @@ function RequestHistory() {
             }}
           >
             <h3 className="flex justify-center m-10 text-zinc-50 text-4xl">
+
               {t('history.requests')}
+
             </h3>
             {history.map((request, index) => {
               const urlSegment = request.url.split('/');
@@ -124,17 +126,19 @@ function RequestHistory() {
         ) : (
           <>
             <div className="min-h-[100%] flex flex-col items-center">
+
               <h3>{t('history.noRequests')}</h3>
               <span>{t('history.empty')}</span>
               <div className="flex gap-4 mt-4 justify-center">
                 <Link href="/restfullClient">
                   <button className="bg-orange-400 data-testid='restBtn' text-white px-4 py-2 rounded hover:bg-orange-500 transition duration-300 ease">
                     {t('history.rest')}
+
                   </button>
                 </Link>
                 <Link href="/GRAPHQL">
-                  <button className="bg-green-900 data-testid='graphBtn' text-white px-4 py-2 rounded hover:bg-green-950 transition duration-300 ease">
                     {t('history.graphiQL')}
+
                   </button>
                 </Link>
               </div>

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-
 import HistoryBtn from './historyButton';
 
 vi.mock('react-i18next', () => ({
