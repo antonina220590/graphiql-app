@@ -26,7 +26,7 @@ export default function RootLayout({
         <body>
           <ErrorWrapper>
             <Header />
-            {children}
+            <main>{children}</main>
             <Toaster />
             <Footer />
           </ErrorWrapper>

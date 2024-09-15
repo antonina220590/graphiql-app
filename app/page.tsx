@@ -11,6 +11,7 @@ import SignUpButton from './components/buttons/SignUpButton';
 import PostmanIcon from './components/mainPage/postmanLogo';
 import HandShakeIcon from './components/mainPage/handshake';
 import GraphQLIcon from './components/mainPage/graphLogo';
+import RoundImage from './components/mainPage/roundImage';
 
 export default function Page() {
   const { isAuthenticated, checkingStatus, errorMessage } = useAuthStatus();
@@ -86,8 +87,51 @@ export default function Page() {
           </div>
         )}
       </div>
-      <div className="">
-        <span>Our Team</span>
+      <div className="flex flex-col justify-center h-[600px] items-center">
+        <span className="text-5xl leading-normal font-bold bg-gradient-to-r from-red-600 to-orange-400 bg-clip-text text-transparent">
+          Our Team
+        </span>
+        <div className="flex flex-row gap-[50px] mt-24 w-[80vw]">
+          <div className="flex flex-col w-1/3 items-center justify-center gap-[20px]">
+            <RoundImage
+              src="/katya.png"
+              alt="Description of image"
+              width={150}
+              height={150}
+            />
+            <div className="flex flex-col items-center">
+              <span className="text-2xl">Ekaterina Kiryanova</span>
+              <span>Member</span>
+              <span>RESTfull client</span>
+            </div>
+          </div>
+          <div className="flex flex-col w-1/3 items-center justify-center gap-[20px]">
+            <RoundImage
+              src="/tonya.png"
+              alt="Description of image"
+              width={150}
+              height={150}
+            />
+            <div className="flex flex-col items-center">
+              <span>Antonina Tyurina</span>
+              <span>Team Leader</span>
+              <span>GraphiQL, History</span>
+            </div>
+          </div>
+          <div className="flex flex-col w-1/3 items-center gap-[20px]">
+            <RoundImage
+              src="/ina.png"
+              alt="Description of image"
+              width={150}
+              height={150}
+            />
+            <div className="flex flex-col items-center">
+              <span>Inna</span>
+              <span>Member</span>
+              <span>Sign In, Sign Up</span>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );
