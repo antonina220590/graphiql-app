@@ -12,7 +12,13 @@ const generateEncodedUrl = (
   const endpointUrl = encodeURIComponent(url.trim());
   const encodedUrl = btoa(endpointUrl);
 
-  const encodedBody = body ? btoa(encodeURIComponent(body)) : '';
+  const encodedBody = body
+    ? btoa(
+        encodeURIComponent(
+          typeof body === 'object' ? JSON.stringify(body) : body
+        )
+      )
+    : '';
 
   const param = params
     .filter((param) => param.key && param.value)
@@ -25,12 +31,8 @@ const generateEncodedUrl = (
 
   const header = headers
     .filter((header) => header.key && header.value)
-    .map(
-      (header) =>
-        `${encodeURIComponent(header.key.trim())}=${encodeURIComponent(header.value.trim())}`
-    )
+    .map((header) => `${header.key.trim()}=${header.value.trim()}`)
     .join('&');
-  const encodedHeaders = header ? btoa(header) : '';
 
   let fullUrl = `${window.location.origin}/restfullClient/${method}/${encodedUrl}`;
 
@@ -38,8 +40,8 @@ const generateEncodedUrl = (
     fullUrl += `/${encodedParams}`;
   }
 
-  if (encodedHeaders) {
-    fullUrl += `/${encodedHeaders}`;
+  if (header) {
+    fullUrl += `?${header}`;
   }
 
   if (encodedBody) {
@@ -48,4 +50,5 @@ const generateEncodedUrl = (
 
   return fullUrl;
 };
+
 export default generateEncodedUrl;

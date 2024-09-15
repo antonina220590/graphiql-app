@@ -12,7 +12,7 @@ const useUrlState = () => {
     { keyHeader: '', valueHeader: '' },
   ]);
   const [params, setParams] = useState<Param[]>([
-    { keyParam: '', valueParam: '' },
+    { keyParam: ' ', valueParam: ' ' },
   ]);
   const [body, setBody] = useState('');
 
@@ -52,15 +52,15 @@ const useUrlState = () => {
           })
           .filter((param) => param.keyParam && param.valueParam);
 
-        if (paramsArray.length === 0) {
-          paramsArray.push({ keyParam: '', valueParam: '' });
-        }
-
-        setParams(paramsArray);
+        setParams(
+          paramsArray.length ? paramsArray : [{ keyParam: '', valueParam: '' }]
+        );
+      } else {
+        setParams([{ keyParam: '', valueParam: '' }]);
       }
 
       if (encodedHeaders) {
-        const decodedHeadersStr = decodeURIComponent(atob(encodedHeaders));
+        const decodedHeadersStr = decodeURIComponent(encodedHeaders);
         const headersArray = decodedHeadersStr
           .split('&')
           .map((headerStr) => {
@@ -72,11 +72,13 @@ const useUrlState = () => {
           })
           .filter((header) => header.keyHeader && header.valueHeader);
 
-        if (headersArray.length === 0) {
-          headersArray.push({ keyHeader: '', valueHeader: '' });
-        }
-
-        setHeaders(headersArray);
+        setHeaders(
+          headersArray.length
+            ? headersArray
+            : [{ keyHeader: '', valueHeader: '' }]
+        );
+      } else {
+        setHeaders([{ keyHeader: '', valueHeader: '' }]);
       }
 
       setMethod(method);
@@ -138,7 +140,7 @@ const useUrlState = () => {
 
     const currentUrl = window.location.href;
     if (generatedUrl && generatedUrl !== currentUrl) {
-      window.history.pushState({}, '', generatedUrl);
+      window.history.replaceState({}, '', generatedUrl);
     }
   }, [method, url, headers, body, params]);
 
