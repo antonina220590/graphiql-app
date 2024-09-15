@@ -21,15 +21,7 @@ const generateEncodedUrl = (
         )}`
     )
     .join('&');
-  const encodedParams = param ? btoa(param) : '';
-
-  const encodedBody = body
-    ? btoa(
-        encodeURIComponent(
-          typeof body === 'object' ? JSON.stringify(body) : body
-        )
-      )
-    : '';
+  const encodedParams = param ? btoa(param) : null;
 
   const headersString = headers
     .filter((header) => header.key && header.value)
@@ -41,24 +33,29 @@ const generateEncodedUrl = (
     )
     .join('&');
 
+  const encodedBody = body
+    ? btoa(
+        encodeURIComponent(
+          typeof body === 'object' ? JSON.stringify(body) : body
+        )
+      )
+    : null;
+
   let fullUrl = `${window.location.origin}/restfullClient/${method}/${encodedUrl}`;
 
+  // Добавляем параметры после URL, если они есть
   if (encodedParams) {
     fullUrl += `/${encodedParams}`;
-  } else {
-    fullUrl += `/`;
   }
 
-  if (encodedBody) {
-    fullUrl += `/${encodedBody}`;
-  }
-
+  // Заголовки в query string
   if (headersString) {
     fullUrl += `/?${headersString}`;
   }
 
-  if (fullUrl.endsWith('/')) {
-    fullUrl = fullUrl.slice(0, -1);
+  // Тело запроса в hash
+  if (encodedBody) {
+    fullUrl += `#${encodedBody}`;
   }
 
   return fullUrl;

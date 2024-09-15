@@ -12,26 +12,25 @@ const useUrlState = () => {
     { keyHeader: '', valueHeader: '' },
   ]);
   const [params, setParams] = useState<Param[]>([
-    { keyParam: ' ', valueParam: ' ' },
+    { keyParam: '', valueParam: '' },
   ]);
   const [body, setBody] = useState('');
 
   useEffect(() => {
     const pathParts = window.location.pathname.split('/');
+    const searchParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
 
     const method = pathParts[2] || 'GET';
     const encodedUrl = pathParts[3] || '';
-    const encodedParams = pathParts[4] || '';
-    const encodedBody = pathParts[5] || '';
-
-    const searchParams = new URLSearchParams(window.location.search);
+    const encodedParams = pathParts[4] || null;
 
     try {
       const decodedUrl = decodeURIComponent(atob(encodedUrl));
       setUrl(decodedUrl);
 
       if (encodedParams) {
-        const decodedParamsStr = decodeURIComponent(atob(encodedParams));
+        const decodedParamsStr = atob(encodedParams);
         const paramsArray = decodedParamsStr
           .split('&')
           .map((paramStr) => {
@@ -50,16 +49,6 @@ const useUrlState = () => {
         setParams([{ keyParam: '', valueParam: '' }]);
       }
 
-      if (encodedBody) {
-        const decodedBody = decodeURIComponent(atob(encodedBody));
-        try {
-          const parsedBody = JSON.parse(decodedBody);
-          setBody(parsedBody);
-        } catch {
-          setBody(decodedBody);
-        }
-      }
-
       const headersArray = Array.from(searchParams.entries()).map(
         ([key, value]) => ({
           keyHeader: decodeURIComponent(key),
@@ -72,6 +61,17 @@ const useUrlState = () => {
           ? headersArray
           : [{ keyHeader: '', valueHeader: '' }]
       );
+
+      if (hash.startsWith('#')) {
+        const encodedBody = hash.replace('#', '');
+        const decodedBody = decodeURIComponent(atob(encodedBody));
+        try {
+          const parsedBody = JSON.parse(decodedBody);
+          setBody(parsedBody);
+        } catch {
+          setBody(decodedBody);
+        }
+      }
 
       setMethod(method);
     } catch (error) {
