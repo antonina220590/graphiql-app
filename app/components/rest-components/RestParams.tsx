@@ -9,7 +9,7 @@ const RestParams: React.FC<RestParamsProps> = ({
   addParam,
 }) => (
   <div className="mb-4">
-    <h2 className="font-semibold">Params:</h2>
+    <h2 className="font-semibold">Variables:</h2>
     <div className="grid grid-cols-[1fr_1fr_4rem] gap-0 mb-0">
       <label className="font-semibold border border-gray-400 p-2">Key</label>
       <label className="font-semibold border border-gray-400 p-2">Value</label>
@@ -17,13 +17,13 @@ const RestParams: React.FC<RestParamsProps> = ({
     {params.map((param, index) => (
       <div key={index} className="grid grid-cols-[1fr_1fr_4rem] gap-0 mb-0">
         <textarea
-          placeholder="Param key"
+          placeholder="Variable key"
           className="border border-gray-400 p-2 h-16 resize-none"
           value={param.keyParam}
           onChange={(e) => handleParamChange(index, 'keyParam', e.target.value)}
         ></textarea>
         <textarea
-          placeholder="Param value"
+          placeholder="Variable value"
           className="border border-gray-400 p-2 h-16 resize-none"
           value={param.valueParam}
           onChange={(e) =>
