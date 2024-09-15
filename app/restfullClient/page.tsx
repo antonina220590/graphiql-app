@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
@@ -10,7 +11,6 @@ import RestHeders from '../components/rest-components/RestHeaders';
 import generateEncodedUrl from './helpers/urlHelper';
 import useUrlState from './helpers/useUrlState';
 import HistoryBtn from '../components/historyButton/historyButton';
-import ToggleButton from '../components/rest-components/ToggleButton';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -25,6 +25,7 @@ const CodeMirror = dynamic(
 );
 
 export default function RESTfullClient() {
+  const { t } = useTranslation();
   const {
     url,
     setUrl,
@@ -42,7 +43,6 @@ export default function RESTfullClient() {
   const [statusCode, setStatusCode] = useState('');
   const [editorMode, setEditorMode] = useState('application/json');
   const [decodedURL, setDecodedURL] = useState<string>('');
-  const [showVariables, setShowVariables] = useState(true);
 
   useEffect(() => {
     try {
@@ -87,26 +87,17 @@ export default function RESTfullClient() {
 
       if (!res.ok) {
         let errorMessage = `${res.status} ${statusMessage}`;
-        try {
-          const errorData = await res.json();
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          }
-        } catch (error) {
-          toast('Failed to parse JSON error response');
+        const errorData = await res.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
         }
-        toast.error(`Error: ${errorMessage}`);
-      } else {
-        const json = await res.json();
-        setResponse(JSON.stringify(json, null, 2));
+        toast(`Error: ${errorMessage}`);
       }
+
+      const json = await res.json();
+      setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      setResponse(
-        `Network Error: ${(error as Error).message || MESSAGE.UNKNOWN}`
-      );
-      toast.error(
-        `Network Error: ${(error as Error).message || MESSAGE.UNKNOWN}`
-      );
+      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
     }
   };
 
@@ -200,7 +191,7 @@ export default function RESTfullClient() {
         <div className="flex flex-row mb-[20px]">
           <HistoryBtn />
           <h1 className="text-xxl font-bold mb-4 text-center w-full">
-            REST Client
+            {t('restfull.restClient')}
           </h1>
         </div>
         <div className="flex space-x-4 mb-4">
@@ -221,24 +212,16 @@ export default function RESTfullClient() {
               handleFocusOut();
             }}
           >
-            Send
+            {t('restfull.send')}
           </button>
         </div>
 
-        <ToggleButton
-          isOpen={showVariables}
-          onClick={() => setShowVariables(!showVariables)}
-          openText="Hide Variables"
-          closedText="Show Variables"
+        <RestParams
+          params={params}
+          removeParam={removeParam}
+          addParam={addParam}
+          handleParamChange={handleParamChange}
         />
-        {showVariables && (
-          <RestParams
-            params={params}
-            removeParam={removeParam}
-            addParam={addParam}
-            handleParamChange={handleParamChange}
-          />
-        )}
         <RestHeders
           headers={headers}
           removeHeader={removeHeader}
@@ -247,7 +230,7 @@ export default function RESTfullClient() {
         />
 
         <div className="mb-4">
-          <h2 className="font-semibold">Body:</h2>
+          <h2 className="font-semibold">{t('restfull.body')}</h2>
           <CodeMirror
             value={
               typeof body === 'object' ? JSON.stringify(body, null, 2) : body
@@ -265,15 +248,15 @@ export default function RESTfullClient() {
         </div>
       </div>
 
-      <h2 className="font-semibold mb-3">Response:</h2>
+      <h2 className="font-semibold mb-3">{t('restfull.response')}</h2>
       <div className="flex items-center mb-2">
-        <h2 className="mr-2">Status:</h2>
+        <h2 className="mr-2">{t('restfull.status')}</h2>
         <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
           {statusCode}
         </div>
       </div>
       <div className="flex items-center mb-4">
-        <h2 className="mr-5">Body:</h2>
+        <h2 className="mr-5">{t('restfull.body')}</h2>
         <CodeMirror
           value={response}
           options={{

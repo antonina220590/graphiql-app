@@ -1,7 +1,17 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
 
 import HistoryBtn from './historyButton';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'history.history': 'History',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
 
 describe('HistoryBtn Component', () => {
   it('should render a link with a button that has text "History"', () => {

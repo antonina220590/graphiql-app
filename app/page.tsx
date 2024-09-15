@@ -1,8 +1,10 @@
 'use client';
 
+import '../i18n';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { onAuthStateChanged } from 'firebase/auth';
+import { useTranslation } from 'react-i18next';
 
 import { auth } from '../firebaseConfig';
 import { useAuthStatus } from './hooks/useAuthStatus';
@@ -14,6 +16,7 @@ import GraphQLIcon from './components/mainPage/graphLogo';
 import RoundImage from './components/mainPage/roundImage';
 
 export default function Page() {
+  const { t } = useTranslation();
   const { isAuthenticated, checkingStatus, errorMessage } = useAuthStatus();
   const [username, setUsername] = useState('');
 
@@ -38,11 +41,10 @@ export default function Page() {
           className="text-7xl text-center leading-normal font-bold bg-gradient-to-r from-orange-400 via-red-600 to-blue-600 bg-clip-text text-transparent  animate-gradient-shift"
           style={{ backgroundSize: '200% 100%' }}
         >
-          We are happy to greet you!
+          {t('home.welcomeMessage')}
         </h4>
         <span className="text-3xl leading-normal font-bold bg-gradient-to-r from-blue-600 via-red-600 to-orange-400 bg-clip-text text-transparent">
-          This is a light-weight versions of Postman and GrqphiQL combined in
-          one app.
+          {t('home.description')}
         </span>
         <div className="flex items-center gap-[100px]">
           <GraphQLIcon />
@@ -55,22 +57,22 @@ export default function Page() {
         {isAuthenticated ? (
           <div className="text-center flex flex-col gap-[50px]">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-red-400 to-blue-600 bg-clip-text text-transparent">
-              Welcome Back, {username}!
+              {t('home.description')} {username}!
             </h1>
             <div className="flex gap-4 mt-4 justify-center">
               <Link href="/restfullClient">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease">
-                  REST Client
+                  {t('home.rest')}
                 </button>
               </Link>
               <Link href="/GRAPHQL">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease">
-                  GraphiQL Client
+                  {t('home.qraphiQL')}
                 </button>
               </Link>
               <Link href="/history">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300 ease">
-                  History
+                  {t('home.history')}
                 </button>
               </Link>
             </div>
@@ -78,7 +80,7 @@ export default function Page() {
         ) : (
           <div className="text-center flex flex-col gap-[30px]">
             <h1 className="text-5xl font-bold bg-gradient-to-r from-red-400 to-blue-600 bg-clip-text text-transparent">
-              Welcome!
+              {t('home.welcome')}
             </h1>
             <div className="flex gap-10 mt-4 justify-center">
               <SignInButton />
@@ -89,7 +91,7 @@ export default function Page() {
       </div>
       <div className="flex flex-col justify-center h-[600px] items-center">
         <span className="text-5xl leading-normal font-bold bg-gradient-to-r from-red-600 to-orange-400 bg-clip-text text-transparent">
-          Our Team
+          {t('home.team')}
         </span>
         <div className="flex flex-row gap-[50px] mt-24 w-[80vw]">
           <div className="flex flex-col w-1/3 items-center justify-center gap-[20px]">
@@ -100,9 +102,9 @@ export default function Page() {
               height={150}
             />
             <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold">Ekaterina Kiryanova</span>
-              <span>Member</span>
-              <span>RESTfull client, languages support</span>
+              <span className="text-2xl font-bold">{t('home.Kate')}</span>
+              <span>{t('home.member')}</span>
+              <span>{t('home.taskK')}</span>
             </div>
           </div>
           <div className="flex flex-col w-1/3 items-center justify-center gap-[20px]">
@@ -113,9 +115,9 @@ export default function Page() {
               height={150}
             />
             <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold">Antonina Tyurina</span>
-              <span>Team Leader</span>
-              <span>GraphiQL, History, Main Page</span>
+              <span className="text-2xl font-bold">{t('home.Antonina')}</span>
+              <span>{t('home.lead')}</span>
+              <span>{t('home.taskA')}</span>
             </div>
           </div>
           <div className="flex flex-col w-1/3 items-center gap-[20px]">
@@ -126,32 +128,29 @@ export default function Page() {
               height={150}
             />
             <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold">Inna</span>
-              <span>Member</span>
-              <span>Sign In, Sign Up, Firebase</span>
+              <span className="text-2xl font-bold">{t('home.Inna')}</span>
+              <span>{t('home.member')}</span>
+              <span>{t('home.taskI')}</span>
             </div>
           </div>
         </div>
       </div>
       <div className="flex flex-col justify-center h-[600px] items-center gap-[20px]">
         <span className="text-5xl leading-normal font-bold bg-gradient-to-r from-red-600 to-orange-400 bg-clip-text text-transparent">
-          RS School
+          {t('home.rsSchool')}
         </span>
         <span className="w-1/2 text-center">
-          This project was created as the final project of the React course at
-          RS School.{' '}
+          {t('home.startDescription')}
+          {t('home.rsSchool')}.{' '}
           <a
             href="https://rs.school/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 underline"
           >
-            RS School{' '}
+            {t('home.rsSchool')}{' '}
           </a>
-          is a free and community-based online education program conducted by
-          The Rolling Scopes Community since 2013. Currently 500+ developers
-          from different countries and companies involve in the education
-          process as mentors.
+          {t('home.rsSchoolDescription')}
         </span>
       </div>
     </main>

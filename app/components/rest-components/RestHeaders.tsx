@@ -1,4 +1,5 @@
 import { TrashIcon } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
 
 import { RestHeadersProps } from '../../restfullClient/types';
 
@@ -8,13 +9,16 @@ const RestHeders: React.FC<RestHeadersProps> = ({
   removeHeader,
   addHeader,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="mb-4">
-      <h2 className="font-semibold">Headers:</h2>
+      <h2 className="font-semibold">{t('restfull.headers')}</h2>
       <div className="grid grid-cols-[1fr_1fr_4rem] gap-0 mb-0">
-        <label className="font-semibold border border-gray-400 p-2">Key</label>
         <label className="font-semibold border border-gray-400 p-2">
-          Value
+          {t('restfull.key')}
+        </label>
+        <label className="font-semibold border border-gray-400 p-2">
+          {t('restfull.value')}
         </label>
       </div>
       {headers.map((header, index) => (
@@ -48,7 +52,7 @@ const RestHeders: React.FC<RestHeadersProps> = ({
         className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
         onClick={addHeader}
       >
-        Add Header
+        {t('restfull.addHeader')}
       </button>
     </div>
   );

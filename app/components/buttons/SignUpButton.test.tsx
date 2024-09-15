@@ -1,25 +1,30 @@
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { I18nextProvider } from 'react-i18next';
+import i18n from 'i18next';
 
 import SignUpButton from './SignUpButton';
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
-}));
+const mockI18n = i18n.createInstance();
+mockI18n.init({
+  lng: 'en',
+  resources: {
+    en: {
+      header: {
+        signUp: 'Sign Up',
+      },
+    },
+  },
+});
 
 describe('SignUpButton', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+  it('renders the button with the correct link', () => {
+    render(
+      <I18nextProvider i18n={mockI18n}>
+        <SignUpButton />
+      </I18nextProvider>
+    );
 
-  it('renders the button with correct text and styles', () => {
-    render(<SignUpButton />);
-
-    const button = screen.getByRole('button', { name: /sign up/i });
-    expect(button).toBeInTheDocument();
-
-    expect(button).toHaveClass('bg-green-900');
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '/signUp');
   });
 });
