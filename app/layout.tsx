@@ -6,6 +6,7 @@ import Header from './components/header/Header';
 import Footer from './components/footer/footer';
 import ProviderWrapper from './providerWrapper';
 import ErrorWrapper from './errorWrapper';
+import I18nProviderWrapper from './i18nextProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -19,19 +20,21 @@ export default function RootLayout({
 }>) {
   return (
     <ProviderWrapper>
-      <html lang="en">
-        <head>
-          <link rel="icon" href="/api.png" />
-        </head>
-        <body>
-          <ErrorWrapper>
-            <Header />
-            {children}
-            <Toaster />
-            <Footer />
-          </ErrorWrapper>
-        </body>
-      </html>
+      <I18nProviderWrapper>
+        <html lang="en">
+          <head>
+            <link rel="icon" href="/api.png" />
+          </head>
+          <body>
+            <ErrorWrapper>
+              <Header />
+              {children}
+              <Toaster />
+              <Footer />
+            </ErrorWrapper>
+          </body>
+        </html>
+      </I18nProviderWrapper>
     </ProviderWrapper>
   );
 }
