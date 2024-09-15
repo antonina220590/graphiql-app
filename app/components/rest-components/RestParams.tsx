@@ -33,7 +33,7 @@ const RestParams: React.FC<RestParamsProps> = ({
             }
           ></textarea>
           <textarea
-            placeholder={t('params.variableValuePlaceholder')}
+            placeholder={t('restfull.variableValuePlaceholder')}
             className="border border-gray-400 p-2 h-16 resize-none"
             value={param.valueParam}
             onChange={(e) =>

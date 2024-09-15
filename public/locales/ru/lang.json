@@ -14,7 +14,8 @@
         "noRequests": "Вы еще не выполнили ни одного запроса",
         "empty": "Здесь пусто. Попробуйте следующие варианты:",
         "rest": "REST-клиент",
-        "grapiQL": "GraphiQL-клиент"
+        "grapiQL": "GraphiQL-клиент",
+        "history": "История"
       },
       "restfull": {
         "restClient": "REST Клиент",
@@ -30,7 +31,8 @@
         "variableValuePlaceholder": "Значение переменной",
         "addVariables": "Добавить переменные",
         "addHeader": "Добавить заголовок"
-    },   "home": {
+       },   
+    "home": {
         "welcomeMessage": "Мы рады приветствовать вас!",
         "description": "Это облегченная версия Postman и GraphiQL, объединенная в одном приложении.",
         "welcomeBack": "С возвращением,",

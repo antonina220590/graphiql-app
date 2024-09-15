@@ -9,7 +9,8 @@
         "noRequests": "Вы яшчэ не выканалі ніводнага запыту",
         "empty": "Тут пусто. Паспрабуйце наступныя варыянты:",
         "rest": "REST-кліент",
-        "grapiQL": "GraphiQL-кліент"
+        "grapiQL": "GraphiQL-кліент",
+        "history": "Iсторыя"
       },
     "header": {
         "signIn": "Увайсці",

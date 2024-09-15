@@ -14,7 +14,8 @@
       "noRequests": "You haven`t executed any requests yet",
       "empty": "It`s empty here. Try those options:",
       "rest": "Rest Client",
-      "grapiQL": "GraphiQL Client"
+      "grapiQL": "GraphiQL Client",
+      "history": "History"
     },
     "restfull": {
         "restClient": "REST Client",
@@ -24,7 +25,7 @@
         "value": "Value",
         "variables": "Variables",
         "headers": "Headers",
-        "responce": "Responce:",
+        "response": "Response:",
         "status": "Status:",
         "variableKeyPlaceholder": "Variable key",
         "variableValuePlaceholder": "Variable value",
