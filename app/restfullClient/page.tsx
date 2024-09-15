@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { MESSAGE, statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
@@ -24,6 +25,7 @@ const CodeMirror = dynamic(
 );
 
 export default function RESTfullClient() {
+  const { t } = useTranslation();
   const {
     url,
     setUrl,
@@ -189,7 +191,7 @@ export default function RESTfullClient() {
         <div className="flex flex-row mb-[20px]">
           <HistoryBtn />
           <h1 className="text-xxl font-bold mb-4 text-center w-full">
-            REST Client
+            {t('restfull.restClient')}
           </h1>
         </div>
         <div className="flex space-x-4 mb-4">

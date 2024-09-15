@@ -1,0 +1,20 @@
+{
+    "welcome": "Welcome!",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "language": {
+      "ru": "Russian",
+      "en": "English",
+      "be": "Belarusian"
+    },
+    "restfull": {
+        "restClient": "REST Client",
+        "send": "Send",
+        "key": "Key",
+        "value": "Value",
+        "variables": "Variables",
+        "headers": "Headers"
+    }
+    
+  }
+  

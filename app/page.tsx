@@ -1,5 +1,6 @@
 'use client';
 
+import '../i18n';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { onAuthStateChanged } from 'firebase/auth';
