@@ -10,6 +10,7 @@ import RestHeders from '../components/rest-components/RestHeaders';
 import generateEncodedUrl from './helpers/urlHelper';
 import useUrlState from './helpers/useUrlState';
 import HistoryBtn from '../components/historyButton/historyButton';
+import ToggleButton from '../components/rest-components/ToggleButton';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -41,6 +42,7 @@ export default function RESTfullClient() {
   const [statusCode, setStatusCode] = useState('');
   const [editorMode, setEditorMode] = useState('application/json');
   const [decodedURL, setDecodedURL] = useState<string>('');
+  const [showVariables, setShowVariables] = useState(true);
 
   useEffect(() => {
     try {
@@ -213,13 +215,20 @@ export default function RESTfullClient() {
             Send
           </button>
         </div>
-
-        <RestParams
-          params={params}
-          removeParam={removeParam}
-          addParam={addParam}
-          handleParamChange={handleParamChange}
+        <ToggleButton
+          isOpen={showVariables}
+          onClick={() => setShowVariables(!showVariables)}
+          openText="Hide Variables"
+          closedText="Show Variables"
         />
+        {showVariables && (
+          <RestParams
+            params={params}
+            removeParam={removeParam}
+            addParam={addParam}
+            handleParamChange={handleParamChange}
+          />
+        )}
         <RestHeders
           headers={headers}
           removeHeader={removeHeader}
