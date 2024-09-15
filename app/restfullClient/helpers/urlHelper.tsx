@@ -57,6 +57,10 @@ const generateEncodedUrl = (
     fullUrl += `/?${headersString}`;
   }
 
+  if (fullUrl.endsWith('/')) {
+    fullUrl = fullUrl.slice(0, -1);
+  }
+
   return fullUrl;
 };
 

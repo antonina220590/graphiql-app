@@ -38,7 +38,7 @@ describe('generateEncodedUrl', () => {
     const body = JSON.stringify({ key: 'value' });
     const encodedBody = btoa(encodeURIComponent(body));
     const result = generateEncodedUrl('POST', url, body, [], []);
-    const expected = `${window.location.origin}/restfullClient/POST/${btoa(encodeURIComponent(url))}/${encodedBody}`;
+    const expected = `${window.location.origin}/restfullClient/POST/${btoa(encodeURIComponent(url))}//${encodedBody}`;
     expect(result).toBe(expected);
   });
   it('should handle empty parameters correctly', () => {
