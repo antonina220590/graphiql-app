@@ -19,11 +19,39 @@
     "restfull": {
         "restClient": "REST Client",
         "send": "Send",
+        "body": "Body:",
         "key": "Key",
         "value": "Value",
         "variables": "Variables",
-        "headers": "Headers"
-    }
+        "headers": "Headers",
+        "responce": "Responce:",
+        "status": "Status:",
+        "variableKeyPlaceholder": "Variable key",
+        "variableValuePlaceholder": "Variable value",
+        "addVariables": "Add Variables",
+        "addHeader" : "Add Header"
+    },
+    "home": {
+        "welcomeMessage": "We are happy to greet you!",
+        "description": "This is a light-weight version of Postman and GraphiQL combined in one app.",
+        "welcomeBack": "Welcome Back,",
+        "rest": "REST Client",
+        "qraphiQL": "GraphiQL Client",
+        "history": "History",
+        "welcome": "Welcome!",
+        "team": "Our Team",
+        "Kate": "Ekaterina Kiryanova",
+        "member": "Member",
+        "taskK": "RESTfull client, languages support",
+        "Antonina": "Antonina Tyurina",
+        "lead": "Team Leader",
+        "taskA": "GraphiQL, History, Main Page",
+        "Inna": "Inna",
+        "taskI": "Sign In, Sign Up, Firebase",
+        "rsSchool": "RS School",
+        "startDescription": "This project was created as the final project of the React course at",
+        "rsSchoolDescription": "is a free and community-based online education program conducted by The Rolling Scopes Community since 2013. Currently 500+ developers from different countries and companies are involved in the education process as mentors."
+      } 
     
   }
   

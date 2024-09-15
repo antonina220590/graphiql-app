@@ -11,6 +11,7 @@ import RestHeders from '../components/rest-components/RestHeaders';
 import generateEncodedUrl from './helpers/urlHelper';
 import useUrlState from './helpers/useUrlState';
 import HistoryBtn from '../components/historyButton/historyButton';
+import ToggleButton from '../components/rest-components/ToggleButton';
 const CodeMirror = dynamic(
   async () => {
     const { Controlled } = await import('react-codemirror2');
@@ -43,6 +44,7 @@ export default function RESTfullClient() {
   const [statusCode, setStatusCode] = useState('');
   const [editorMode, setEditorMode] = useState('application/json');
   const [decodedURL, setDecodedURL] = useState<string>('');
+  const [showVariables, setShowVariables] = useState(true);
 
   useEffect(() => {
     try {
@@ -87,17 +89,26 @@ export default function RESTfullClient() {
 
       if (!res.ok) {
         let errorMessage = `${res.status} ${statusMessage}`;
-        const errorData = await res.json();
-        if (errorData.message) {
-          errorMessage = errorData.message;
+        try {
+          const errorData = await res.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (error) {
+          toast('Failed to parse JSON error response');
         }
-        toast(`Error: ${errorMessage}`);
+        toast.error(`Error: ${errorMessage}`);
+      } else {
+        const json = await res.json();
+        setResponse(JSON.stringify(json, null, 2));
       }
-
-      const json = await res.json();
-      setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
+      setResponse(
+        `Network Error: ${(error as Error).message || MESSAGE.UNKNOWN}`
+      );
+      toast.error(
+        `Network Error: ${(error as Error).message || MESSAGE.UNKNOWN}`
+      );
     }
   };
 
@@ -216,12 +227,20 @@ export default function RESTfullClient() {
           </button>
         </div>
 
-        <RestParams
-          params={params}
-          removeParam={removeParam}
-          addParam={addParam}
-          handleParamChange={handleParamChange}
+        <ToggleButton
+          isOpen={showVariables}
+          onClick={() => setShowVariables(!showVariables)}
+          openText="Hide Variables"
+          closedText="Show Variables"
         />
+        {showVariables && (
+          <RestParams
+            params={params}
+            removeParam={removeParam}
+            addParam={addParam}
+            handleParamChange={handleParamChange}
+          />
+        )}
         <RestHeders
           headers={headers}
           removeHeader={removeHeader}
