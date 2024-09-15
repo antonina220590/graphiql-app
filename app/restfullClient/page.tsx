@@ -87,17 +87,26 @@ export default function RESTfullClient() {
 
       if (!res.ok) {
         let errorMessage = `${res.status} ${statusMessage}`;
-        const errorData = await res.json();
-        if (errorData.message) {
-          errorMessage = errorData.message;
+        try {
+          const errorData = await res.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (error) {
+          toast('Failed to parse JSON error response');
         }
-        toast(`Error: ${errorMessage}`);
+        toast.error(`Error: ${errorMessage}`);
+      } else {
+        const json = await res.json();
+        setResponse(JSON.stringify(json, null, 2));
       }
-
-      const json = await res.json();
-      setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
+      setResponse(
+        `Network Error: ${(error as Error).message || MESSAGE.UNKNOWN}`
+      );
+      toast.error(
+        `Network Error: ${(error as Error).message || MESSAGE.UNKNOWN}`
+      );
     }
   };
 
