@@ -102,7 +102,7 @@ export default function Page() {
             <div className="flex flex-col items-center">
               <span className="text-2xl font-bold">Ekaterina Kiryanova</span>
               <span>Member</span>
-              <span>RESTfull client</span>
+              <span>RESTfull client, languages support</span>
             </div>
           </div>
           <div className="flex flex-col w-1/3 items-center justify-center gap-[20px]">
@@ -115,7 +115,7 @@ export default function Page() {
             <div className="flex flex-col items-center">
               <span className="text-2xl font-bold">Antonina Tyurina</span>
               <span>Team Leader</span>
-              <span>GraphiQL, History</span>
+              <span>GraphiQL, History, Main Page</span>
             </div>
           </div>
           <div className="flex flex-col w-1/3 items-center gap-[20px]">
@@ -128,7 +128,7 @@ export default function Page() {
             <div className="flex flex-col items-center">
               <span className="text-2xl font-bold">Inna</span>
               <span>Member</span>
-              <span>Sign In, Sign Up</span>
+              <span>Sign In, Sign Up, Firebase</span>
             </div>
           </div>
         </div>
