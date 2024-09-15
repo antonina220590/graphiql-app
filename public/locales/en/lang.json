@@ -7,6 +7,11 @@
       "en": "English",
       "be": "Belarusian"
     },
+    "header": {
+       "signIn":"Sign In",
+       "signUp":"Sign Up",
+       "signOut": "Sign Out"
+    },
     "restfull": {
         "restClient": "REST Client",
         "send": "Send",
