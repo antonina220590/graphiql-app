@@ -4,6 +4,21 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RequestHistory from './history';
 import extractGraphQLOperation from './helpers/extractOperator';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: { [key: string]: string } = {
+        'history.requests': 'Your Requests',
+        'history.noRequests': "You haven't executed any requests yet",
+        'history.empty': "It's empty here. Try those options:",
+        'history.rest': 'Rest Client',
+        'history.graphiQL': 'GraphiQL Client',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 interface RequestDetails {
   url: string;
   timestamp: string;
@@ -86,10 +101,10 @@ describe('RequestHistory Component', () => {
     render(<RequestHistory />);
 
     expect(
-      screen.getByText('You haven`t executed any requests yet')
+      screen.getByText("You haven't executed any requests yet")
     ).toBeInTheDocument();
     expect(
-      screen.getByText('It`s empty here. Try those options:')
+      screen.getByText("It's empty here. Try those options:")
     ).toBeInTheDocument();
   });
 
@@ -98,10 +113,10 @@ describe('RequestHistory Component', () => {
     render(<RequestHistory />);
 
     expect(
-      screen.getByText('You haven`t executed any requests yet')
+      screen.getByText("You haven't executed any requests yet")
     ).toBeInTheDocument();
     expect(
-      screen.getByText('It`s empty here. Try those options:')
+      screen.getByText("It's empty here. Try those options:")
     ).toBeInTheDocument();
   });
 
@@ -119,6 +134,7 @@ describe('RequestHistory Component', () => {
     });
     expect(graphqlClientButton).toBeInTheDocument();
   });
+
   it('should extract the correct operation from a valid GraphQL query', () => {
     const query = '{"query": "{ getUser(id: 1) { id name } }"}';
     const operation = extractGraphQLOperation(query);

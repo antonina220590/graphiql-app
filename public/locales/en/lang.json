@@ -1,7 +1,4 @@
 {
-    "welcome": "Welcome!",
-    "signIn": "Sign in",
-    "signUp": "Sign up",
     "language": {
       "ru": "Russian",
       "en": "English",
@@ -11,6 +8,13 @@
        "signIn":"Sign In",
        "signUp":"Sign Up",
        "signOut": "Sign Out"
+    },
+    "history": {
+      "requests":"Your Requests",
+      "noRequests": "You haven`t executed any requests yet",
+      "empty": "It`s empty here. Try those options:",
+      "rest": "Rest Client",
+      "grapiQL": "GraphiQL Client"
     },
     "restfull": {
         "restClient": "REST Client",

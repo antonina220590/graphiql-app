@@ -9,6 +9,13 @@
         "signUp": "Регистрация",
         "signOut": "Выход"
       },
+      "history": {
+        "requests": "Ваши запросы",
+        "noRequests": "Вы еще не выполнили ни одного запроса",
+        "empty": "Здесь пусто. Попробуйте следующие варианты:",
+        "rest": "REST-клиент",
+        "grapiQL": "GraphiQL-клиент"
+      },
     "restfull": {
         "restClient": "REST-клиент",
         "send": "Отправить",
