@@ -69,8 +69,20 @@ export default function AuthForm({
   return (
     <main className="flex-grow p-4 bg-light flex items-center justify-center min-h-screen">
       <div className="bg-white shadow-md rounded-lg p-6 max-w-sm w-full">
-        <h1 className="text-2xl font-bold mb-6 text-center">{title}</h1>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <h1
+          data-testid="signInHeader"
+          className="text-2xl font-bold mb-6 text-center"
+        >
+          {title}
+        </h1>
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit}
+          data-testid="form"
+        >
+          <label htmlFor="email" className="sr-only" data-testid="signInEmail">
+            Email
+          </label>
           <AuthInput
             type="email"
             name="email"
@@ -82,7 +94,13 @@ export default function AuthForm({
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email}</p>
           )}
-
+          <label
+            htmlFor="password"
+            className="sr-only"
+            data-testid="signInPassword"
+          >
+            Password
+          </label>
           <AuthInput
             type="password"
             name="password"
@@ -97,6 +115,9 @@ export default function AuthForm({
 
           {isSignUp && (
             <>
+              <label htmlFor="confirmPassword" className="sr-only">
+                Confirm Password
+              </label>
               <AuthInput
                 type="password"
                 name="confirmPassword"

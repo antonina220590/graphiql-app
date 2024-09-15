@@ -51,8 +51,12 @@ export default function SignIn() {
 
   return (
     <div>
-      <AuthForm title="Sign In" onSubmit={handleSignIn} />
-      {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
+      <AuthForm title="Sign In" data-testid="signIn" onSubmit={handleSignIn} />
+      {errorMessage && (
+        <p data-testid="error-message" className="text-red-500 mt-2">
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

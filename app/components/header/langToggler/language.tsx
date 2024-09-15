@@ -18,7 +18,7 @@ export default function LanguageToggler() {
   }, [i18n.language]);
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex space-x-4" data-testid="language-toggler">
       <select
         value={currentLang}
         onChange={handleLanguageChange}
