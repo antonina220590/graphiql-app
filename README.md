@@ -1,4 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# REST/GraphiQL Client
+
+## Project description
+
+This REST/GraphiQL Client project aims to develop a light-weight versions of Postman and GrqphiQL combined in one app.
+Key pages of the application include:
+
+- Login and Registration pages 🖥️
+- Main page 🏠
+- REST Client page 📋
+- GraphiQL Client page 🔎
+
+The project is being developed as the final task of the RS school's JS / React course. Its main goals are:
+
+- consolidation of the knowledges gained during this course and,
+- improvement of teamwork skills.
+
+Our team:
+
+- [antonina220590](https://github.com/antonina220590)
+- [inaFK](https://github.com/inafk)
+- [KrKate](https://github.com/krkate)
+
+Our mentor:
+
+- [andron13](https://github.com/andron13)
+
+### Technology stack
+
+#### Front-end:
+
+- HTML
+- TailwindCss
+- TypeScript
+- Webpack
+- React
+- Next JS
+- Vitest
 
 ## Getting Started
 
@@ -6,31 +43,141 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build the application:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm run build
+```
 
-## Learn More
+Compiles the application for production deployment. It optimizes the app for the best performance.
 
-To learn more about Next.js, take a look at the following resources:
+### Start the application in production mode
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Starts the server in production mode. Must be used after building the app.
 
-## Deploy on Vercel
+### Lint the project files
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Runs ESLint to find and fix problems in your JavaScript and TypeScript files within the app/ directory.
+
+### Format the project files
+
+```bash
+npm run prettier:fix
+```
+
+Runs Prettier to format code.
+
+### Run Tests
+
+```bash
+npm run test
+```
+
+Executes the test suites of the application using Vitest.
+
+### Run Tests Coverage
+
+```bash
+npm run test:coverage
+```
+
+Executes the test coverage.
+
+## GraphiQL Requests Examples
+
+#### Without variables
+
+```
+##### endpoint url:
+https://graphqlzero.almansi.me/api
+
+##### query:
+
+ query {
+  albums {
+    data {
+      title
+    }
+  }
+}
+
+##### headers (optional)
+
+Content-Type: application/json
+
+```
+
+#### With variables
+
+##### Example 1
+
+```
+##### endpoint url:
+https://graphqlzero.almansi.me/api
+
+##### query:
+
+ query ($id: ID!) {
+  album(id: $id) {
+    title
+    user {
+      name
+      username
+    }
+  }
+}
+
+##### Variables
+
+{
+  "id": 3
+}
+
+##### headers (optional)
+
+Content-Type: application/json
+
+```
+
+##### Example 2
+
+```
+##### endpoint url:
+https://swapi-graphql.eskerda.vercel.app/
+
+##### query:
+
+ query ($id: ID!) {
+  album(id: $id) {
+    title
+    user {
+      name
+      username
+    }
+  }
+}
+
+##### Variables
+
+{
+  "id": 1,
+  "planetID": 1
+}
+
+##### headers (optional)
+
+Content-Type: application/json
+
+```
