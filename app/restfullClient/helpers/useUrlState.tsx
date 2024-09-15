@@ -41,7 +41,6 @@ const useUrlState = () => {
             };
           })
           .filter((param) => param.keyParam && param.valueParam);
-
         setParams(
           paramsArray.length ? paramsArray : [{ keyParam: '', valueParam: '' }]
         );

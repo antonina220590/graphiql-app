@@ -224,6 +224,7 @@ export default function RESTfullClient() {
             Send
           </button>
         </div>
+
         <ToggleButton
           isOpen={showVariables}
           onClick={() => setShowVariables(!showVariables)}

@@ -41,7 +41,6 @@ export function useAuthStatus() {
 
     return () => unsubscribe();
   }, [router]);
-
   return {
     isAuthenticated,
     checkingStatus,

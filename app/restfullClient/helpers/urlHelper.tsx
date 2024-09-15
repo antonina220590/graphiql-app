@@ -42,23 +42,18 @@ const generateEncodedUrl = (
     : null;
 
   let fullUrl = `${window.location.origin}/restfullClient/${method}/${encodedUrl}`;
-
-  // Добавляем параметры после URL, если они есть
   if (encodedParams) {
     fullUrl += `/${encodedParams}`;
   }
 
-  // Заголовки в query string
   if (headersString) {
     fullUrl += `/?${headersString}`;
   }
 
-  // Тело запроса в hash
   if (encodedBody) {
     fullUrl += `#${encodedBody}`;
   }
 
   return fullUrl;
 };
-
 export default generateEncodedUrl;
