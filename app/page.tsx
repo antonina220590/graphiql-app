@@ -100,7 +100,7 @@ export default function Page() {
               height={150}
             />
             <div className="flex flex-col items-center">
-              <span className="text-2xl">Ekaterina Kiryanova</span>
+              <span className="text-2xl font-bold">Ekaterina Kiryanova</span>
               <span>Member</span>
               <span>RESTfull client</span>
             </div>
@@ -113,7 +113,7 @@ export default function Page() {
               height={150}
             />
             <div className="flex flex-col items-center">
-              <span>Antonina Tyurina</span>
+              <span className="text-2xl font-bold">Antonina Tyurina</span>
               <span>Team Leader</span>
               <span>GraphiQL, History</span>
             </div>
@@ -126,12 +126,33 @@ export default function Page() {
               height={150}
             />
             <div className="flex flex-col items-center">
-              <span>Inna</span>
+              <span className="text-2xl font-bold">Inna</span>
               <span>Member</span>
               <span>Sign In, Sign Up</span>
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex flex-col justify-center h-[600px] items-center gap-[20px]">
+        <span className="text-5xl leading-normal font-bold bg-gradient-to-r from-red-600 to-orange-400 bg-clip-text text-transparent">
+          RS School
+        </span>
+        <span className="w-1/2 text-center">
+          This project was created as the final project of the React course at
+          RS School.{' '}
+          <a
+            href="https://rs.school/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            RS School{' '}
+          </a>
+          is a free and community-based online education program conducted by
+          The Rolling Scopes Community since 2013. Currently 500+ developers
+          from different countries and companies involve in the education
+          process as mentors.
+        </span>
       </div>
     </main>
   );
