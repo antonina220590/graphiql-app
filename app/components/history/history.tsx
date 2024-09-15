@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GraphQLIcon from './methodIcon/graphQL-icon';
 import GETIcon from './methodIcon/get-icon';
@@ -21,6 +22,7 @@ interface RequestDetails {
 }
 
 function RequestHistory() {
+  const { t } = useTranslation();
   const [history, setHistory] = useState<RequestDetails[]>([]);
   const router = useRouter();
 
@@ -52,7 +54,7 @@ function RequestHistory() {
             }}
           >
             <h3 className="flex justify-center m-10 text-zinc-50 text-4xl">
-              Your Requests
+              {t('history.requests')}
             </h3>
             {history.map((request, index) => {
               const urlSegment = request.url.split('/');
@@ -122,17 +124,17 @@ function RequestHistory() {
         ) : (
           <>
             <div className="min-h-[100%] flex flex-col items-center">
-              <h3>You haven`t executed any requests yet</h3>
-              <span>It`s empty here. Try those options:</span>
+              <h3>{t('history.noRequests')}</h3>
+              <span>{t('history.empty')}</span>
               <div className="flex gap-4 mt-4 justify-center">
                 <Link href="/restfullClient">
                   <button className="bg-orange-400 data-testid='restBtn' text-white px-4 py-2 rounded hover:bg-orange-500 transition duration-300 ease">
-                    Rest Client
+                    {t('history.rest')}
                   </button>
                 </Link>
                 <Link href="/GRAPHQL">
                   <button className="bg-green-900 data-testid='graphBtn' text-white px-4 py-2 rounded hover:bg-green-950 transition duration-300 ease">
-                    GraphiQL Client
+                    {t('history.graphiQL')}
                   </button>
                 </Link>
               </div>

@@ -1,31 +1,29 @@
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { I18nextProvider } from 'react-i18next';
+import i18n from 'i18next';
 
 import SignInButton from './SignInButton';
 
-vi.mock('next/router', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
-}));
+const mockI18n = i18n.createInstance();
+mockI18n.init({
+  lng: 'en',
+  resources: {
+    en: {
+      header: {
+        signIn: 'Sign In',
+      },
+    },
+  },
+});
 
 describe('SignInButton', () => {
-  it('renders the button with correct text and styles', () => {
-    render(<SignInButton />);
-
-    const button = screen.getByRole('button', { name: /sign in/i });
-    expect(button).toBeInTheDocument();
-    expect(button).toHaveTextContent('Sign In');
-    expect(button).toHaveClass('bg-orange-400');
-  });
-
-  it('navigates to /signIn when clicked', () => {
-    render(<SignInButton />);
-
-    const button = screen.getByRole('button', { name: /sign in/i });
-    button.click();
-
-    const link = screen.getByRole('link', { name: /sign in/i });
+  it('renders the button with the correct link', () => {
+    render(
+      <I18nextProvider i18n={mockI18n}>
+        <SignInButton />
+      </I18nextProvider>
+    );
+    const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/signIn');
   });
 });

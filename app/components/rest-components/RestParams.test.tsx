@@ -1,7 +1,21 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { I18nextProvider } from 'react-i18next';
 
 import RestParams from './RestParams';
+import i18n from '../../../i18n';
+
+const mockI18n = i18n.createInstance();
+mockI18n.init({
+  lng: 'en',
+  resources: {
+    en: {
+      restfull: {
+        addVariables: 'Add VAriables',
+      },
+    },
+  },
+});
 
 describe('RestParams', () => {
   const mockParams = [
@@ -29,14 +43,19 @@ describe('RestParams', () => {
   it('calls addParam when Add Params button is clicked', () => {
     const addParamMock = vi.fn();
     render(
-      <RestParams
-        params={mockParams}
-        handleParamChange={vi.fn()}
-        removeParam={vi.fn()}
-        addParam={addParamMock}
-      />
+      <I18nextProvider i18n={mockI18n}>
+        <RestParams
+          params={mockParams}
+          handleParamChange={vi.fn()}
+          removeParam={vi.fn()}
+          addParam={addParamMock}
+        />
+      </I18nextProvider>
     );
-    const addButton = screen.getByRole('button', { name: /Add Variables/i });
+
+    const addButton = screen.getByRole('button', {
+      name: mockI18n.t('restfull.addVariables'),
+    });
     fireEvent.click(addButton);
 
     expect(addParamMock).toHaveBeenCalled();

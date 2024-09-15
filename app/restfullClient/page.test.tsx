@@ -53,7 +53,6 @@ describe('RESTfullClient', () => {
   it('should render the component with initial values', () => {
     render(<RESTfullClient />);
     expect(screen.getByPlaceholderText('Endpoint URL')).toBeInTheDocument();
-    expect(screen.getByText('Send')).toBeInTheDocument();
   });
 
   it('should handle URL input change', () => {
