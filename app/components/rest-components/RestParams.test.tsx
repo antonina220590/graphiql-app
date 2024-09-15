@@ -37,7 +37,7 @@ describe('RestParams', () => {
       />
     );
 
-    const addButton = screen.getByRole('button', { name: /Add Params/i });
+    const addButton = screen.getByRole('button', { name: /Add Variables/i });
     fireEvent.click(addButton);
 
     expect(addParamMock).toHaveBeenCalled();

@@ -42,7 +42,7 @@ const RestParams: React.FC<RestParamsProps> = ({
       className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
       onClick={addParam}
     >
-      Add Params
+      Add Variables
     </button>
   </div>
 );
