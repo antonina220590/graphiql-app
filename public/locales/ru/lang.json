@@ -16,12 +16,19 @@
         "rest": "REST-клиент",
         "grapiQL": "GraphiQL-клиент"
       },
-    "restfull": {
-        "restClient": "REST-клиент",
+      "restfull": {
+        "restClient": "REST Клиент",
         "send": "Отправить",
+        "body": "Тело:",
         "key": "Ключ",
         "value": "Значение",
         "variables": "Переменные",
-        "headers": "Заголовки"
+        "headers": "Заголовки",
+        "response": "Ответ:",
+        "status": "Статус:",
+        "variableKeyPlaceholder": "Ключ переменной",
+        "variableValuePlaceholder": "Значение переменной",
+        "addVariables": "Добавить переменные",
+        "addHeader": "Добавить заголовок"
     }
   }

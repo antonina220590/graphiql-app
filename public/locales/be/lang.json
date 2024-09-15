@@ -15,7 +15,22 @@
         "signIn": "Увайсці",
         "signUp": "Зарэгістравацца",
         "signOut": "Выйсці"
-      }
+      },     
+      "restfull": {
+        "restClient": "REST Кліент",
+        "send": "Адправіць",
+        "body": "Цела:",
+        "key": "Ключ",
+        "value": "Значэнне",
+        "variables": "Пераменныя",
+        "headers": "Загалоўкі",
+        "response": "Адказ:",
+        "status": "Статус:",
+        "variableKeyPlaceholder": "Ключ пераменнай",
+        "variableValuePlaceholder": "Значэнне пераменнай",
+        "addVariables": "Дадаць пераменныя",
+        "addHeader": "Дадаць загаловак"
+    }
     
   }
   
