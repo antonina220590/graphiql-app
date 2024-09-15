@@ -11,7 +11,6 @@ export function useAuthStatus() {
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasJustLoggedIn, setHasJustLoggedIn] = useState(false);
-
   const router = useRouter();
 
   useEffect(() => {

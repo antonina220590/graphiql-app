@@ -17,7 +17,6 @@ mockI18n.init({
   },
 });
 
-
 describe('RestParams', () => {
   const mockParams = [
     { keyParam: 'param1', valueParam: 'value1' },
@@ -57,7 +56,6 @@ describe('RestParams', () => {
     const addButton = screen.getByRole('button', {
       name: mockI18n.t('restfull.addVariables'),
     });
-
     fireEvent.click(addButton);
 
     expect(addParamMock).toHaveBeenCalled();

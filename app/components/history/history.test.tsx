@@ -19,7 +19,6 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-
 interface RequestDetails {
   url: string;
   timestamp: string;
@@ -102,12 +101,10 @@ describe('RequestHistory Component', () => {
     render(<RequestHistory />);
 
     expect(
-
       screen.getByText("You haven't executed any requests yet")
     ).toBeInTheDocument();
     expect(
       screen.getByText("It's empty here. Try those options:")
-
     ).toBeInTheDocument();
   });
 
@@ -120,7 +117,6 @@ describe('RequestHistory Component', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText("It's empty here. Try those options:")
-
     ).toBeInTheDocument();
   });
 

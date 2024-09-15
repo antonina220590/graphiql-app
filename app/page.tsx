@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 
-
 import { auth } from '../firebaseConfig';
 import { useAuthStatus } from './hooks/useAuthStatus';
 import SignInButton from './components/buttons/SignInButton';
@@ -18,7 +17,6 @@ import RoundImage from './components/mainPage/roundImage';
 
 export default function Page() {
   const { t } = useTranslation();
-
   const { isAuthenticated, checkingStatus, errorMessage } = useAuthStatus();
   const [username, setUsername] = useState('');
 

@@ -19,15 +19,12 @@ mockI18n.init({
   },
 });
 
-
 describe('RestHeders Component', () => {
   const mockHeaders = [
     { keyHeader: 'Content-Type', valueHeader: 'application/json' },
   ];
 
-
   it.skip('renders correctly with initial headers', () => {
-
     render(
       <RestHeders
         headers={mockHeaders}
@@ -108,9 +105,7 @@ describe('RestHeders Component', () => {
     expect(removeHeaderMock).toHaveBeenCalledWith(0);
   });
 
-
   it.skip('calls addHeader when Add Header button is clicked', () => {
-
     const addHeaderMock = vi.fn();
     render(
       <RestHeders
