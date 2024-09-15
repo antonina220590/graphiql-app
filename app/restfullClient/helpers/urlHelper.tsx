@@ -12,38 +12,46 @@ const generateEncodedUrl = (
   const endpointUrl = encodeURIComponent(url.trim());
   const encodedUrl = btoa(endpointUrl);
 
-  const encodedBody = body ? btoa(encodeURIComponent(body)) : '';
-
   const param = params
     .filter((param) => param.key && param.value)
     .map(
       (param) =>
-        `${encodeURIComponent(param.key.trim())}=${encodeURIComponent(param.value.trim())}`
+        `${encodeURIComponent(param.key.trim())}=${encodeURIComponent(
+          param.value.trim()
+        )}`
     )
     .join('&');
-  const encodedParams = param ? btoa(param) : '';
+  const encodedParams = param ? btoa(param) : null;
 
-  const header = headers
+  const headersString = headers
     .filter((header) => header.key && header.value)
     .map(
       (header) =>
-        `${encodeURIComponent(header.key.trim())}=${encodeURIComponent(header.value.trim())}`
+        `${encodeURIComponent(header.key.trim())}=${encodeURIComponent(
+          header.value.trim()
+        )}`
     )
     .join('&');
-  const encodedHeaders = header ? btoa(header) : '';
+
+  const encodedBody = body
+    ? btoa(
+        encodeURIComponent(
+          typeof body === 'object' ? JSON.stringify(body) : body
+        )
+      )
+    : null;
 
   let fullUrl = `${window.location.origin}/restfullClient/${method}/${encodedUrl}`;
-
   if (encodedParams) {
     fullUrl += `/${encodedParams}`;
   }
 
-  if (encodedHeaders) {
-    fullUrl += `/${encodedHeaders}`;
+  if (headersString) {
+    fullUrl += `/?${headersString}`;
   }
 
   if (encodedBody) {
-    fullUrl += `/${encodedBody}`;
+    fullUrl += `#${encodedBody}`;
   }
 
   return fullUrl;

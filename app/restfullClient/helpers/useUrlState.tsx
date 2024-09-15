@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 
 import { Header, Param } from '../types';
 import generateEncodedUrl from '../helpers/urlHelper';
-import { MESSAGE, PathPartIndex } from '../constants';
+import { MESSAGE } from '../constants';
 
 const useUrlState = () => {
   const [url, setUrl] = useState('');
@@ -18,29 +18,19 @@ const useUrlState = () => {
 
   useEffect(() => {
     const pathParts = window.location.pathname.split('/');
+    const searchParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
 
-    const method = pathParts[PathPartIndex.METHOD] || 'GET';
-    const encodedUrl = pathParts[PathPartIndex.URL] || '';
-    const encodedParams = pathParts[PathPartIndex.PARAMS] || '';
-    const encodedHeaders = pathParts[PathPartIndex.HEADERS] || '';
-    const encodedBody = pathParts[PathPartIndex.BODY] || '';
+    const method = pathParts[2] || 'GET';
+    const encodedUrl = pathParts[3] || '';
+    const encodedParams = pathParts[4] || null;
 
     try {
       const decodedUrl = decodeURIComponent(atob(encodedUrl));
       setUrl(decodedUrl);
 
-      if (encodedBody) {
-        const decodedBody = decodeURIComponent(atob(encodedBody));
-        try {
-          const parsedBody = JSON.parse(decodedBody);
-          setBody(parsedBody);
-        } catch {
-          setBody(decodedBody);
-        }
-      }
-
       if (encodedParams) {
-        const decodedParamsStr = decodeURIComponent(atob(encodedParams));
+        const decodedParamsStr = atob(encodedParams);
         const paramsArray = decodedParamsStr
           .split('&')
           .map((paramStr) => {
@@ -51,37 +41,40 @@ const useUrlState = () => {
             };
           })
           .filter((param) => param.keyParam && param.valueParam);
-
-        if (paramsArray.length === 0) {
-          paramsArray.push({ keyParam: '', valueParam: '' });
-        }
-
-        setParams(paramsArray);
+        setParams(
+          paramsArray.length ? paramsArray : [{ keyParam: '', valueParam: '' }]
+        );
+      } else {
+        setParams([{ keyParam: '', valueParam: '' }]);
       }
 
-      if (encodedHeaders) {
-        const decodedHeadersStr = decodeURIComponent(atob(encodedHeaders));
-        const headersArray = decodedHeadersStr
-          .split('&')
-          .map((headerStr) => {
-            const [key, value] = headerStr.split('=');
-            return {
-              keyHeader: decodeURIComponent(key || ''),
-              valueHeader: decodeURIComponent(value || ''),
-            };
-          })
-          .filter((header) => header.keyHeader && header.valueHeader);
+      const headersArray = Array.from(searchParams.entries()).map(
+        ([key, value]) => ({
+          keyHeader: decodeURIComponent(key),
+          valueHeader: decodeURIComponent(value),
+        })
+      );
 
-        if (headersArray.length === 0) {
-          headersArray.push({ keyHeader: '', valueHeader: '' });
+      setHeaders(
+        headersArray.length
+          ? headersArray
+          : [{ keyHeader: '', valueHeader: '' }]
+      );
+
+      if (hash.startsWith('#')) {
+        const encodedBody = hash.replace('#', '');
+        const decodedBody = decodeURIComponent(atob(encodedBody));
+        try {
+          const parsedBody = JSON.parse(decodedBody);
+          setBody(parsedBody);
+        } catch {
+          setBody(decodedBody);
         }
-
-        setHeaders(headersArray);
       }
 
       setMethod(method);
     } catch (error) {
-      toast(MESSAGE.DECODING, { description: error.message });
+      toast(MESSAGE.DECODING, { description: (error as Error).message });
     }
   }, []);
 
@@ -138,7 +131,7 @@ const useUrlState = () => {
 
     const currentUrl = window.location.href;
     if (generatedUrl && generatedUrl !== currentUrl) {
-      window.history.pushState({}, '', generatedUrl);
+      window.history.replaceState({}, '', generatedUrl);
     }
   }, [method, url, headers, body, params]);
 
