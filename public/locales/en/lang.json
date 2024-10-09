@@ -52,7 +52,9 @@
         "rsSchool": "RS School",
         "startDescription": "This project was created as the final project of the React course at",
         "rsSchoolDescription": "is a free and community-based online education program conducted by The Rolling Scopes Community since 2013. Currently 500+ developers from different countries and companies are involved in the education process as mentors."
-      } 
-    
+      },
+      "signIn": {
+        "alreadyLoggedIn": "You are already logged in."
+      }
   }
   
