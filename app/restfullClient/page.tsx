@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
-import { MESSAGE, statusText } from './constants';
+import { statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
@@ -55,12 +55,11 @@ export default function RESTfullClient() {
 
   const handleSend = async () => {
     if (!url) {
-      toast(MESSAGE.EMPTY);
-      setResponse(MESSAGE.EMPTY);
+      toast(t('restfull.message.empty'));
+      setResponse(t('restfull.message.empty'));
       setStatusCode(`💁`);
       return;
     }
-
     const validHeaders = headers.filter(
       (header) => header.keyHeader && header.valueHeader
     );
@@ -82,22 +81,33 @@ export default function RESTfullClient() {
 
     try {
       const res = await fetch(url, options);
-      const statusMessage = statusText[res.status] || 'Unknown Status';
+      const statusMessage = t(`restfull.statusText.${res.status}`, {
+        defaultValue:
+          statusText[res.status] || t('restfull.error.unknownStatus'),
+      });
+
       setStatusCode(`${res.status} ${statusMessage}`);
 
       if (!res.ok) {
-        let errorMessage = `${res.status} ${statusMessage}`;
+        let errorMessage = t('restfull.error.responseMessage', {
+          status: res.status,
+          statusMessage,
+        });
         const errorData = await res.json();
         if (errorData.message) {
           errorMessage = errorData.message;
         }
-        toast(`Error: ${errorMessage}`);
+
+        toast(t('restfull.error.errorMessage', { message: errorMessage }));
+        return;
       }
 
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
+      setResponse(
+        `Error: ${(error as Error).message || t('restfull.error.unknown')}`
+      );
     }
   };
 

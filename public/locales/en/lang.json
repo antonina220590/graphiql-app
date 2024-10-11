@@ -30,7 +30,28 @@
         "variableKeyPlaceholder": "Variable key",
         "variableValuePlaceholder": "Variable value",
         "addVariables": "Add Variables",
-        "addHeader" : "Add Header"
+        "addHeader" : "Add Header",
+        "message": {
+          "empty": "The URL field is empty. Please enter a URL.",
+          "unknown": "An unknown error occurred"
+        },
+        "error": {
+          "unknownStatus": "Unknown status",
+          "errorMessage": "Error: {{message}}",
+          "responseMessage": "{{status}} {{statusMessage}}"
+        },
+        "statusText": {
+          "200": "OK",
+          "201": "Created",
+          "204": "No Content",
+          "400": "Bad Request",
+          "401": "Unauthorized",
+          "403": "Forbidden",
+          "404": "Not Found",
+          "500": "Internal Server Error",
+          "502": "Bad Gateway",
+          "503": "Service Unavailable"
+        }
     },
     "home": {
         "welcomeMessage": "We are happy to greet you!",
@@ -54,7 +75,15 @@
         "rsSchoolDescription": "is a free and community-based online education program conducted by The Rolling Scopes Community since 2013. Currently 500+ developers from different countries and companies are involved in the education process as mentors."
       },
       "signIn": {
-        "alreadyLoggedIn": "You are already logged in."
+        "alreadyLoggedIn": "You are already logged in.",
+        "success": "Successfully signed in!",
+        "signInError": "Error signing in. Please try again."
+      },
+      "signUp": {
+        "alreadyLoggedUp": "You are already logged up.",
+        "success": "Successfully signed up!",
+        "signUpError": "Error signing up. Please try again."
       }
+
   }
   
