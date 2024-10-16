@@ -53,6 +53,39 @@
           "503": "Сэрвіс недаступны"
         }
     }, 
+    "graphql": {
+      "client": "GraphiQL Кліент",
+      "endpointUrl": "URL Эндпойнта",
+      "format": "Няма запыту для фарматавання!",
+      "send": "Адправіць",
+      "close": "Зачыніць",
+      "status": "Статус:",
+      "endpointUrlSdl": "SDL URL Эндпойнта",
+      "formattingFail": "Памылка фарматавання, паспрабуйце зноў!",
+      "decodeFail": "Не атрымалася дэкадаваць параметры URL",
+      "correctUrl": "Калі ласка, укажыце карэктны URL і запыт",
+      "oops": "Ой! Нешта пайшло не так!",
+      "invalidFormat": "Няправільны фармат пераменных. Калі ласка, праверце ўвод.",
+      "fetchFail": "Не атрымалася атрымаць дадзеныя",
+      "writeHere": "# Напішыце тут ваш запыт ці мутацыю",
+      "response": "Адказ",
+      "schema": {
+        "schemaHeader": "Схема GraphQL",
+        "schema": "Схема",
+        "httpError": "Памылка HTTP! Статус: {{status}}",
+        "graphqlError": "Памылкі, вернутыя GraphQL: {{result}}",
+        "missing": "Няправільны introspection адказ: няма __schema"
+      },
+      "header": {
+        "headers": "Загалоўкі:",
+        "key": "Ключ",
+        "value": "Значэнне",
+        "addHeader": "Дадаць загаловак",
+        "Headers": "Загалоўкі",
+        "variables": "Пераменныя",
+        "placeholder": "{\"key\": \"значэнне\"}"
+      }
+    },
     "home": {
     "welcomeMessage": "Мы рады вас вітаць!",
     "description": "Гэта палегчаная версія Postman і GraphiQL, аб’яднаная ў адным дадатку.",

@@ -53,6 +53,39 @@
           "503": "Service Unavailable"
         }
     },
+    "graphql": {
+      "client":"GraphiQL Client",
+      "endpointUrl":"Endpoint URL",
+      "format":"No query to format!",
+      "send":"Send",
+      "close":"Close",
+      "status":"Status:",
+      "endpointUrlSdl":"Endpoint URL SDL",
+      "formattingFail":"Formatting failed, please try again!",
+      "decodeFail":"Failed to decode URL parameters",
+      "correctUrl":"Please provide correct URL and query",
+      "oops":"Oooops! Something went wrong!",
+      "invalidFormat":"Invalid variables format. Please check your input.",
+      "fetchFail":"Failed to fetch data",
+      "writeHere":"# Write your query or mutation here",
+      "response":"Response",
+      "schema": {
+        "schemaHeader":"GraphQL Schema",
+        "schema":"Schema",
+        "httpError": "HTTP error! status: {{status}}",
+        "graphqlError": "Errors returned from GraphQL: {{result}}",
+        "missing": "Invalid introspection response: missing __schema"
+      },
+      "header": {
+        "headers": "Headers:",  
+        "key": "Key",   
+        "value": "Value",   
+        "addHeader": "Add Header",
+        "Headers": "Headers",
+        "variables": "Variables",
+        "placeholder": "{\"key\": \"value\"}"
+      }
+    },
     "home": {
         "welcomeMessage": "We are happy to greet you!",
         "description": "This is a light-weight version of Postman and GraphiQL combined in one app.",

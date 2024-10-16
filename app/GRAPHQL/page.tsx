@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { useTranslation } from 'react-i18next';
 
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
@@ -24,6 +25,7 @@ import { clearHeaders, setHeaders } from '../slices/headersSlice';
 import HistoryBtn from '../components/historyButton/historyButton';
 
 export default function GraphiQLClient() {
+  const { t } = useTranslation();
   const [url, setUrl] = useState<string>('');
   const [urlSDL, setUrlSDL] = useState<string>('');
   const [responseData, setResponseData] = useState<string>('');
@@ -46,7 +48,7 @@ export default function GraphiQLClient() {
 
   const handleFormatCode = () => {
     if (!query) {
-      toast('No query to format!');
+      toast(t('graphql.format'));
       return;
     }
 
@@ -55,10 +57,10 @@ export default function GraphiQLClient() {
         setQuery(formattedQuery);
       })
       .catch((error) => {
-        toast('Formatting failed, please try again!', {
+        toast(t('graphql.formattingFail'), {
           description: `${error.message}`,
           action: {
-            label: 'Close',
+            label: t('graphql.close'),
             onClick: () => {
               toast.dismiss();
             },
@@ -114,10 +116,10 @@ export default function GraphiQLClient() {
           dispatch(setHeaders(headersToDispatch));
         }
       } catch (error) {
-        toast('Failed to decode URL parameters', {
+        toast(t('graphql.decodeFail'), {
           description: `${error}`,
           action: {
-            label: 'Close',
+            label: t('graphql.close'),
             onClick: () => {
               toast.dismiss();
             },
@@ -125,7 +127,7 @@ export default function GraphiQLClient() {
         });
       }
     }
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     if (url) {
@@ -138,11 +140,11 @@ export default function GraphiQLClient() {
   const handleRequest = async () => {
     if (!url || !query) {
       setStatusCode(`💁`);
-      setResponseData('Please provide correct URL and query');
-      toast('Oooops! Something went wrong!', {
-        description: 'Please provide URL and query',
+      setResponseData(t('graphql.correctUrl'));
+      toast(t('graphql.oops'), {
+        description: t('graphql.correctURL'),
         action: {
-          label: 'Close',
+          label: t('graphql.close'),
           onClick: () => {
             toast.dismiss();
           },
@@ -161,10 +163,10 @@ export default function GraphiQLClient() {
       try {
         validVariables = JSON.parse(variables);
       } catch (error) {
-        toast('Invalid variables format. Please check your input.', {
+        toast(t('graphql.invalidFormat'), {
           description: `${error}`,
           action: {
-            label: 'Close',
+            label: t('graphql.close'),
             onClick: () => {
               toast.dismiss();
             },
@@ -197,10 +199,10 @@ export default function GraphiQLClient() {
       setResponseData(JSON.stringify(data, null, 2));
     } catch (error) {
       setResponseData(String(error));
-      toast('Oooops! Something went wrong!', {
-        description: 'Failed to fetch data',
+      toast(t('graphql.oops'), {
+        description: t('graphql.fetchFail'),
         action: {
-          label: 'Close',
+          label: t('graphql.close'),
           onClick: () => {
             toast.dismiss();
           },
@@ -251,14 +253,14 @@ export default function GraphiQLClient() {
         <div className="flex flex-row mb-[20px]">
           <HistoryBtn />
           <h1 className="text-xxl font-bold mb-4 text-center w-full">
-            GraphiQL Client
+            {t('graphql.client')}
           </h1>
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row">
             <input
               type="text"
-              placeholder="Endpoint URL"
+              placeholder={t('graphql.endpointUrl')}
               className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
               value={url}
               onChange={(e) => {
@@ -275,13 +277,13 @@ export default function GraphiQLClient() {
                 saveToLS();
               }}
             >
-              Send
+              {t('graphql.send')}
             </button>
           </div>
           <div className="flex flex-row">
             <input
               type="text"
-              placeholder="Endpoint URL SDL"
+              placeholder={t('graphql.endpointUrlSdl')}
               className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
               value={urlSDL}
               onChange={(e) => {
@@ -294,11 +296,11 @@ export default function GraphiQLClient() {
               type="submit"
               onClick={handleSDLRequest}
             >
-              Send
+              {t('graphql.send')}
             </button>
           </div>
           <div className="flex items-center mb-2">
-            <div className="mr-2 font-semibold">Status:</div>
+            <div className="mr-2 font-semibold">{t('graphql.status')}</div>
             <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
               {statusCode}
             </div>
@@ -327,7 +329,7 @@ export default function GraphiQLClient() {
                     width="100%"
                     value={query}
                     theme="dark"
-                    placeholder="# Write your query or mutation here"
+                    placeholder={t('graphql.writeHere')}
                     extensions={[javascript({ jsx: true })]}
                     onChange={(value) => {
                       setQuery(value);
@@ -344,7 +346,7 @@ export default function GraphiQLClient() {
                 <div className="flex-grow p-2 min-h-full overflow-auto">
                   <CodeMirror
                     height="700px"
-                    placeholder="Response"
+                    placeholder={t('graphql.response')}
                     width="100%"
                     value={responseData}
                     theme="dark"

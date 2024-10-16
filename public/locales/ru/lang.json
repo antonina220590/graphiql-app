@@ -53,6 +53,39 @@
           "503": "Сервис недоступен"
         }
        },   
+       "graphql": {
+    "client": "GraphiQL Клиент",
+    "endpointUrl": "URL Эндпоинта",
+    "format": "Нет запроса для форматирования!",
+    "send": "Отправить",
+    "close": "Закрыть",
+    "status": "Статус:",
+    "endpointUrlSdl": "SDL URL Эндпоинта",
+    "formattingFail": "Ошибка форматирования, попробуйте снова!",
+    "decodeFail": "Не удалось декодировать параметры URL",
+    "correctUrl": "Пожалуйста, укажите корректный URL и запрос",
+    "oops": "Упс! Что-то пошло не так!",
+    "invalidFormat": "Неправильный формат переменных. Пожалуйста, проверьте ввод.",
+    "fetchFail": "Не удалось получить данные",
+    "writeHere": "# Напишите здесь ваш запрос или мутацию",
+    "response": "Ответ",
+    "schema": {
+      "schemaHeader": "Схема GraphQL",
+      "schema": "Схема",
+      "httpError": "Ошибка HTTP! Статус: {{status}}",
+      "graphqlError": "Ошибки, возвращённые GraphQL: {{result}}",
+      "missing": "Недействительный introspection ответ: отсутствует __schema"
+    },
+    "header": {
+      "headers": "Заголовки:",
+      "key": "Ключ",
+      "value": "Значение",
+      "addHeader": "Добавить заголовок",
+      "Headers": "Заголовки",
+      "variables": "Переменные",
+      "placeholder": "{\"key\": \"значение\"}"
+    }
+  },
     "home": {
         "welcomeMessage": "Мы рады приветствовать вас!",
         "description": "Это облегченная версия Postman и GraphiQL, объединенная в одном приложении.",
