@@ -1,11 +1,11 @@
 import * as prettier from 'prettier/standalone';
 import * as parserGraphQL from 'prettier/parser-graphql';
 import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 
-const formatQuery = async (query: string): Promise<string> => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { t } = useTranslation();
+const formatQuery = async (
+  query: string,
+  t: (key: string) => string
+): Promise<string> => {
   try {
     return await prettier.format(query, {
       parser: 'graphql',
@@ -31,4 +31,5 @@ const formatQuery = async (query: string): Promise<string> => {
     return query;
   }
 };
+
 export default formatQuery;
