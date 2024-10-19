@@ -51,7 +51,7 @@ export default function GraphiQLClient() {
       return;
     }
 
-    formatQuery(query)
+    formatQuery(query, t)
       .then((formattedQuery) => {
         setQuery(formattedQuery);
       })
@@ -95,7 +95,7 @@ export default function GraphiQLClient() {
         }
 
         if (typeof bodyParsed.query === 'string') {
-          formatQuery(bodyParsed.query).then((formattedQuery) => {
+          formatQuery(bodyParsed.query, t).then((formattedQuery) => {
             setQuery(formattedQuery);
           });
         }
