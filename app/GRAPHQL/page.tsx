@@ -17,12 +17,11 @@ import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { clearUrlSdl, setUrlSdl } from '../slices/sdlSlice';
-import statusTexts from './helpers/status';
-import formatQuery from './helpers/prettifier';
 import { clearVariables, setVariables } from '../slices/variablesSlice';
 import generateEncodedUrl from './helpers/urlHelper';
 import { clearHeaders, setHeaders } from '../slices/headersSlice';
 import HistoryBtn from '../components/historyButton/historyButton';
+import useFormatQuery from './helpers/prettifier';
 
 export default function GraphiQLClient() {
   const { t } = useTranslation();
@@ -37,6 +36,7 @@ export default function GraphiQLClient() {
     (state: { variables: { value: string } }) => state.variables.value
   );
   const dispatch = useDispatch();
+  const { formatQuery } = useFormatQuery();
 
   useEffect(() => {
     return () => {
@@ -127,7 +127,7 @@ export default function GraphiQLClient() {
         });
       }
     }
-  }, [dispatch, t]);
+  }, [dispatch, formatQuery, t]);
 
   useEffect(() => {
     if (url) {
@@ -192,7 +192,9 @@ export default function GraphiQLClient() {
         },
         body: JSON.stringify(requestBody),
       });
-      const statusText = statusTexts[res.status] || 'Unknown Status';
+      const statusText = t(`statusText.${res.status}`, {
+        defaultValue: t('statusText.unknownStatus'),
+      });
       setStatusCode(`${res.status} ${statusText}`);
 
       const data = await res.json();

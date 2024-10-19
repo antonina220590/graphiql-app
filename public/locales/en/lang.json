@@ -39,22 +39,9 @@
         },
         "error": {
           "label": "Error:",
-          "unknownStatus": "Unknown status",
           "errorMessage": "Error: {{message}}",
           "responseMessage": "{{status}} {{statusMessage}}",
           "invalidUrl": "Invalid URL. Please, enter a correct URL"
-        },
-        "statusText": {
-          "200": "OK",
-          "201": "Created",
-          "204": "No Content",
-          "400": "Bad Request",
-          "401": "Unauthorized",
-          "403": "Forbidden",
-          "404": "Not Found",
-          "500": "Internal Server Error",
-          "502": "Bad Gateway",
-          "503": "Service Unavailable"
         }
     },
     "graphql": {
@@ -73,6 +60,9 @@
       "fetchFail":"Failed to fetch data",
       "writeHere":"# Write your query or mutation here",
       "response":"Response",
+      "key": "Key",
+      "value":"Value",
+      "addHeader":"Add Header",
       "schema": {
         "schemaHeader":"GraphQL Schema",
         "schema":"Schema",
@@ -120,7 +110,22 @@
         "alreadyLoggedUp": "You are already logged up.",
         "success": "Successfully signed up!",
         "signUpError": "Error signing up. Please try again."
+      },
+      "statusText": {
+        "unknownStatus": "Unknown Status",
+        "100": "Continue",
+        "101": "Switching Protocols",
+        "200": "OK",
+        "201": "Created",
+        "204": "No Content",
+        "400": "Bad Request",
+        "401": "Unauthorized",
+        "403": "Forbidden",
+        "404": "Not Found",
+        "500": "Internal Server Error",
+        "502": "Bad Gateway",
+        "503": "Service Unavailable",  
+        "422": "Unprocessable Entity"
       }
-
   }
   

@@ -1,8 +1,11 @@
 import * as prettier from 'prettier/standalone';
 import * as parserGraphQL from 'prettier/parser-graphql';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const formatQuery = async (query: string): Promise<string> => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { t } = useTranslation();
   try {
     return await prettier.format(query, {
       parser: 'graphql',
@@ -16,10 +19,10 @@ const formatQuery = async (query: string): Promise<string> => {
       endOfLine: 'lf',
     });
   } catch (error) {
-    toast('Formatting failed, please try again!', {
+    toast(t('graphql.formattingFail'), {
       description: `${error}`,
       action: {
-        label: 'Close',
+        label: t('graphql.close'),
         onClick: () => {
           toast.dismiss();
         },

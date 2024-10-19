@@ -101,9 +101,8 @@ export default function RESTfullClient() {
 
     try {
       const res = await fetch(url, options);
-      const statusMessage = t(`restfull.statusText.${res.status}`, {
-        defaultValue:
-          statusText[res.status] || t('restfull.error.unknownStatus'),
+      const statusMessage = t(`statusText.${res.status}`, {
+        defaultValue: statusText[res.status] || t('statusText.unknownStatus'),
       });
 
       setStatusCode(`${res.status} ${statusMessage}`);

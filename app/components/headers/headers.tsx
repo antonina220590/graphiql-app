@@ -114,10 +114,10 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
               <div className="grid grid-cols-[4rem_1fr_1fr_4rem] gap-0 mb-0">
                 <div></div>
                 <label className="font-semibold border border-gray-400 p-2">
-                  Key
+                  {t('graphql.key')}
                 </label>
                 <label className="font-semibold border border-gray-400 p-2">
-                  Value
+                  {t('graphql.value')}
                 </label>
               </div>
               {headers.map((header, index) => (
@@ -158,7 +158,7 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
                 className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
                 onClick={addHTTPHeader}
               >
-                Add Header
+                {t('graphql.addHeader')}
               </button>
             </div>
           )}
