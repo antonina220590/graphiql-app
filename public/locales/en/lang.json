@@ -30,7 +30,55 @@
         "variableKeyPlaceholder": "Variable key",
         "variableValuePlaceholder": "Variable value",
         "addVariables": "Add Variables",
-        "addHeader" : "Add Header"
+        "addHeader" : "Add Header",
+        "close": "Close",
+        "endpointURL": "Endpoint URL",
+        "message": {
+          "empty": "The URL field is empty. Please enter a URL.",
+          "unknown": "An unknown error occurred"
+        },
+        "error": {
+          "label": "Error:",
+          "errorMessage": "Error: {{message}}",
+          "responseMessage": "{{status}} {{statusMessage}}",
+          "invalidUrl": "Invalid URL. Please, enter a correct URL"
+        }
+    },
+    "graphql": {
+      "client":"GraphiQL Client",
+      "endpointUrl":"Endpoint URL",
+      "format":"No query to format!",
+      "send":"Send",
+      "close":"Close",
+      "status":"Status:",
+      "endpointUrlSdl":"Endpoint URL SDL",
+      "formattingFail":"Formatting failed, please try again!",
+      "decodeFail":"Failed to decode URL parameters",
+      "correctUrl":"Please provide correct URL and query",
+      "oops":"Oooops! Something went wrong!",
+      "invalidFormat":"Invalid variables format. Please check your input.",
+      "fetchFail":"Failed to fetch data",
+      "writeHere":"# Write your query or mutation here",
+      "response":"Response",
+      "key": "Key",
+      "value":"Value",
+      "addHeader":"Add Header",
+      "schema": {
+        "schemaHeader":"GraphQL Schema",
+        "schema":"Schema",
+        "httpError": "HTTP error! status: {{status}}",
+        "graphqlError": "Errors returned from GraphQL: {{result}}",
+        "missing": "Invalid introspection response: missing __schema"
+      },
+      "header": {
+        "headers": "Headers:",  
+        "key": "Key",   
+        "value": "Value",   
+        "addHeader": "Add Header",
+        "Headers": "Headers",
+        "variables": "Variables",
+        "placeholder": "{\"key\": \"value\"}"
+      }
     },
     "home": {
         "welcomeMessage": "We are happy to greet you!",
@@ -52,7 +100,32 @@
         "rsSchool": "RS School",
         "startDescription": "This project was created as the final project of the React course at",
         "rsSchoolDescription": "is a free and community-based online education program conducted by The Rolling Scopes Community since 2013. Currently 500+ developers from different countries and companies are involved in the education process as mentors."
-      } 
-    
+      },
+      "signIn": {
+        "alreadyLoggedIn": "You are already logged in.",
+        "success": "Successfully signed in!",
+        "signInError": "Error signing in. Please try again."
+      },
+      "signUp": {
+        "alreadyLoggedUp": "You are already logged up.",
+        "success": "Successfully signed up!",
+        "signUpError": "Error signing up. Please try again."
+      },
+      "statusText": {
+        "unknownStatus": "Unknown Status",
+        "100": "Continue",
+        "101": "Switching Protocols",
+        "200": "OK",
+        "201": "Created",
+        "204": "No Content",
+        "400": "Bad Request",
+        "401": "Unauthorized",
+        "403": "Forbidden",
+        "404": "Not Found",
+        "500": "Internal Server Error",
+        "502": "Bad Gateway",
+        "503": "Service Unavailable",  
+        "422": "Unprocessable Entity"
+      }
   }
   

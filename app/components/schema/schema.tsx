@@ -7,10 +7,12 @@ import {
   printSchema,
 } from 'graphql';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { RootState } from '../../slices/store';
 
 export default function SchemaPanel() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [panelWidth, setPanelWidth] = useState<number>(300);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -41,27 +43,31 @@ export default function SchemaPanel() {
           });
           setSDLStatus(response.status);
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(
+              t('graphql.schema.httpError', { status: response.status })
+            );
           }
           const result = await response.json();
           if (result.errors) {
             throw new Error(
-              `Errors returned from GraphQL: ${JSON.stringify(result.errors)}`
+              t('graphql.schema.graphqlError', {
+                result: JSON.stringify(result.errors),
+              })
             );
           }
           const schemaData = result.data;
           if (!schemaData || !schemaData.__schema) {
-            throw new Error('Invalid introspection response: missing __schema');
+            throw new Error(t('graphql.schema.missing'));
           }
 
           const schema: GraphQLSchema = buildClientSchema(schemaData);
           setSchemaSDL(printSchema(schema).replace(/"""/g, ''));
         } catch (error: unknown) {
           setError((error as Error).message);
-          toast('Oooops! Something went wrong!', {
+          toast(t('graphql.oops'), {
             description: `${error}`,
             action: {
-              label: 'Close',
+              label: t('graphql.close'),
               onClick: () => {
                 toast.dismiss();
               },
@@ -71,7 +77,7 @@ export default function SchemaPanel() {
       }
     };
     fetchSchema();
-  }, [GRAPHQL_URL, sdlStatus]);
+  }, [GRAPHQL_URL, sdlStatus, t]);
 
   const togglePanel = () => {
     if (sdlStatus === 200 && schemaSDL && GRAPHQL_URL.length && !error) {
@@ -129,7 +135,7 @@ export default function SchemaPanel() {
             onMouseDown={startResize}
             data-testid="resize-handle"
           />
-          <h1>GraphQL Schema</h1>
+          <h1>{t('graphql.schema.schemaHeader')}</h1>
           {error ? (
             <p className="text-red-500">{error}</p>
           ) : (
@@ -141,7 +147,7 @@ export default function SchemaPanel() {
           className={`absolute py-1 px-2 z-50 left-[-70px] top-1/4 transform -translate-y-1/2 bg-[${sdlStatus === 200 && schemaSDL && GRAPHQL_URL.length && !error ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
           style={{ transform: 'rotate(-90deg)' }}
         >
-          Schema
+          {t('graphql.schema.schema')}
         </button>
       </div>
     </div>
