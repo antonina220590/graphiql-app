@@ -176,6 +176,7 @@ export default function GraphiQLClient() {
     }
 
     const requestBody = {
+      url,
       query,
       ...(validVariables && Object.keys(validVariables).length > 0
         ? { variables: validVariables }
@@ -183,7 +184,7 @@ export default function GraphiQLClient() {
     };
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch('/api/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
