@@ -31,6 +31,7 @@
         "variableValuePlaceholder": "Значение переменной",
         "addVariables": "Добавить переменные",
         "addHeader": "Добавить заголовок",
+        "close": "Закрыть",
         "message": {
           "empty": "Поле URL пустое. Пожалуйста, введите URL.",
           "unknown": "Произошла неизвестная ошибка"

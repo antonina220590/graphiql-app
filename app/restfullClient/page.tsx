@@ -55,28 +55,48 @@ export default function RESTfullClient() {
 
   const handleSend = async () => {
     if (!url) {
-      toast(t('restfull.message.empty'));
+      toast(t('restfull.message.empty'), {
+        action: {
+          label: t('restfull.close'),
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
       setResponse(t('restfull.message.empty'));
       setStatusCode(`💁`);
       return;
     }
-    const validHeaders = headers.filter(
-      (header) => header.keyHeader && header.valueHeader
-    );
 
-    let requestBody;
-    if (typeof body === 'object') {
-      requestBody = JSON.stringify(body);
-    } else {
-      requestBody = body;
+    try {
+      new URL(url);
+    } catch (error) {
+      toast(t('restfull.error.invalidUrl'), {
+        action: {
+          label: t('restfull.close'),
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+      setResponse(t('restfull.error.invalidUrl'));
+      setStatusCode(`❌`);
+      return;
     }
+
+    const validHeaders = headers.filter(
+      ({ keyHeader, valueHeader }) => keyHeader && valueHeader
+    );
 
     const options = {
       method: method,
       headers: Object.fromEntries(
-        validHeaders.map((header) => [header.keyHeader, header.valueHeader])
+        validHeaders.map(({ keyHeader, valueHeader }) => [
+          keyHeader,
+          valueHeader,
+        ])
       ),
-      body: requestBody ? requestBody : undefined,
+      body: body && typeof body === 'object' ? JSON.stringify(body) : body,
     };
 
     try {
@@ -97,8 +117,14 @@ export default function RESTfullClient() {
         if (errorData.message) {
           errorMessage = errorData.message;
         }
-
-        toast(t('restfull.error.errorMessage', { message: errorMessage }));
+        toast(t('restfull.error.errorMessage', { message: errorMessage }), {
+          action: {
+            label: t('restfull.close'),
+            onClick: () => {
+              toast.dismiss();
+            },
+          },
+        });
         return;
       }
 
@@ -106,7 +132,7 @@ export default function RESTfullClient() {
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
       setResponse(
-        `Error: ${(error as Error).message || t('restfull.error.unknown')}`
+        `${t('restfull.error.label')}: ${(error as Error).message || t('restfull.error.unknown')}`
       );
     }
   };

@@ -31,14 +31,18 @@
         "variableValuePlaceholder": "Variable value",
         "addVariables": "Add Variables",
         "addHeader" : "Add Header",
+        "close": "Close",
+        "endpointURL": "Endpoint URL",
         "message": {
           "empty": "The URL field is empty. Please enter a URL.",
           "unknown": "An unknown error occurred"
         },
         "error": {
+          "label": "Error:",
           "unknownStatus": "Unknown status",
           "errorMessage": "Error: {{message}}",
-          "responseMessage": "{{status}} {{statusMessage}}"
+          "responseMessage": "{{status}} {{statusMessage}}",
+          "invalidUrl": "Invalid URL. Please, enter a correct URL"
         },
         "statusText": {
           "200": "OK",
