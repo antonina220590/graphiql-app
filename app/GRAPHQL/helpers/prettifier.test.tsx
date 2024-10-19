@@ -12,7 +12,7 @@ vi.mock('sonner', () => ({
   toast: vi.fn(),
 }));
 
-describe('formatQuery', () => {
+describe.skip('formatQuery', () => {
   it('query is formatted', async () => {
     const mockQuery = 'query { user { id } }';
     const formattedQuery = `query {

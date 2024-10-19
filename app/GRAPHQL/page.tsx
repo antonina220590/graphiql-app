@@ -21,7 +21,7 @@ import { clearVariables, setVariables } from '../slices/variablesSlice';
 import generateEncodedUrl from './helpers/urlHelper';
 import { clearHeaders, setHeaders } from '../slices/headersSlice';
 import HistoryBtn from '../components/historyButton/historyButton';
-import useFormatQuery from './helpers/prettifier';
+import formatQuery from './helpers/prettifier';
 
 export default function GraphiQLClient() {
   const { t } = useTranslation();
@@ -36,7 +36,6 @@ export default function GraphiQLClient() {
     (state: { variables: { value: string } }) => state.variables.value
   );
   const dispatch = useDispatch();
-  const { formatQuery } = useFormatQuery();
 
   useEffect(() => {
     return () => {
@@ -127,7 +126,7 @@ export default function GraphiQLClient() {
         });
       }
     }
-  }, [dispatch, formatQuery, t]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     if (url) {
