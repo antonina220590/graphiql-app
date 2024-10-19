@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { useTranslation } from 'react-i18next';
 
 import {
   addHeader,
@@ -23,6 +24,7 @@ interface HeadersPanelProps {
 }
 
 export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -108,14 +110,14 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
           />
           {activeTab === 'headers' && (
             <div className="mb-4">
-              <h2 className="font-semibold">Headers:</h2>
+              <h2 className="font-semibold">{t('graphql.header.headers')}</h2>
               <div className="grid grid-cols-[4rem_1fr_1fr_4rem] gap-0 mb-0">
                 <div></div>
                 <label className="font-semibold border border-gray-400 p-2">
-                  Key
+                  {t('graphql.key')}
                 </label>
                 <label className="font-semibold border border-gray-400 p-2">
-                  Value
+                  {t('graphql.value')}
                 </label>
               </div>
               {headers.map((header, index) => (
@@ -156,7 +158,7 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
                 className="bg-[#fe6d12] text-white p-2 mt-3 rounded border hover:border-[#292929] transition duration-300"
                 onClick={addHTTPHeader}
               >
-                Add Header
+                {t('graphql.addHeader')}
               </button>
             </div>
           )}
@@ -176,7 +178,7 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
                 theme="dark"
                 extensions={[javascript({ jsx: true })]}
                 onChange={handleChange}
-                placeholder='{"key": "value"}'
+                placeholder={t('graphql.header.placeholder')}
                 style={{
                   borderColor: isValidJson ? 'lightgray' : 'red',
                   borderWidth: '5px',
@@ -194,7 +196,7 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
               openPanel();
             }}
           >
-            Headers
+            {t('graphql.header.Headers')}
           </button>
           <button
             className={`py-1 px-2 bg-[${activeTab === 'variables' ? '#fe6d12' : '#fbc511'}] text-white flex items-center justify-center shadow-md`}
@@ -203,7 +205,7 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
               openPanel();
             }}
           >
-            Variables
+            {t('graphql.header.variables')}
           </button>
         </div>
         <button
