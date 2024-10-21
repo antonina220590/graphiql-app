@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import handleFormatCode from './helpers/handleFormatCode';
 import { useDecodedUrlEffect } from './hooks/useDecodedUrlEffect';
+import { saveRequestToLocalStorage } from './helpers/localStorageUtils';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
@@ -152,17 +153,7 @@ export default function GraphiQLClient() {
   }, [url, query, headers, variables]);
 
   const saveToLS = () => {
-    const savedRequests = JSON.parse(
-      localStorage.getItem('savedRequests') || '[]'
-    );
-
-    const requestDetails = {
-      url: decodedURL,
-      timestamp: new Date().toISOString(),
-    };
-
-    savedRequests.push(requestDetails);
-    localStorage.setItem('savedRequests', JSON.stringify(savedRequests));
+    saveRequestToLocalStorage(decodedURL);
   };
 
   useEffect(() => {
