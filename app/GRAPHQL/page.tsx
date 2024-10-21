@@ -13,6 +13,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { useTranslation } from 'react-i18next';
 
+import handleFormatCode from './helpers/handleFormatCode';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
@@ -45,28 +46,6 @@ export default function GraphiQLClient() {
     };
   }, [dispatch]);
 
-  const handleFormatCode = () => {
-    if (!query) {
-      toast(t('graphql.format'));
-      return;
-    }
-
-    formatQuery(query, t)
-      .then((formattedQuery) => {
-        setQuery(formattedQuery);
-      })
-      .catch((error) => {
-        toast(t('graphql.formattingFail'), {
-          description: `${error.message}`,
-          action: {
-            label: t('graphql.close'),
-            onClick: () => {
-              toast.dismiss();
-            },
-          },
-        });
-      });
-  };
   const padBase64Str = (str: string) => {
     while (str.length % 4 !== 0) {
       str += '=';
@@ -318,7 +297,7 @@ export default function GraphiQLClient() {
                 <div className="absolute right-2 top-2 z-10">
                   <button
                     className="flex items-center justify-center w-10 h-10 text-white p-1 m-1 col-span-1"
-                    onClick={handleFormatCode}
+                    onClick={() => handleFormatCode({ query, t, setQuery })}
                   >
                     <SparklesIcon className="h-15 w-15 text-[#fe6d12]" />
                   </button>
