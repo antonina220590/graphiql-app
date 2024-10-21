@@ -14,15 +14,15 @@ import { javascript } from '@codemirror/lang-javascript';
 import { useTranslation } from 'react-i18next';
 
 import handleFormatCode from './helpers/handleFormatCode';
+import { useDecodedUrlEffect } from './hooks/useDecodedUrlEffect';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { clearUrlSdl, setUrlSdl } from '../slices/sdlSlice';
-import { clearVariables, setVariables } from '../slices/variablesSlice';
+import { clearVariables } from '../slices/variablesSlice';
 import generateEncodedUrl from './helpers/urlHelper';
-import { clearHeaders, setHeaders } from '../slices/headersSlice';
+import { clearHeaders } from '../slices/headersSlice';
 import HistoryBtn from '../components/historyButton/historyButton';
-import formatQuery from './helpers/prettifier';
 
 export default function GraphiQLClient() {
   const { t } = useTranslation();
@@ -46,66 +46,7 @@ export default function GraphiQLClient() {
     };
   }, [dispatch]);
 
-  const padBase64Str = (str: string) => {
-    while (str.length % 4 !== 0) {
-      str += '=';
-    }
-    return str;
-  };
-
-  useEffect(() => {
-    const encodedUrl = window.location.pathname.split('/');
-
-    if (encodedUrl.length >= 4) {
-      const endpointUrlEncoded = encodedUrl[2];
-      const bodyEncoded = encodedUrl[3];
-
-      try {
-        const decodedEndpointUrl = decodeURIComponent(
-          atob(padBase64Str(endpointUrlEncoded) || '')
-        );
-        const decodedBody = decodeURIComponent(
-          atob(padBase64Str(bodyEncoded)) || ''
-        );
-        const bodyParsed = JSON.parse(decodedBody.replace(/\\n/g, ''));
-
-        if (typeof decodedEndpointUrl === 'string') {
-          setUrl(decodedEndpointUrl);
-        }
-
-        if (typeof bodyParsed.query === 'string') {
-          formatQuery(bodyParsed.query, t).then((formattedQuery) => {
-            setQuery(formattedQuery);
-          });
-        }
-
-        if (Object.keys(bodyParsed.variables).length > 0) {
-          dispatch(setVariables(JSON.stringify(bodyParsed.variables)));
-        }
-        const queryParams = new URLSearchParams(window.location.search);
-        const headerEntries = Array.from(queryParams.entries());
-
-        const headersToDispatch = headerEntries.map(([key, value]) => ({
-          key: key.trim(),
-          value: value.trim(),
-        }));
-
-        if (headersToDispatch.length > 0) {
-          dispatch(setHeaders(headersToDispatch));
-        }
-      } catch (error) {
-        toast(t('graphql.decodeFail'), {
-          description: `${error}`,
-          action: {
-            label: t('graphql.close'),
-            onClick: () => {
-              toast.dismiss();
-            },
-          },
-        });
-      }
-    }
-  }, [dispatch, t]);
+  useDecodedUrlEffect({ setUrl, setQuery, t });
 
   useEffect(() => {
     if (url) {
