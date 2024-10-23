@@ -17,6 +17,7 @@ import handleFormatCode from './helpers/handleFormatCode';
 import { useDecodedUrlEffect } from './hooks/useDecodedUrlEffect';
 import { saveRequestToLocalStorage } from './helpers/localStorageUtils';
 import { useGraphQLRequest } from './hooks/useGraphqlRequest';
+import UrlInput from '../components/graphql-components/URLInput';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
@@ -114,48 +115,23 @@ export default function GraphiQLClient() {
           </h1>
         </div>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-row">
-            <input
-              type="text"
-              placeholder={t('graphql.endpointUrl')}
-              className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
-              value={url}
-              onChange={(e) => {
-                setUrl(e.target.value.trim());
-              }}
-              onBlur={handleFocusOut}
-            />
-            <button
-              data-testid="sendUrl"
-              className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
-              type="submit"
-              onClick={() => {
-                handleRequest();
-                saveToLS();
-              }}
-            >
-              {t('graphql.send')}
-            </button>
-          </div>
-          <div className="flex flex-row">
-            <input
-              type="text"
-              placeholder={t('graphql.endpointUrlSdl')}
-              className="border-2 p-2 ml-0 rounded flex-grow bg-dark text-white focus:border-yellow-500 focus:outline-none"
-              value={urlSDL}
-              onChange={(e) => {
-                setUrlSDL(e.target.value.trim());
-              }}
-            />
-            <button
-              data-testid="sendSdl"
-              className="bg-[#fe6d12] text-white p-2 rounded border hover:border-[#292929] transition duration-300"
-              type="submit"
-              onClick={handleSDLRequest}
-            >
-              {t('graphql.send')}
-            </button>
-          </div>
+          <UrlInput
+            url={url}
+            setUrl={setUrl}
+            onSubmit={() => {
+              handleRequest();
+              saveToLS();
+            }}
+            placeholder={t('graphql.endpointUrl')}
+            buttonLabel={t('graphql.send')}
+          />
+          <UrlInput
+            url={urlSDL}
+            setUrl={setUrlSDL}
+            onSubmit={handleSDLRequest}
+            placeholder={t('graphql.endpointUrlSdl')}
+            buttonLabel={t('graphql.send')}
+          />
           <div className="flex items-center mb-2">
             <div className="mr-2 font-semibold">{t('graphql.status')}</div>
             <div className="border p-2 rounded bg-dark flex-1 text-white min-h-10">
