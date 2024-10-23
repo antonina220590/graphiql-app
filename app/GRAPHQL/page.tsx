@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import handleFormatCode from './helpers/handleFormatCode';
 import { useDecodedUrlEffect } from './hooks/useDecodedUrlEffect';
 import { saveRequestToLocalStorage } from './helpers/localStorageUtils';
+import { useGraphQLRequest } from './hooks/useGraphqlRequest';
 import { RootState } from '../slices/store';
 import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
@@ -29,9 +30,7 @@ export default function GraphiQLClient() {
   const { t } = useTranslation();
   const [url, setUrl] = useState<string>('');
   const [urlSDL, setUrlSDL] = useState<string>('');
-  const [responseData, setResponseData] = useState<string>('');
   const [query, setQuery] = useState<string>('');
-  const [statusCode, setStatusCode] = useState('');
   const headers = useSelector((state: RootState) => state.headers);
   const [decodedURL, setDecodedURL] = useState<string>('');
   const variables = useSelector(
@@ -49,6 +48,11 @@ export default function GraphiQLClient() {
 
   useDecodedUrlEffect({ setUrl, setQuery, t });
 
+  const { sendRequest, statusCode, responseData } = useGraphQLRequest({
+    headers,
+    variables,
+  });
+
   useEffect(() => {
     if (url) {
       setUrlSDL(`${url}?sdl`);
@@ -59,8 +63,6 @@ export default function GraphiQLClient() {
 
   const handleRequest = async () => {
     if (!url || !query) {
-      setStatusCode(`💁`);
-      setResponseData(t('graphql.correctUrl'));
       toast(t('graphql.oops'), {
         description: t('graphql.correctURL'),
         action: {
@@ -72,67 +74,9 @@ export default function GraphiQLClient() {
       });
       return;
     }
-
-    const validHeaders = headers.filter((header) => header.key && header.value);
-    const headersObject = Object.fromEntries(
-      validHeaders.map((header) => [header.key.trim(), header.value.trim()])
-    );
-
-    let validVariables = {};
-    if (variables.trim()) {
-      try {
-        validVariables = JSON.parse(variables);
-      } catch (error) {
-        toast(t('graphql.invalidFormat'), {
-          description: `${error}`,
-          action: {
-            label: t('graphql.close'),
-            onClick: () => {
-              toast.dismiss();
-            },
-          },
-        });
-        return;
-      }
-    }
-
-    const requestBody = {
-      url,
-      query,
-      ...(validVariables && Object.keys(validVariables).length > 0
-        ? { variables: validVariables }
-        : {}),
-    };
-
-    try {
-      const res = await fetch('/api/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...headersObject,
-        },
-        body: JSON.stringify(requestBody),
-      });
-      const statusText = t(`statusText.${res.status}`, {
-        defaultValue: t('statusText.unknownStatus'),
-      });
-      setStatusCode(`${res.status} ${statusText}`);
-
-      const data = await res.json();
-      setResponseData(JSON.stringify(data, null, 2));
-    } catch (error) {
-      setResponseData(String(error));
-      toast(t('graphql.oops'), {
-        description: t('graphql.fetchFail'),
-        action: {
-          label: t('graphql.close'),
-          onClick: () => {
-            toast.dismiss();
-          },
-        },
-      });
-    }
+    await sendRequest(url, query);
   };
+
   const handleSDLRequest = () => {
     dispatch(setUrlSdl(urlSDL));
   };
