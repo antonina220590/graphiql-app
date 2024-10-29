@@ -23,9 +23,9 @@ import SchemaPanel from '../components/schema/schema';
 import HeadersPanel from '../components/headers/headers';
 import { clearUrlSdl, setUrlSdl } from '../slices/sdlSlice';
 import { clearVariables } from '../slices/variablesSlice';
-import generateEncodedUrl from './helpers/urlHelper';
 import { clearHeaders } from '../slices/headersSlice';
 import HistoryBtn from '../components/historyButton/historyButton';
+import handleFocusOut from './helpers/handleFocusOut';
 
 export default function GraphiQLClient() {
   const { t } = useTranslation();
@@ -82,28 +82,23 @@ export default function GraphiQLClient() {
     dispatch(setUrlSdl(urlSDL));
   };
 
-  const handleFocusOut = useCallback(() => {
-    const commonBody = JSON.stringify({
+  const handleFocusOutCallback = useCallback(() => {
+    handleFocusOut({
+      url,
       query,
-      variables: JSON.parse(variables || '{}'),
+      headers,
+      variables,
+      setDecodedURL,
     });
+  }, [url, query, headers, variables, setDecodedURL]);
 
-    const generatedUrl = generateEncodedUrl(url, commonBody, headers);
-    const currentUrl = window.location.href;
-
-    if (generatedUrl && generatedUrl !== currentUrl) {
-      window.history.pushState({}, '', generatedUrl);
-      setDecodedURL(generatedUrl);
-    }
-  }, [url, query, headers, variables]);
+  useEffect(() => {
+    handleFocusOutCallback();
+  }, [handleFocusOutCallback]);
 
   const saveToLS = () => {
     saveRequestToLocalStorage(decodedURL);
   };
-
-  useEffect(() => {
-    handleFocusOut();
-  }, [handleFocusOut]);
 
   return (
     <main className="flex-grow p-4 bg-light">
@@ -155,7 +150,7 @@ export default function GraphiQLClient() {
                   </button>
                 </div>
                 <div className="flex-grow p-2 min-h-full overflow-auto">
-                  <HeadersPanel onUpdate={handleFocusOut} />
+                  <HeadersPanel onUpdate={handleFocusOutCallback} />
                   <CodeMirror
                     data-testid="queryPanel"
                     height="700px"
@@ -167,7 +162,7 @@ export default function GraphiQLClient() {
                     onChange={(value) => {
                       setQuery(value);
                     }}
-                    onBlur={handleFocusOut}
+                    onBlur={handleFocusOutCallback}
                   />
                 </div>
               </div>
