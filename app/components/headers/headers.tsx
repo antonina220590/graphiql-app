@@ -19,7 +19,7 @@ interface Header {
   value: string;
 }
 
-interface HeadersPanelProps {
+export interface HeadersPanelProps {
   onUpdate: () => void;
 }
 
@@ -92,7 +92,6 @@ export default function HeadersPanel({ onUpdate }: HeadersPanelProps) {
   const handleClearVariables = () => {
     dispatch(clearVariables());
   };
-
   return (
     <div>
       <div
