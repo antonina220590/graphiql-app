@@ -97,7 +97,7 @@ export default function RESTfullClient() {
           valueHeader,
         ])
       ),
-      body: body && typeof body === 'object' ? JSON.stringify(body) : body,
+      body: body && typeof body === 'object' ? JSON.stringify(body) : null,
     };
 
     try {
