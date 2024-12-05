@@ -88,44 +88,29 @@ export default function RESTfullClient() {
       ({ keyHeader, valueHeader }) => keyHeader && valueHeader
     );
 
-    const options = {
-      method: method,
+    const requestBody = {
+      url,
+      method,
       headers: Object.fromEntries(
         validHeaders.map(({ keyHeader, valueHeader }) => [
           keyHeader,
           valueHeader,
         ])
       ),
-      body: body && typeof body === 'object' ? JSON.stringify(body) : body,
+      body: body && typeof body === 'object' ? JSON.stringify(body) : null,
     };
 
     try {
-      const res = await fetch(url, options);
+      const res = await fetch('/api/restfull', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+
       const statusMessage = t(`statusText.${res.status}`, {
         defaultValue: statusText[res.status] || t('statusText.unknownStatus'),
       });
-
       setStatusCode(`${res.status} ${statusMessage}`);
-
-      if (!res.ok) {
-        let errorMessage = t('restfull.error.responseMessage', {
-          status: res.status,
-          statusMessage,
-        });
-        const errorData = await res.json();
-        if (errorData.message) {
-          errorMessage = errorData.message;
-        }
-        toast(t('restfull.error.errorMessage', { message: errorMessage }), {
-          action: {
-            label: t('restfull.close'),
-            onClick: () => {
-              toast.dismiss();
-            },
-          },
-        });
-        return;
-      }
 
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
