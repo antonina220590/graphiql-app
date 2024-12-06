@@ -2,7 +2,10 @@ import * as prettier from 'prettier/standalone';
 import * as parserGraphQL from 'prettier/parser-graphql';
 import { toast } from 'sonner';
 
-const formatQuery = async (query: string): Promise<string> => {
+const formatQuery = async (
+  query: string,
+  t: (key: string) => string
+): Promise<string> => {
   try {
     return await prettier.format(query, {
       parser: 'graphql',
@@ -16,10 +19,10 @@ const formatQuery = async (query: string): Promise<string> => {
       endOfLine: 'lf',
     });
   } catch (error) {
-    toast('Formatting failed, please try again!', {
+    toast(t('graphql.formattingFail'), {
       description: `${error}`,
       action: {
-        label: 'Close',
+        label: t('graphql.close'),
         onClick: () => {
           toast.dismiss();
         },
@@ -28,4 +31,5 @@ const formatQuery = async (query: string): Promise<string> => {
     return query;
   }
 };
+
 export default formatQuery;

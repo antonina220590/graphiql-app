@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { auth } from '../../firebaseConfig';
 import AuthForm from '../components/form/AuthForm';
 import { useAuthStatus } from '../hooks/useAuthStatus';
 
 export default function SignUp() {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const {
@@ -21,12 +23,12 @@ export default function SignUp() {
 
   useEffect(() => {
     if (!checkingStatus && isAuthenticated && !hasJustLoggedIn) {
-      toast('You are already logged in.');
+      toast(t('signUp.alreadyLoggedUp'));
       setTimeout(() => {
         router.push('/');
       }, 1500);
     }
-  }, [isAuthenticated, checkingStatus, hasJustLoggedIn, router]);
+  }, [isAuthenticated, checkingStatus, hasJustLoggedIn, router, t]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,12 +40,12 @@ export default function SignUp() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       setHasJustLoggedIn(true);
-      toast.success('Successfully signed up!');
+      toast.success(t('signUp.success'));
       setTimeout(() => {
         router.push('/');
       }, 5000);
     } catch (error) {
-      setErrorMessage('Error signing up. Please try again.');
+      setErrorMessage(t('signUp.signUpError'));
     }
   };
 

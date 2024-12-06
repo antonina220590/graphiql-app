@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
-import { MESSAGE, statusText } from './constants';
+import { statusText } from './constants';
 import RestParams from '../components/rest-components/RestParams';
 import SelectMethod from '../components/rest-components/SelectMethod';
 import RestHeders from '../components/rest-components/RestHeaders';
@@ -55,49 +55,69 @@ export default function RESTfullClient() {
 
   const handleSend = async () => {
     if (!url) {
-      toast(MESSAGE.EMPTY);
-      setResponse(MESSAGE.EMPTY);
+      toast(t('restfull.message.empty'), {
+        action: {
+          label: t('restfull.close'),
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+      setResponse(t('restfull.message.empty'));
       setStatusCode(`💁`);
       return;
     }
 
-    const validHeaders = headers.filter(
-      (header) => header.keyHeader && header.valueHeader
-    );
-
-    let requestBody;
-    if (typeof body === 'object') {
-      requestBody = JSON.stringify(body);
-    } else {
-      requestBody = body;
+    try {
+      new URL(url);
+    } catch (error) {
+      toast(t('restfull.error.invalidUrl'), {
+        action: {
+          label: t('restfull.close'),
+          onClick: () => {
+            toast.dismiss();
+          },
+        },
+      });
+      setResponse(t('restfull.error.invalidUrl'));
+      setStatusCode(`❌`);
+      return;
     }
 
-    const options = {
-      method: method,
+    const validHeaders = headers.filter(
+      ({ keyHeader, valueHeader }) => keyHeader && valueHeader
+    );
+
+    const requestBody = {
+      url,
+      method,
       headers: Object.fromEntries(
-        validHeaders.map((header) => [header.keyHeader, header.valueHeader])
+        validHeaders.map(({ keyHeader, valueHeader }) => [
+          keyHeader,
+          valueHeader,
+        ])
       ),
-      body: requestBody ? requestBody : undefined,
+      body: body && typeof body === 'object' ? JSON.stringify(body) : null,
     };
 
     try {
-      const res = await fetch(url, options);
-      const statusMessage = statusText[res.status] || 'Unknown Status';
-      setStatusCode(`${res.status} ${statusMessage}`);
+      const res = await fetch('/api/restfull', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
 
-      if (!res.ok) {
-        let errorMessage = `${res.status} ${statusMessage}`;
-        const errorData = await res.json();
-        if (errorData.message) {
-          errorMessage = errorData.message;
-        }
-        toast(`Error: ${errorMessage}`);
-      }
+      const statusMessage = t(`statusText.${res.status}`, {
+        defaultValue: statusText[res.status] || t('statusText.unknownStatus'),
+      });
+      setStatusCode(`${res.status} ${statusMessage}`);
 
       const json = await res.json();
       setResponse(JSON.stringify(json, null, 2));
     } catch (error) {
-      setResponse(`Error: ${(error as Error).message || MESSAGE.UNKNOWN}`);
+      setResponse(
+        `${t('restfull.error.label')}: ${(error as Error).message || t('restfull.error.unknown')}`
+      );
     }
   };
 
