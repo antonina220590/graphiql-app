@@ -1,0 +1,10 @@
+echo "Running tests in CI mode..."
+npx vitest run
+
+test_status=$?
+if [ $test_status -ne 0 ]; then
+  echo "Tests failed. Aborting push."
+  exit 1
+fi
+
+echo "Tests passed. Proceeding with push."
